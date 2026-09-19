@@ -2,6 +2,8 @@ package com.example.ecommerce.domain.entity;
 
 
 import com.example.ecommerce.domain.valueobject.FechaVencimiento;
+import com.example.ecommerce.domain.valueobject.NombreArticulo;
+import com.example.ecommerce.domain.valueobject.Precio;
 
 import java.util.List;
 
