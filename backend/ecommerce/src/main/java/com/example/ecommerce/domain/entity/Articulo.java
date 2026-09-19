@@ -1,6 +1,8 @@
 package com.example.ecommerce.domain.entity;
 
 
+import com.example.ecommerce.domain.valueobject.FechaVencimiento;
+
 import java.util.List;
 
 public class Articulo {
