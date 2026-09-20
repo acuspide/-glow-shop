@@ -1,4 +1,4 @@
-﻿# IntelliJ
+# IntelliJ
 .idea/
 *.iml
 out/
@@ -6,3 +6,5 @@ out/
 # Gradle / build
 **/.gradle/
 **/build/
+backend/ecommerce/.gradle/
+backend/ecommerce/build/
