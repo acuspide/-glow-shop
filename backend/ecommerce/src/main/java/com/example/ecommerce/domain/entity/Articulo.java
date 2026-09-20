@@ -1,9 +1,8 @@
 package com.example.ecommerce.domain.entity;
 
 
-import com.example.ecommerce.domain.valueobject.FechaVencimiento;
-import com.example.ecommerce.domain.valueobject.NombreArticulo;
-import com.example.ecommerce.domain.valueobject.Precio;
+import com.example.ecommerce.domain.exception.*;
+import com.example.ecommerce.domain.valueobject.*;
 
 import java.util.List;
 
@@ -55,30 +54,28 @@ public class Articulo {
 
     private void validarPuedePublicarse(){
         if (categoria == null){
-            throw new IllegalStateException("el articulo debe tener una categoria");
+            throw new CategoriaRequeridaException();
         }
         if (marca == null) {
-            throw new IllegalStateException(
-                    "El artículo debe tener una marca"
-            );
+            throw new MarcaRequeridaException();
         }
 
         if (precio == null) {
-            throw new IllegalStateException(
-                    "El artículo debe tener un precio"
-            );
+            throw new PrecioRequeridoException();
         }
 
         if (inventario == null) {
-            throw new IllegalStateException(
-                    "El artículo debe tener inventario"
-            );
+            throw new CantidadDisponibleRequeridaException();
         }
 
         if (fechaVencimiento == null) {
-            throw new IllegalStateException(
-                    "El artículo debe tener fecha de vencimiento"
-            );
+            throw new FechaVencimientoRequeridaException();
+        }
+        if (fechaVencimiento.estaVencida()) {
+            throw new ArticuloVencidoException();
+        }
+        if (tienda == null) {
+            throw new TiendaRequeridaException();
         }
     }
 
