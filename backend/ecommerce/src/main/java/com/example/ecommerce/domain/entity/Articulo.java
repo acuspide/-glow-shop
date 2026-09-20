@@ -7,7 +7,7 @@ import com.example.ecommerce.domain.valueobject.*;
 import java.util.List;
 
 public class Articulo {
-    private long id;
+    private final long id;
     private NombreArticulo nombre;
     private Precio precio;
     private Categoria categoria;
@@ -52,6 +52,10 @@ public class Articulo {
         this.publicado = true;
     }
 
+    public long getId() {
+        return id;
+    }
+
     private void validarPuedePublicarse(){
         if (categoria == null){
             throw new CategoriaRequeridaException();
@@ -78,6 +82,8 @@ public class Articulo {
             throw new TiendaRequeridaException();
         }
     }
+
+
 
 
 }
