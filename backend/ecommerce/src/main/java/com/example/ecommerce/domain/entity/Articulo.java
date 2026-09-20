@@ -5,6 +5,7 @@ import com.example.ecommerce.domain.exception.*;
 import com.example.ecommerce.domain.valueobject.*;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Articulo {
     private final long id;
@@ -55,6 +56,9 @@ public class Articulo {
     public long getId() {
         return id;
     }
+    public boolean isPublicado() {
+        return publicado;
+    }
 
     private void validarPuedePublicarse(){
         if (categoria == null){
@@ -81,6 +85,17 @@ public class Articulo {
         if (tienda == null) {
             throw new TiendaRequeridaException();
         }
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Articulo otro)) return false;
+        return id == otro.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 
