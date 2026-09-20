@@ -1,7 +1,7 @@
 # Diagrama de Agregado --- Pedido
 
 En el "diagrama de agregado" de nuestro e-commerce de belleza elegimos
-Pedido) como la raíz del agregado**, porque representa la compra
+Pedido como la raíz del agregado, porque representa la compra
 realizada por el cliente y es el encargado de controlar las reglas y
 operaciones relacionadas con ella.
 
