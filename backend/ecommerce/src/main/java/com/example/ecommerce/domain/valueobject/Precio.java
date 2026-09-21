@@ -19,6 +19,11 @@ public class Precio {
             throw new PrecioInvalidoException();
         }
     }
+
+    public BigDecimal valor() {
+        return valor;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
