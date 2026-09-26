@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ecommerce.application.usecase.ActualizarInventarioUseCaseTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-09-26T05:17:55.367Z" hostname="DESKTOP-Q7O3V6O" time="0.112">
+  <properties/>
+  <testcase name="noDebePermitirActualizarInventarioConCantidadCero()" classname="com.example.ecommerce.application.usecase.ActualizarInventarioUseCaseTest" time="0.081"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

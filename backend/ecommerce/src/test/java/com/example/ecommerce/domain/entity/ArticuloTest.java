@@ -122,4 +122,50 @@ public class ArticuloTest {
         // El estado no debe haber cambiado
         assertFalse(articulo.isPublicado());
     }
+    @Test
+    void debeDisminuirElInventarioDelArticulo() {
+
+        // Arrange
+        Articulo articulo = new Articulo(
+                6L,
+                new NombreArticulo("Base"),
+                new Precio(new BigDecimal("50000")),
+                new Categoria(2L, "Rostro"),
+                new Marca(2L, "MAC"),
+                Tono.CLARO,
+                List.of(TipoPiel.SECA),
+                new Inventario(20),
+                new FechaVencimiento(LocalDate.of(2028, 5, 20)),
+                new Tienda(2L, "Tienda Beauty")
+        );
+
+        // Act
+        articulo.disminuirInventario(5);
+
+        // Assert
+        assertEquals(15, articulo.getCantidadDisponible());
+    }
+    @Test
+    void debeAumentarElInventarioDelArticulo() {
+
+        // Arrange
+        Articulo articulo = new Articulo(
+                5L,
+                new NombreArticulo("Labial"),
+                new Precio(new BigDecimal("20000")),
+                new Categoria(1L, "Labios"),
+                new Marca(1L, "Maybelline"),
+                Tono.OSCURO,
+                List.of(TipoPiel.NORMAL),
+                new Inventario(10),
+                new FechaVencimiento(LocalDate.of(2027, 12, 31)),
+                new Tienda(1L, "Tienda Beauty")
+        );
+
+        // Act
+        articulo.aumentarInventario(5);
+
+        // Assert
+        assertEquals(15, articulo.getCantidadDisponible());
+    }
 }
