@@ -1,12 +1,14 @@
 package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.domain.entity.*;
+import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.RutinaCuidadoRepository;
 import com.example.ecommerce.domain.valueobject.FechaVencimiento;
 import com.example.ecommerce.domain.valueobject.NombreArticulo;
 import com.example.ecommerce.domain.valueobject.Precio;
 import com.example.ecommerce.domain.valueobject.TipoPiel;
 import com.example.ecommerce.domain.valueobject.Tono;
+import com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.persistence.RutinaCuidadoRepositoryEnMemoria;
 import org.junit.jupiter.api.Test;
 
@@ -37,12 +39,17 @@ public class CrearRutinaCuidadoUseCaseTest {
     @Test
     void debeCrearYGuardarRutinaDeCuidado() {
 
-        // Arrange
-        RutinaCuidadoRepository repository =
-                new RutinaCuidadoRepositoryEnMemoria();
+        RutinaCuidadoRepository rutinaRepository =
+                new com.example.ecommerce.infrastructure.persistence.RutinaCuidadoRepositoryEnMemoria();
+
+        ArticuloRepository articuloRepository =
+                new com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria();
 
         CrearRutinaCuidadoUseCase useCase =
-                new CrearRutinaCuidadoUseCase(repository);
+                new CrearRutinaCuidadoUseCase(
+                        rutinaRepository,
+                        articuloRepository
+                );
 
         Articulo articulo1 = crearArticulo(1L, 10);
         Articulo articulo2 = crearArticulo(2L, 5);
@@ -50,21 +57,24 @@ public class CrearRutinaCuidadoUseCaseTest {
         articulo1.publicar();
         articulo2.publicar();
 
-        // Act
-        useCase.ejecutar(
+        articuloRepository.guardar(articulo1);
+        articuloRepository.guardar(articulo2);
+
+        RutinaCuidado rutinaCreada = useCase.ejecutar(
                 1L,
                 "Rutina de cuidado diario",
-                List.of(articulo1, articulo2)
+                List.of(1L, 2L)
         );
 
-        // Assert
+        assertNotNull(rutinaCreada);
+        assertEquals(1L, rutinaCreada.getId());
+        assertEquals("Rutina de cuidado diario", rutinaCreada.getNombre());
+        assertEquals(2, rutinaCreada.getArticulos().size());
+
         Optional<RutinaCuidado> rutina =
-                repository.obtenerPorId(1L);
+                rutinaRepository.obtenerPorId(1L);
 
         assertTrue(rutina.isPresent());
-        assertEquals(1L, rutina.get().getId());
-        assertEquals("Rutina de cuidado diario", rutina.get().getNombre());
-        assertEquals(2, rutina.get().getArticulos().size());
     }
 }
 

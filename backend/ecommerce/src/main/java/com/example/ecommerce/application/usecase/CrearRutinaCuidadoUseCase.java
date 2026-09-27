@@ -2,21 +2,38 @@ package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.RutinaCuidado;
+import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.RutinaCuidadoRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CrearRutinaCuidadoUseCase {
-    private final RutinaCuidadoRepository repository;
+    private final RutinaCuidadoRepository rutinaRepository;
+    private final ArticuloRepository articuloRepository;
 
-    public CrearRutinaCuidadoUseCase(RutinaCuidadoRepository repository) {
-        this.repository = repository;
+    public CrearRutinaCuidadoUseCase(
+            RutinaCuidadoRepository rutinaRepository,
+            ArticuloRepository articuloRepository) {
+
+        this.rutinaRepository = rutinaRepository;
+        this.articuloRepository = articuloRepository;
     }
 
-    public void ejecutar(
+    public RutinaCuidado ejecutar(
             long id,
             String nombre,
-            List<Articulo> articulos) {
+            List<Long> articulosIds) {
+
+        List<Articulo> articulos = new ArrayList<>();
+
+        for (Long articuloId : articulosIds) {
+            Articulo articulo = articuloRepository
+                    .obtenerPorId(articuloId)
+                    .orElseThrow();
+
+            articulos.add(articulo);
+        }
 
         RutinaCuidado rutina = new RutinaCuidado(
                 id,
@@ -24,7 +41,8 @@ public class CrearRutinaCuidadoUseCase {
                 articulos
         );
 
-        repository.guardar(rutina);
-    }
+        rutinaRepository.guardar(rutina);
 
+        return rutina;
+    }
 }
