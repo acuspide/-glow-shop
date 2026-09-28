@@ -14,7 +14,7 @@
 <div class="tab-container">
 <ul class="tabLinks">
 <li>
-<a class="successGroup" href="#">Gradle Test Run :test</a>
+<a class="failureGroup" href="#">Gradle Test Run :test</a>
 </li>
 </ul>
 <div class="tab">
@@ -38,13 +38,13 @@
 <tr>
 <td>
 <div class="infoBox">
-<div class="counter">2</div>
+<div class="counter">29</div>
 <p>tests</p>
 </div>
 </td>
 <td>
 <div class="infoBox">
-<div class="counter">0</div>
+<div class="counter">1</div>
 <p>failures</p>
 </div>
 </td>
@@ -56,7 +56,7 @@
 </td>
 <td>
 <div class="infoBox duration">
-<div class="counter">1.925s</div>
+<div class="counter">5.713s</div>
 <p>duration</p>
 </div>
 </td>
@@ -65,14 +65,54 @@
 </div>
 </td>
 <td>
-<div class="infoBox success successRate">
-<div class="percent">100%</div>
+<div class="infoBox failures successRate">
+<div class="percent">96%</div>
 <p>successful</p>
 </div>
 </td>
 </tr>
 </table>
 </div>
+<div class="tab-container">
+<ul class="tabLinks">
+<li>
+<a class="" href="#">Failed</a>
+</li>
+<li>
+<a class="" href="#">All</a>
+</li>
+</ul>
+<div class="tab">
+<h2>Failed</h2>
+<table class="test-results sortable">
+<thead>
+<tr>
+<th>Child</th>
+<th>Name</th>
+<th data-sort-default="desc">Tests</th>
+<th data-sort-default="desc">Failures</th>
+<th data-sort-default="desc">Skipped</th>
+<th data-sort-default="desc">Duration</th>
+<th>Success rate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="failures">
+<a href="com.example.ecommerce.EcommerceApplicationTests/index.html">EcommerceApplicationTests</a>
+</td>
+<td class="path">com.example.ecommerce.EcommerceApplicationTests</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td data-sort-value="3422">3.422s</td>
+<td class="failures" data-sort-value="0">0%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="tab">
+<h2>All</h2>
 <table class="test-results sortable">
 <thead>
 <tr>
@@ -88,17 +128,107 @@
 <tbody>
 <tr>
 <td class="success">
+<a href="com.example.ecommerce.application.usecase.ActualizarInventarioUseCaseTest/index.html">ActualizarInventarioUseCaseTest</a>
+</td>
+<td class="path">com.example.ecommerce.application.usecase.ActualizarInventarioUseCaseTest</td>
+<td>5</td>
+<td>0</td>
+<td>0</td>
+<td data-sort-value="128">0.128s</td>
+<td class="success" data-sort-value="100">100%</td>
+</tr>
+<tr>
+<td class="success">
+<a href="com.example.ecommerce.application.usecase.CrearRutinaCuidadoUseCaseTest/index.html">CrearRutinaCuidadoUseCaseTest</a>
+</td>
+<td class="path">com.example.ecommerce.application.usecase.CrearRutinaCuidadoUseCaseTest</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td data-sort-value="9">0.009s</td>
+<td class="success" data-sort-value="100">100%</td>
+</tr>
+<tr>
+<td class="success">
+<a href="com.example.ecommerce.application.usecase.ObtenerRutinaCuidadoUseCaseTest/index.html">ObtenerRutinaCuidadoUseCaseTest</a>
+</td>
+<td class="path">com.example.ecommerce.application.usecase.ObtenerRutinaCuidadoUseCaseTest</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td data-sort-value="4">0.004s</td>
+<td class="success" data-sort-value="100">100%</td>
+</tr>
+<tr>
+<td class="success">
+<a href="com.example.ecommerce.application.usecase.PublicarArticuloUseCaseTest/index.html">PublicarArticuloUseCaseTest</a>
+</td>
+<td class="path">com.example.ecommerce.application.usecase.PublicarArticuloUseCaseTest</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td data-sort-value="9">0.009s</td>
+<td class="success" data-sort-value="100">100%</td>
+</tr>
+<tr>
+<td class="success">
+<a href="com.example.ecommerce.domain.entity.ArticuloTest/index.html">ArticuloTest</a>
+</td>
+<td class="path">com.example.ecommerce.domain.entity.ArticuloTest</td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td data-sort-value="14">0.014s</td>
+<td class="success" data-sort-value="100">100%</td>
+</tr>
+<tr>
+<td class="success">
+<a href="com.example.ecommerce.domain.entity.InventarioTest/index.html">InventarioTest</a>
+</td>
+<td class="path">com.example.ecommerce.domain.entity.InventarioTest</td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td data-sort-value="14">0.014s</td>
+<td class="success" data-sort-value="100">100%</td>
+</tr>
+<tr>
+<td class="success">
+<a href="com.example.ecommerce.domain.entity.RutinaCuidadoTest/index.html">RutinaCuidadoTest</a>
+</td>
+<td class="path">com.example.ecommerce.domain.entity.RutinaCuidadoTest</td>
+<td>6</td>
+<td>0</td>
+<td>0</td>
+<td data-sort-value="13">0.013s</td>
+<td class="success" data-sort-value="100">100%</td>
+</tr>
+<tr>
+<td class="success">
 <a href="com.example.ecommerce.domain.valueobject.PrecioTest/index.html">PrecioTest</a>
 </td>
 <td class="path">com.example.ecommerce.domain.valueobject.PrecioTest</td>
 <td>2</td>
 <td>0</td>
 <td>0</td>
-<td data-sort-value="103">0.103s</td>
+<td data-sort-value="8">0.008s</td>
 <td class="success" data-sort-value="100">100%</td>
+</tr>
+<tr>
+<td class="failures">
+<a href="com.example.ecommerce.EcommerceApplicationTests/index.html">EcommerceApplicationTests</a>
+</td>
+<td class="path">com.example.ecommerce.EcommerceApplicationTests</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td data-sort-value="3422">3.422s</td>
+<td class="failures" data-sort-value="0">0%</td>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -111,7 +241,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="https://www.gradle.org">Gradle 9.7.1</a> at 27/09/2026, 9:26:34 p. m.</p>
+<a href="https://www.gradle.org">Gradle 9.7.1</a> at 27/09/2026, 9:36:43 p. m.</p>
 </div>
 </div>
 </body>

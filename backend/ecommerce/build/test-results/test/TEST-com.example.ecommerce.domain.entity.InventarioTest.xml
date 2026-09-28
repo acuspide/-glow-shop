@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ecommerce.domain.entity.InventarioTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-28T02:36:42.916Z" hostname="DESKTOP-Q7O3V6O" time="0.014">
+  <properties/>
+  <testcase name="noDebePermitirDisminuirUnaCantidadCero()" classname="com.example.ecommerce.domain.entity.InventarioTest" time="0.001"/>
+  <testcase name="noDebePermitirDisminuirPorDebajoDeCero()" classname="com.example.ecommerce.domain.entity.InventarioTest" time="0.001"/>
+  <testcase name="noDebeModificarElInventarioSiLaDisminucionGeneraStockNegativo()" classname="com.example.ecommerce.domain.entity.InventarioTest" time="0.002"/>
+  <testcase name="noDebePermitirAumentarUnaCantidadCero()" classname="com.example.ecommerce.domain.entity.InventarioTest" time="0.001"/>
+  <testcase name="debeDisminuirLaCantidadDisponible()" classname="com.example.ecommerce.domain.entity.InventarioTest" time="0.001"/>
+  <testcase name="debeAumentarLaCantidadDisponible()" classname="com.example.ecommerce.domain.entity.InventarioTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

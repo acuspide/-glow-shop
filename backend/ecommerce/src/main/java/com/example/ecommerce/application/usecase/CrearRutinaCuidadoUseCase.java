@@ -1,4 +1,5 @@
 package com.example.ecommerce.application.usecase;
+import org.springframework.stereotype.Service;
 
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.RutinaCuidado;
@@ -7,7 +8,7 @@ import com.example.ecommerce.domain.repository.RutinaCuidadoRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class CrearRutinaCuidadoUseCase {
     private final RutinaCuidadoRepository rutinaRepository;
     private final ArticuloRepository articuloRepository;

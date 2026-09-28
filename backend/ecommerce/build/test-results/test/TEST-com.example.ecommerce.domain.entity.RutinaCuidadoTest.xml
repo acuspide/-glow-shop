@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ecommerce.domain.entity.RutinaCuidadoTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-09-28T02:36:42.931Z" hostname="DESKTOP-Q7O3V6O" time="0.013">
+  <properties/>
+  <testcase name="noDebeCrearRutinaConArticuloSinDisponibilidad()" classname="com.example.ecommerce.domain.entity.RutinaCuidadoTest" time="0.002"/>
+  <testcase name="noDebeCrearRutinaConMenosDeDosArticulos()" classname="com.example.ecommerce.domain.entity.RutinaCuidadoTest" time="0.001"/>
+  <testcase name="debePermitirArticulosDeDiferentesMarcas()" classname="com.example.ecommerce.domain.entity.RutinaCuidadoTest" time="0.001"/>
+  <testcase name="unMismoArticuloPuedePertenecerADiferentesRutinas()" classname="com.example.ecommerce.domain.entity.RutinaCuidadoTest" time="0.002"/>
+  <testcase name="noDebeCrearRutinaConArticuloNoPublicado()" classname="com.example.ecommerce.domain.entity.RutinaCuidadoTest" time="0.002"/>
+  <testcase name="debeCrearRutinaConDosArticulosPublicadosYDisponibles()" classname="com.example.ecommerce.domain.entity.RutinaCuidadoTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
