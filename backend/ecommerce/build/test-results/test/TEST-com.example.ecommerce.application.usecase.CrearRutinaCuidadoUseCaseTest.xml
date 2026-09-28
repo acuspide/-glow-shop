@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.ecommerce.application.usecase.CrearRutinaCuidadoUseCaseTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-09-27T23:23:59.931Z" hostname="DESKTOP-Q7O3V6O" time="0.144">
-  <properties/>
-  <testcase name="debeCrearYGuardarRutinaDeCuidado()" classname="com.example.ecommerce.application.usecase.CrearRutinaCuidadoUseCaseTest" time="0.113"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
