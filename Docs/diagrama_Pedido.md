@@ -29,15 +29,13 @@ información inconsistente.
 Las "invariantes" son las reglas que siempre deben cumplirse dentro
 del agregado para mantener el pedido correcto y consistente:
 
--   **Un Pedido nunca puede pasar a (EN_PREPARACION) si no tiene un pago
-    confirmado asociado**.
--   **Un Pedido siempre debe contener al menos un (DetallePedido); no
-    puede confirmarse vacío**. 
--   **El (precioUnitario) de un (DetallePedido) nunca cambia**, aunque
-    posteriormente cambie el precio del (Articulo) original.
--   **Un Pedido en estado (CANCELADO) nunca puede volver directamente a
-    (CONFIRMADO)**; para realizar nuevamente la compra se requiere un
-    pedido nuevo.
--   **El total del Pedido siempre debe corresponder a la suma de sus
-    detalles**, teniendo en cuenta descuentos, impuestos y envío cuando
-    aplique.
+1. Un Pedido no puede pasar a EN_PREPARACION si no tiene registrado un pago confirmado.
+2. Un Pedido siempre debe contener al menos un DetallePedido. 
+3. El precioUnitario de un DetallePedido nunca cambia, aunque después cambie el precio del Artículo original.
+4. CANCELADO y ENTREGADO son estados finales: un pedido en cualquiera de ellos no puede pasar a otro estado. Para volver a comprar se requiere un pedido nuevo.
+5. El total del Pedido siempre es igual a la suma de (precioUnitario × cantidad) de sus detalles, menos el descuento, más los impuestos y el costo de envío.
+6. El descuento nunca puede ser mayor que la suma de los detalles, de modo que el total nunca es negativo.
+7. La cantidad de cada DetallePedido debe ser mayor que 0.
+8. Los detalles y el cupón solo pueden modificarse mientras el Pedido está en estado PENDIENTE.
+9. Un Pedido admite como máximo un cupón.
+10. Todos los precios del Pedido deben estar en la misma moneda.
