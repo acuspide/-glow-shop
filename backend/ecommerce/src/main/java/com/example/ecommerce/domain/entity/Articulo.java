@@ -52,10 +52,23 @@ public class Articulo {
         validarPuedePublicarse();
         this.publicado = true;
     }
+    public void aumentarInventario(int cantidad) {
+        inventario.aumentar(cantidad);
+    }
+
+    public void disminuirInventario(int cantidad) {
+        inventario.disminuir(cantidad);
+    }
+
 
     public long getId() {
         return id;
     }
+
+    public int getCantidadDisponible() {
+        return inventario.getCantidadDisponible();
+    }
+
     public boolean isPublicado() {
         return publicado;
     }
