@@ -38,4 +38,3 @@ del agregado para mantener el pedido correcto y consistente:
 7. La cantidad de cada DetallePedido debe ser mayor que 0.
 8. Los detalles y el cupón solo pueden modificarse mientras el Pedido está en estado PENDIENTE.
 9. Un Pedido admite como máximo un cupón.
-10. Todos los precios del Pedido deben estar en la misma moneda.
