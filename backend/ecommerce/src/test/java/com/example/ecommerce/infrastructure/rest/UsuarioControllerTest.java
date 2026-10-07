@@ -1,7 +1,7 @@
 package com.example.ecommerce.infrastructure.rest;
 
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
-import com.example.ecommerce.application.usecase.RegistrarUsuarioUseCase;
+import com.example.ecommerce.application.usecase.RegistrarClienteUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.valueobject.Email;
@@ -30,7 +30,7 @@ class UsuarioControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private RegistrarUsuarioUseCase registrarUsuarioUseCase;
+    private RegistrarClienteUseCase registrarClienteUseCase;
 
     @MockitoBean
     private UsuarioMapper mapper;
@@ -43,14 +43,13 @@ class UsuarioControllerTest {
             {
                 "nombre": "Ana",
                 "email": "ana@correo.com",
-                "contrasena": "clave123",
-                "rol": "CLIENTE"
+                "contrasena": "clave123"
             }
             """;
 
-        Usuario usuarioSimulado = Usuario.registrar(
-                1L, "Ana", new Email("ana@correo.com"), "hash", RolUsuario.CLIENTE);
-        when(registrarUsuarioUseCase.ejecutar(anyLong(), any(), any(), any(), any()))
+        Usuario usuarioSimulado = Usuario.registrarCliente(
+                1L, "Ana", new Email("ana@correo.com"), "hash");
+        when(registrarClienteUseCase.ejecutar(anyLong(), any(), any(), any()))
                 .thenReturn(usuarioSimulado);
         when(mapper.toResponse(any()))
                 .thenReturn(new UsuarioResponse(1L, "Ana", "ana@correo.com", RolUsuario.CLIENTE, true));
@@ -117,7 +116,7 @@ class UsuarioControllerTest {
             }
             """;
 
-        when(registrarUsuarioUseCase.ejecutar(anyLong(), any(), any(), any(), any()))
+        when(registrarClienteUseCase.ejecutar(anyLong(), any(), any(), any()))
                 .thenThrow(new CorreoElectronicoDuplicadoException());
 
         // Act y Assert

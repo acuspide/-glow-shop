@@ -1,6 +1,7 @@
 package com.example.ecommerce.infrastructure.rest.exception;
 
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
+import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
@@ -47,6 +48,13 @@ public class GlobalExceptionHandler {
             CredencialesInvalidasException ex) {
 
         return construirRespuesta(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(CreacionUsuarioNoPermitidaException.class)
+    public ResponseEntity<Map<String, Object>> manejarCreacionNoPermitida(
+            CreacionUsuarioNoPermitidaException ex) {
+
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(UsuarioInactivoException.class)

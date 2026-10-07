@@ -2,7 +2,8 @@ package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.application.PasswordHasher;
 import com.example.ecommerce.domain.entity.Usuario;
-import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
+import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
@@ -12,17 +13,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RegistrarUsuarioUseCaseTest {
+public class RegistrarClienteUseCaseTest {
 
     @Test
-    void debeRegistrarUnUsuarioNuevoConCorreoUnico() {
+    void debeRegistrarUnClienteNuevoConCorreoUnico() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarUsuarioUseCase useCase = new RegistrarUsuarioUseCase(repository, passwordHasher);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
 
         // Act
-        Usuario usuario = useCase.ejecutar(1L, "Ana Pérez", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        Usuario usuario = useCase.ejecutar(1L, "Ana Pérez", "ana@correo.com", "clave123");
 
         // Assert
         assertEquals(RolUsuario.CLIENTE, usuario.getRol());
@@ -34,27 +35,13 @@ public class RegistrarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarUsuarioUseCase useCase = new RegistrarUsuarioUseCase(repository, passwordHasher);
-        useCase.ejecutar(1L, "Ana", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
+        useCase.ejecutar(1L, "Ana", "ana@correo.com", "clave123");
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> {
-            useCase.ejecutar(2L, "Otra Ana", "ana@correo.com", "otraClave", RolUsuario.VENDEDOR);
+        assertThrows(CorreoElectronicoDuplicadoException.class, () -> {
+            useCase.ejecutar(2L, "Otra Ana", "ana@correo.com", "otraClave");
         });
-    }
-
-    @Test
-    void debeAsignarRolClientePorDefectoSiNoSeIndica() {
-        // Arrange
-        UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarUsuarioUseCase useCase = new RegistrarUsuarioUseCase(repository, passwordHasher);
-
-        // Act
-        Usuario usuario = useCase.ejecutar(1L, "Ana", "ana@correo.com", "clave123", null);
-
-        // Assert
-        assertEquals(RolUsuario.CLIENTE, usuario.getRol());
     }
 
     @Test
@@ -62,10 +49,10 @@ public class RegistrarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarUsuarioUseCase useCase = new RegistrarUsuarioUseCase(repository, passwordHasher);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
 
         // Act
-        Usuario usuario = useCase.ejecutar(1L, "Ana", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        Usuario usuario = useCase.ejecutar(1L, "Ana", "ana@correo.com", "clave123");
 
         // Assert
         assertNotEquals("clave123", usuario.getContrasenaHash());
@@ -76,11 +63,11 @@ public class RegistrarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarUsuarioUseCase useCase = new RegistrarUsuarioUseCase(repository, passwordHasher);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)
-        assertThrows(ReglaDominioException.class, () ->
-                useCase.ejecutar(1L, "Ana", "ana@correo.com", "   ", RolUsuario.CLIENTE));
+        assertThrows(ContrasenaRequeridaException.class, () ->
+                useCase.ejecutar(1L, "Ana", "ana@correo.com", "   "));
         assertFalse(repository.existePorEmail(new Email("ana@correo.com")));
     }
 }

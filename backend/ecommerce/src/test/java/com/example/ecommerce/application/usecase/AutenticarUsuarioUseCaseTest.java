@@ -5,7 +5,6 @@ import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
-import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
 import org.junit.jupiter.api.Test;
@@ -20,8 +19,8 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        new RegistrarUsuarioUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana Pérez", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        new RegistrarClienteUseCase(repository, passwordHasher)
+                .ejecutar(1L, "Ana Pérez", "ana@correo.com", "clave123");
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act
@@ -36,8 +35,8 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        new RegistrarUsuarioUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        new RegistrarClienteUseCase(repository, passwordHasher)
+                .ejecutar(1L, "Ana", "ana@correo.com", "clave123");
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
@@ -64,8 +63,8 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        Usuario usuario = new RegistrarUsuarioUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher)
+                .ejecutar(1L, "Ana", "ana@correo.com", "clave123");
         usuario.desactivar();
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 

@@ -6,27 +6,23 @@ import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoExceptio
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.ContrasenaPlana;
 import com.example.ecommerce.domain.valueobject.Email;
-import com.example.ecommerce.domain.valueobject.RolUsuario;
 import org.springframework.stereotype.Service;
 
+/**
+ * Autorregistro: una persona crea su propia cuenta. Siempre queda como CLIENTE.
+ */
 @Service
-public class RegistrarUsuarioUseCase {
+public class RegistrarClienteUseCase {
 
     private final UsuarioRepository repository;
     private final PasswordHasher passwordHasher;
 
-    public RegistrarUsuarioUseCase(UsuarioRepository repository, PasswordHasher passwordHasher) {
+    public RegistrarClienteUseCase(UsuarioRepository repository, PasswordHasher passwordHasher) {
         this.repository = repository;
         this.passwordHasher = passwordHasher;
     }
 
-    public Usuario ejecutar(
-            long id,
-            String nombre,
-            String email,
-            String contrasenaPlano,
-            RolUsuario rol) {
-
+    public Usuario ejecutar(long id, String nombre, String email, String contrasenaPlano) {
         ContrasenaPlana contrasena = new ContrasenaPlana(contrasenaPlano); // el dominio valida
         Email correo = new Email(email);                                   // el dominio valida
 
@@ -36,12 +32,10 @@ public class RegistrarUsuarioUseCase {
         }
 
         String contrasenaHash = passwordHasher.hash(contrasena.valor());
+        Usuario cliente = Usuario.registrarCliente(id, nombre, correo, contrasenaHash);
 
-        // RN03: el rol por defecto lo decide el dominio.
-        Usuario usuario = Usuario.registrar(id, nombre, correo, contrasenaHash, rol);
+        repository.guardar(cliente);
 
-        repository.guardar(usuario);
-
-        return usuario;
+        return cliente;
     }
 }

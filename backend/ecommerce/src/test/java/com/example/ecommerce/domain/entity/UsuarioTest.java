@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.entity;
 
+import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
@@ -57,20 +58,54 @@ public class UsuarioTest {
     }
 
     @Test
-    void registrarSinRolDebeAsignarClientePorDefecto() {
+    void registrarClienteDebeCrearSiempreUnUsuarioConRolCliente() {
         // Arrange y Act
-        Usuario usuario = Usuario.registrar(1L, "Ana", new Email("ana@correo.com"), "hash", null);
+        Usuario usuario = Usuario.registrarCliente(1L, "Ana", new Email("ana@correo.com"), "hash");
 
         // Assert
         assertEquals(RolUsuario.CLIENTE, usuario.getRol());
     }
 
     @Test
-    void registrarConRolDebeRespetarElRolIndicado() {
-        // Arrange y Act
-        Usuario usuario = Usuario.registrar(1L, "Ana", new Email("ana@correo.com"), "hash", RolUsuario.VENDEDOR);
+    void unAdministradorActivoDebePoderCrearUnVendedor() {
+        // Arrange
+        Usuario admin = new Usuario(1L, "Admin", new Email("admin@glow.com"), "hash", RolUsuario.ADMINISTRADOR);
+
+        // Act
+        Usuario vendedor = admin.crearUsuarioConRol(2L, "Vera", new Email("vera@tienda.com"), "hash", RolUsuario.VENDEDOR);
 
         // Assert
-        assertEquals(RolUsuario.VENDEDOR, usuario.getRol());
+        assertEquals(RolUsuario.VENDEDOR, vendedor.getRol());
+    }
+
+    @Test
+    void unClienteNoDebePoderCrearUsuariosConRol() {
+        // Arrange
+        Usuario cliente = new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", RolUsuario.CLIENTE);
+
+        // Act y Assert
+        assertThrows(CreacionUsuarioNoPermitidaException.class, () ->
+                cliente.crearUsuarioConRol(2L, "Vera", new Email("vera@tienda.com"), "hash", RolUsuario.VENDEDOR));
+    }
+
+    @Test
+    void unVendedorNoDebePoderCrearUsuariosConRol() {
+        // Arrange
+        Usuario vendedor = new Usuario(1L, "Vera", new Email("vera@tienda.com"), "hash", RolUsuario.VENDEDOR);
+
+        // Act y Assert
+        assertThrows(CreacionUsuarioNoPermitidaException.class, () ->
+                vendedor.crearUsuarioConRol(2L, "Otro", new Email("otro@tienda.com"), "hash", RolUsuario.VENDEDOR));
+    }
+
+    @Test
+    void unAdministradorInactivoNoDebePoderCrearUsuariosConRol() {
+        // Arrange
+        Usuario admin = new Usuario(1L, "Admin", new Email("admin@glow.com"), "hash", RolUsuario.ADMINISTRADOR);
+        admin.desactivar();
+
+        // Act y Assert
+        assertThrows(CreacionUsuarioNoPermitidaException.class, () ->
+                admin.crearUsuarioConRol(2L, "Vera", new Email("vera@tienda.com"), "hash", RolUsuario.VENDEDOR));
     }
 }

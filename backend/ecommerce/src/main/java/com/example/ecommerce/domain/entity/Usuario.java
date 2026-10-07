@@ -1,6 +1,7 @@
 package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
+import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.NombreUsuarioRequeridoException;
 import com.example.ecommerce.domain.exception.RolRequeridoException;
 import com.example.ecommerce.domain.valueobject.Email;
@@ -30,11 +31,18 @@ public class Usuario {
         this.activo = true;
     }
 
-    // Único punto de entrada para registrar: aquí vive la regla RN03
-    public static Usuario registrar(long id, String nombre, Email email,
-                                    String contrasenaHash, RolUsuario rol) {
-        RolUsuario rolAsignado = (rol != null) ? rol : RolUsuario.CLIENTE;
-        return new Usuario(id, nombre, email, contrasenaHash, rolAsignado);
+    // Autorregistro: los clientes se crean solos (RN03).
+    public static Usuario registrarCliente(long id, String nombre, Email email, String contrasenaHash) {
+        return new Usuario(id, nombre, email, contrasenaHash, RolUsuario.CLIENTE);
+    }
+
+    // Solo un administrador activo puede crear vendedores u otros administradores (RN03).
+    public Usuario crearUsuarioConRol(long id, String nombre, Email email,
+                                      String contrasenaHash, RolUsuario rol) {
+        if (this.rol != RolUsuario.ADMINISTRADOR || !this.activo) {
+            throw new CreacionUsuarioNoPermitidaException();
+        }
+        return new Usuario(id, nombre, email, contrasenaHash, rol);
     }
 
     private void validarNombre(String nombre) {

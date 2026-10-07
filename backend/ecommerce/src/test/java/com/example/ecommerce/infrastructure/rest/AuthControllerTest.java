@@ -46,8 +46,8 @@ class AuthControllerTest {
     void deberiaAutenticarConCredencialesCorrectas() throws Exception {
 
         // Arrange
-        Usuario usuarioSimulado = Usuario.registrar(
-                1L, "Ana", new Email("ana@correo.com"), "hash", RolUsuario.CLIENTE);
+        Usuario usuarioSimulado = Usuario.registrarCliente(
+                1L, "Ana", new Email("ana@correo.com"), "hash");
         when(autenticarUsuarioUseCase.ejecutar(anyString(), anyString()))
                 .thenReturn(usuarioSimulado);
         when(mapper.toResponse(any()))

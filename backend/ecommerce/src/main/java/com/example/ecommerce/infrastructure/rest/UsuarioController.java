@@ -1,8 +1,8 @@
 package com.example.ecommerce.infrastructure.rest;
 
-import com.example.ecommerce.application.dto.request.RegistrarUsuarioRequest;
+import com.example.ecommerce.application.dto.request.RegistrarClienteRequest;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
-import com.example.ecommerce.application.usecase.RegistrarUsuarioUseCase;
+import com.example.ecommerce.application.usecase.RegistrarClienteUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.infrastructure.rest.mapper.UsuarioMapper;
 import jakarta.validation.Valid;
@@ -20,35 +20,35 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    private final RegistrarUsuarioUseCase registrarUsuarioUseCase;
+    private final RegistrarClienteUseCase registrarClienteUseCase;
     private final UsuarioMapper mapper;
 
     // Temporal: mientras el repositorio sea en memoria. Con JPA/MariaDB lo genera la base de datos.
     private final AtomicLong siguienteId = new AtomicLong(1);
 
-    public UsuarioController(RegistrarUsuarioUseCase registrarUsuarioUseCase, UsuarioMapper mapper) {
-        this.registrarUsuarioUseCase = registrarUsuarioUseCase;
+    public UsuarioController(RegistrarClienteUseCase registrarClienteUseCase, UsuarioMapper mapper) {
+        this.registrarClienteUseCase = registrarClienteUseCase;
         this.mapper = mapper;
     }
 
+    // Autorregistro público: siempre crea un CLIENTE.
     @PostMapping
     public ResponseEntity<UsuarioResponse> registrar(
-            @Valid @RequestBody RegistrarUsuarioRequest request) {
+            @Valid @RequestBody RegistrarClienteRequest request) {
 
-        Usuario usuario = registrarUsuarioUseCase.ejecutar(
+        Usuario cliente = registrarClienteUseCase.ejecutar(
                 siguienteId.getAndIncrement(),
                 request.nombre(),
                 request.email(),
-                request.contrasena(),
-                request.rol()
+                request.contrasena()
         );
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(usuario.getId())
+                .buildAndExpand(cliente.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(mapper.toResponse(usuario));
+        return ResponseEntity.created(location).body(mapper.toResponse(cliente));
     }
 }

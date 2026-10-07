@@ -1,10 +1,12 @@
 package com.example.ecommerce.application.dto.request;
 
-import com.example.ecommerce.domain.valueobject.RolUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public record RegistrarUsuarioRequest(
+/**
+ * Autorregistro de un cliente. No incluye el rol: quien se registra solo queda como CLIENTE.
+ */
+public record RegistrarClienteRequest(
 
         @NotBlank(message = "El nombre es obligatorio")
         String nombre,
@@ -14,9 +16,6 @@ public record RegistrarUsuarioRequest(
         String email,
 
         @NotBlank(message = "La contraseña es obligatoria")
-        String contrasena,
-
-        // Opcional: si no se envía, el dominio asigna CLIENTE (RN03)
-        RolUsuario rol
+        String contrasena
 ) {
 }
