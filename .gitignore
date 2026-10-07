@@ -1,0 +1,15 @@
+# VS Code / Eclipse
+**/bin/
+.vscode/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+out/
+
+# Gradle / build
+**/.gradle/
+**/build/
+backend/ecommerce/.gradle/
+backend/ecommerce/build/

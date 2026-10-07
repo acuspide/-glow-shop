@@ -1,5 +1,8 @@
 package com.example.ecommerce.domain.entity;
 
+import com.example.ecommerce.domain.exception.ArticuloAgotadoException;
+import com.example.ecommerce.domain.exception.ArticuloNoPublicadoParaVentaException;
+import com.example.ecommerce.domain.exception.CantidadSuperaStockException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.valueobject.*;
 import org.junit.jupiter.api.Test;
@@ -11,6 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ArticuloTest {
+
+
     @Test
     void dosArticulosConElMismoIdDebenSerIguales() {
 
@@ -167,5 +172,99 @@ public class ArticuloTest {
 
         // Assert
         assertEquals(15, articulo.getCantidadDisponible());
+    }
+
+    private Articulo crearArticulo(int stock) {
+        return new Articulo(
+                10L,
+                new NombreArticulo("Labial"),
+                new Precio(new BigDecimal("20000")),
+                new Categoria(1L, "Labios"),
+                new Marca(1L, "Maybelline"),
+                Tono.CLARO,
+                List.of(TipoPiel.NORMAL),
+                new Inventario(stock),
+                new FechaVencimiento(LocalDate.now().plusYears(1)),
+                new Tienda(1L, "Tienda Beauty")
+        );
+    }
+
+    @Test
+    void debeExponerElPrecioDelArticulo() {
+
+        // Arrange
+        Articulo articulo = crearArticulo(10);
+
+        // Act
+        Precio precio = articulo.getPrecio();
+
+        // Assert
+        assertEquals(new BigDecimal("20000"), precio.valor());
+    }
+
+    @Test
+    void unArticuloPublicadoConStockSuficienteDebeEstarDisponibleParaVenta() {
+
+        // Arrange
+        Articulo articulo = crearArticulo(10);
+        articulo.publicar();
+
+        // Act y Assert
+        assertDoesNotThrow(() -> articulo.validarDisponibleParaVenta(10));
+    }
+
+    @Test
+    void noDebeVenderseUnArticuloQueNoEstaPublicadoEnElCatalogo() {
+
+        // Arrange
+        // La tienda creó el artículo pero aún no lo publica.
+        // Aunque no aparezca en el catálogo, una petición directa
+        // a la API podría intentar agregarlo al carrito.
+        Articulo articulo = crearArticulo(10);
+
+        // Act y Assert
+        assertThrows(ArticuloNoPublicadoParaVentaException.class, () -> {
+            articulo.validarDisponibleParaVenta(1);
+        });
+    }
+
+    @Test
+    void unArticuloAgotadoNoDebeEstarDisponibleParaVenta() {
+
+        // Arrange
+        Articulo articulo = crearArticulo(0);
+        articulo.publicar();
+
+        // Act y Assert
+        assertThrows(ArticuloAgotadoException.class, () -> {
+            articulo.validarDisponibleParaVenta(1);
+        });
+    }
+
+    @Test
+    void noDebeEstarDisponibleParaVentaUnaCantidadMayorAlStock() {
+
+        // Arrange
+        Articulo articulo = crearArticulo(3);
+        articulo.publicar();
+
+        // Act y Assert
+        assertThrows(CantidadSuperaStockException.class, () -> {
+            articulo.validarDisponibleParaVenta(4);
+        });
+    }
+
+    @Test
+    void validarDisponibleParaVentaNoDebeDescontarInventario() {
+
+        // Arrange
+        Articulo articulo = crearArticulo(10);
+        articulo.publicar();
+
+        // Act
+        articulo.validarDisponibleParaVenta(4);
+
+        // Assert
+        assertEquals(10, articulo.getCantidadDisponible());
     }
 }

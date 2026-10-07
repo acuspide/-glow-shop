@@ -1,5 +1,8 @@
 package com.example.ecommerce.infrastructure.rest.exception;
 
+import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
+import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
+import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +33,27 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND,
                 "El recurso solicitado no existe"
         );
+    }
+
+    @ExceptionHandler(CorreoElectronicoDuplicadoException.class)
+    public ResponseEntity<Map<String, Object>> manejarCorreoDuplicado(
+            CorreoElectronicoDuplicadoException ex) {
+
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<Map<String, Object>> manejarCredencialesInvalidas(
+            CredencialesInvalidasException ex) {
+
+        return construirRespuesta(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(UsuarioInactivoException.class)
+    public ResponseEntity<Map<String, Object>> manejarUsuarioInactivo(
+            UsuarioInactivoException ex) {
+
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     private ResponseEntity<Map<String, Object>> construirRespuesta(

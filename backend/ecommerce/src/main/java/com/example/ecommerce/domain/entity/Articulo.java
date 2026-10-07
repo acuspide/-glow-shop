@@ -73,6 +73,7 @@ public class Articulo {
         return publicado;
     }
 
+
     private void validarPuedePublicarse(){
         if (categoria == null){
             throw new CategoriaRequeridaException();
@@ -98,6 +99,23 @@ public class Articulo {
         if (tienda == null) {
             throw new TiendaRequeridaException();
         }
+    }
+    public Precio getPrecio() {return precio; }
+
+    //Este metodo valida al momento de la agregar al carrito, es decir en modo venta y el anterior valida al momento de publicar
+    //el articulo en el catalogo
+
+    public void validarDisponibleParaVenta(int cantidad) {
+        if (!publicado || eliminado) {
+            throw new ArticuloNoPublicadoParaVentaException();
+        }
+        if (fechaVencimiento.estaVencida()) {
+            throw new ArticuloVencidoParaVentaException();
+        }
+        if (getCantidadDisponible() == 0) {
+            throw new ArticuloAgotadoException();
+        }
+        inventario.validarDisponibilidad(cantidad);
     }
     @Override
     public boolean equals(Object o) {

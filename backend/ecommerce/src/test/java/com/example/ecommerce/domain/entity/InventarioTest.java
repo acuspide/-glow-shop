@@ -1,6 +1,7 @@
 package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.domain.exception.CantidadInvalidaException;
+import com.example.ecommerce.domain.exception.CantidadSuperaStockException;
 import com.example.ecommerce.domain.exception.StockNegativoException;
 import org.junit.jupiter.api.Test;
 
@@ -82,5 +83,41 @@ public class InventarioTest {
         });
 
         assertEquals(10, inventario.getCantidadDisponible());
+    }
+    @Test
+    void validarDisponibilidadNoDebeModificarElInventario() {
+
+        // Arrange
+        Inventario inventario = new Inventario(10);
+
+        // Act
+        inventario.validarDisponibilidad(4);
+
+        // Assert
+        assertEquals(10, inventario.getCantidadDisponible());
+    }
+
+    @Test
+    void noDebeEstarDisponibleSiLaCantidadSuperaElStock() {
+
+        // Arrange
+        Inventario inventario = new Inventario(3);
+
+        // Act y Assert
+        assertThrows(CantidadSuperaStockException.class, () -> {
+            inventario.validarDisponibilidad(4);
+        });
+    }
+
+    @Test
+    void noDebeValidarDisponibilidadParaUnaCantidadCero() {
+
+        // Arrange
+        Inventario inventario = new Inventario(10);
+
+        // Act y Assert
+        assertThrows(CantidadInvalidaException.class, () -> {
+            inventario.validarDisponibilidad(0);
+        });
     }
 }
