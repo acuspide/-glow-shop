@@ -55,4 +55,22 @@ public class UsuarioTest {
             new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", null);
         });
     }
+
+    @Test
+    void registrarSinRolDebeAsignarClientePorDefecto() {
+        // Arrange y Act
+        Usuario usuario = Usuario.registrar(1L, "Ana", new Email("ana@correo.com"), "hash", null);
+
+        // Assert
+        assertEquals(RolUsuario.CLIENTE, usuario.getRol());
+    }
+
+    @Test
+    void registrarConRolDebeRespetarElRolIndicado() {
+        // Arrange y Act
+        Usuario usuario = Usuario.registrar(1L, "Ana", new Email("ana@correo.com"), "hash", RolUsuario.VENDEDOR);
+
+        // Assert
+        assertEquals(RolUsuario.VENDEDOR, usuario.getRol());
+    }
 }

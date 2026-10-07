@@ -2,7 +2,6 @@ package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
 import com.example.ecommerce.domain.exception.NombreUsuarioRequeridoException;
-import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.exception.RolRequeridoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
@@ -29,6 +28,13 @@ public class Usuario {
         this.contrasenaHash = contrasenaHash;
         this.rol = rol;
         this.activo = true;
+    }
+
+    // Único punto de entrada para registrar: aquí vive la regla RN03
+    public static Usuario registrar(long id, String nombre, Email email,
+                                    String contrasenaHash, RolUsuario rol) {
+        RolUsuario rolAsignado = (rol != null) ? rol : RolUsuario.CLIENTE;
+        return new Usuario(id, nombre, email, contrasenaHash, rolAsignado);
     }
 
     private void validarNombre(String nombre) {
