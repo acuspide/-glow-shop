@@ -1,5 +1,6 @@
 package com.example.ecommerce.application.dto.request;
 
+import com.example.ecommerce.domain.valueobject.RolUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,9 +9,9 @@ import jakarta.validation.constraints.Past;
 import java.time.LocalDate;
 
 /**
- * Autorregistro de un cliente. No incluye el rol: quien se registra solo queda como CLIENTE.
+ * Creación de un vendedor o administrador por parte de un administrador.
  */
-public record RegistrarClienteRequest(
+public record CrearUsuarioConRolRequest(
 
         @NotBlank(message = "El nombre es obligatorio")
         String nombre,
@@ -27,6 +28,9 @@ public record RegistrarClienteRequest(
 
         @NotNull(message = "La fecha de nacimiento es obligatoria")
         @Past(message = "La fecha de nacimiento debe ser pasada")
-        LocalDate fechaNacimiento
+        LocalDate fechaNacimiento,
+
+        @NotNull(message = "El rol es obligatorio")
+        RolUsuario rol
 ) {
 }

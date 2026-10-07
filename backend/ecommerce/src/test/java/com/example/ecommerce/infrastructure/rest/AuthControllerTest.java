@@ -1,7 +1,10 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.DatosPrueba;
+import com.example.ecommerce.application.SesionIniciada;
+import com.example.ecommerce.application.dto.response.LoginResponse;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
-import com.example.ecommerce.application.usecase.AutenticarUsuarioUseCase;
+import com.example.ecommerce.application.usecase.IniciarSesionUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
@@ -15,6 +18,8 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,7 +35,7 @@ class AuthControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
-    private AutenticarUsuarioUseCase autenticarUsuarioUseCase;
+    private IniciarSesionUseCase iniciarSesionUseCase;
 
     @MockitoBean
     private UsuarioMapper mapper;
@@ -47,26 +52,30 @@ class AuthControllerTest {
 
         // Arrange
         Usuario usuarioSimulado = Usuario.registrarCliente(
-                1L, "Ana", new Email("ana@correo.com"), "hash");
-        when(autenticarUsuarioUseCase.ejecutar(anyString(), anyString()))
-                .thenReturn(usuarioSimulado);
-        when(mapper.toResponse(any()))
-                .thenReturn(new UsuarioResponse(1L, "Ana", "ana@correo.com", RolUsuario.CLIENTE, true));
+                1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        when(iniciarSesionUseCase.ejecutar(anyString(), anyString()))
+                .thenReturn(new SesionIniciada("token.de.prueba", usuarioSimulado));
+        when(mapper.toLoginResponse(any()))
+                .thenReturn(new LoginResponse("token.de.prueba", "Bearer",
+                        new UsuarioResponse(1L, "Ana", "ana@correo.com", "3001234567",
+                                LocalDate.of(2000, 1, 1), RolUsuario.CLIENTE, true)));
 
         // Act y Assert
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(LOGIN_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("ana@correo.com"))
-                .andExpect(jsonPath("$.contrasenaHash").doesNotExist());
+                .andExpect(jsonPath("$.token").value("token.de.prueba"))
+                .andExpect(jsonPath("$.tipo").value("Bearer"))
+                .andExpect(jsonPath("$.usuario.email").value("ana@correo.com"))
+                .andExpect(jsonPath("$.usuario.contrasenaHash").doesNotExist());
     }
 
     @Test
     void deberiaRetornar401CuandoLasCredencialesSonInvalidas() throws Exception {
 
         // Arrange
-        when(autenticarUsuarioUseCase.ejecutar(anyString(), anyString()))
+        when(iniciarSesionUseCase.ejecutar(anyString(), anyString()))
                 .thenThrow(new CredencialesInvalidasException());
 
         // Act y Assert
@@ -80,7 +89,7 @@ class AuthControllerTest {
     void deberiaRetornar403CuandoElUsuarioEstaInactivo() throws Exception {
 
         // Arrange
-        when(autenticarUsuarioUseCase.ejecutar(anyString(), anyString()))
+        when(iniciarSesionUseCase.ejecutar(anyString(), anyString()))
                 .thenThrow(new UsuarioInactivoException());
 
         // Act y Assert

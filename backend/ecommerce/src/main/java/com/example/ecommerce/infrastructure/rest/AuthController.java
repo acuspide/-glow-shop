@@ -1,9 +1,9 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.application.SesionIniciada;
 import com.example.ecommerce.application.dto.request.LoginRequest;
-import com.example.ecommerce.application.dto.response.UsuarioResponse;
-import com.example.ecommerce.application.usecase.AutenticarUsuarioUseCase;
-import com.example.ecommerce.domain.entity.Usuario;
+import com.example.ecommerce.application.dto.response.LoginResponse;
+import com.example.ecommerce.application.usecase.IniciarSesionUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.UsuarioMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -16,23 +16,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final AutenticarUsuarioUseCase autenticarUsuarioUseCase;
+    private final IniciarSesionUseCase iniciarSesionUseCase;
     private final UsuarioMapper mapper;
 
-    public AuthController(AutenticarUsuarioUseCase autenticarUsuarioUseCase, UsuarioMapper mapper) {
-        this.autenticarUsuarioUseCase = autenticarUsuarioUseCase;
+    public AuthController(IniciarSesionUseCase iniciarSesionUseCase, UsuarioMapper mapper) {
+        this.iniciarSesionUseCase = iniciarSesionUseCase;
         this.mapper = mapper;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
 
-        Usuario usuario = autenticarUsuarioUseCase.ejecutar(
+        SesionIniciada sesion = iniciarSesionUseCase.ejecutar(
                 request.email(),
                 request.contrasena()
         );
 
-        // Pendiente: devolver un token JWT en lugar del usuario (requisito del enunciado).
-        return ResponseEntity.ok(mapper.toResponse(usuario));
+        return ResponseEntity.ok(mapper.toLoginResponse(sesion));
     }
 }

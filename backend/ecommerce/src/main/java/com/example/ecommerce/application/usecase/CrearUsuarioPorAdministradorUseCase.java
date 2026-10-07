@@ -7,8 +7,12 @@ import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaExceptio
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.ContrasenaPlana;
 import com.example.ecommerce.domain.valueobject.Email;
+import com.example.ecommerce.domain.valueobject.FechaNacimiento;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
+import com.example.ecommerce.domain.valueobject.Telefono;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
 
 /**
  * Un administrador crea a otro administrador o a un vendedor.
@@ -31,6 +35,8 @@ public class CrearUsuarioPorAdministradorUseCase {
             String nombre,
             String email,
             String contrasenaPlano,
+            String telefono,
+            LocalDate fechaNacimiento,
             RolUsuario rol) {
 
         // Si quien pide no existe, tampoco tiene permiso.
@@ -39,10 +45,12 @@ public class CrearUsuarioPorAdministradorUseCase {
 
         ContrasenaPlana contrasena = new ContrasenaPlana(contrasenaPlano);
         Email correo = new Email(email);
+        Telefono tel = new Telefono(telefono);
+        FechaNacimiento nacimiento = new FechaNacimiento(fechaNacimiento);
         String contrasenaHash = passwordHasher.hash(contrasena.valor());
 
         // El dominio decide si este administrador puede crear el usuario.
-        Usuario nuevo = administrador.crearUsuarioConRol(id, nombre, correo, contrasenaHash, rol);
+        Usuario nuevo = administrador.crearUsuarioConRol(id, nombre, correo, contrasenaHash, tel, nacimiento, rol);
 
         // RN01: se consulta después de validar permisos, para no revelar qué correos existen.
         if (repository.existePorEmail(correo)) {

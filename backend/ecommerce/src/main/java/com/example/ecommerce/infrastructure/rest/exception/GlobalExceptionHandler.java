@@ -3,6 +3,7 @@ package com.example.ecommerce.infrastructure.rest.exception;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
+import com.example.ecommerce.domain.exception.TokenInvalidoException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<Map<String, Object>> manejarCredencialesInvalidas(
             CredencialesInvalidasException ex) {
+
+        return construirRespuesta(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(TokenInvalidoException.class)
+    public ResponseEntity<Map<String, Object>> manejarTokenInvalido(
+            TokenInvalidoException ex) {
 
         return construirRespuesta(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
