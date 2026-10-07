@@ -2,14 +2,11 @@ package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.application.PasswordHasher;
 import com.example.ecommerce.domain.entity.Usuario;
-import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
-import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.valueobject.ContrasenaPlana;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
-
-import java.util.UUID;
 
 public class RegistrarUsuarioUseCase {
 
@@ -28,23 +25,18 @@ public class RegistrarUsuarioUseCase {
             String contrasenaPlano,
             RolUsuario rol) {
 
-        if (contrasenaPlano == null || contrasenaPlano.trim().isEmpty()) {
-            throw new ContrasenaRequeridaException();
-        }
+        ContrasenaPlana contrasena = new ContrasenaPlana(contrasenaPlano); // el dominio valida
+        Email correo = new Email(email);                                   // el dominio valida
 
-        Email correo = new Email(email);
-
-        // RN01: el correo electrónico debe ser único.
+        // RN01: la unicidad requiere consultar el repositorio, por eso se pregunta aquí.
         if (repository.existePorEmail(correo)) {
             throw new CorreoElectronicoDuplicadoException();
         }
 
-        // RN03: si no se indica rol, se asume Cliente por defecto.
-        RolUsuario rolAsignado = rol != null ? rol : RolUsuario.CLIENTE;
+        String contrasenaHash = passwordHasher.hash(contrasena.valor());
 
-        String contrasenaHash = passwordHasher.hash(contrasenaPlano);
-
-        Usuario usuario = new Usuario(id, nombre, correo, contrasenaHash, rolAsignado);
+        // RN03: el rol por defecto lo decide el dominio.
+        Usuario usuario = Usuario.registrar(id, nombre, correo, contrasenaHash, rol);
 
         repository.guardar(usuario);
 
