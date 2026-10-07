@@ -1,11 +1,12 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.Carrito;
-import com.example.ecommerce.domain.exception.ArticuloNoRegistradoException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.CarritoRepository;
-import com.example.ecommerce.domain.valueobject.Precio;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AgregarAlCarritoUseCase {
 
     private final CarritoRepository carritoRepository;
@@ -16,25 +17,14 @@ public class AgregarAlCarritoUseCase {
         this.articuloRepository = articuloRepository;
     }
 
-    // NOTA: precioUnitario y stockDisponible se reciben como parametros porque
-    // Articulo/Inventario todavia no exponen un getter/metodo publico para leerlos.
-    // Cuando Inventario tenga tieneDisponibilidad(int), este caso de uso debe
-    // resolver ambos valores directamente desde el Articulo obtenido del repositorio.
-    public Carrito ejecutar(
-            long carritoId,
-            long clienteId,
-            long articuloId,
-            int cantidad,
-            Precio precioUnitario,
-            int stockDisponible) {
+    public Carrito ejecutar(long clienteId, long articuloId, int cantidad) {
 
-        articuloRepository.obtenerPorId(articuloId)
-                .orElseThrow(ArticuloNoRegistradoException::new);
+        Articulo articulo = articuloRepository.obtenerPorId(articuloId).orElseThrow();
 
-        Carrito carrito = carritoRepository.obtenerPorId(carritoId)
-                .orElseGet(() -> new Carrito(carritoId, clienteId));
+        Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId)
+                .orElseGet(() -> Carrito.crear(carritoRepository.siguienteId(), clienteId));
 
-        carrito.agregarItem(articuloId, cantidad, precioUnitario, stockDisponible);
+        carrito.agregarArticulo(articulo, cantidad);
 
         carritoRepository.guardar(carrito);
 

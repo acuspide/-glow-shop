@@ -1,6 +1,7 @@
 package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.domain.exception.CantidadInvalidaException;
+import com.example.ecommerce.domain.exception.CantidadSuperaStockException;
 import com.example.ecommerce.domain.exception.StockNegativoException;
 
 public class Inventario {
@@ -25,6 +26,12 @@ public class Inventario {
         this.cantidadDisponible = nuevaCantidad;
     }
 
+    public void validarDisponibilidad(int cantidad) {
+        validarCantidadPositiva(cantidad);
+        if (cantidad > cantidadDisponible) {
+            throw new CantidadSuperaStockException();
+        }
+    }
     public int getCantidadDisponible() {
         return cantidadDisponible;
     }

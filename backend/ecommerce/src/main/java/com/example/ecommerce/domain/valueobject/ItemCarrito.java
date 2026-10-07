@@ -1,7 +1,7 @@
 package com.example.ecommerce.domain.valueobject;
 
 import com.example.ecommerce.domain.exception.CantidadInvalidaException;
-import com.example.ecommerce.domain.exception.CantidadSuperaStockException;
+import com.example.ecommerce.domain.exception.PrecioRequeridoException;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -11,9 +11,9 @@ public class ItemCarrito {
     private final int cantidad;
     private final Precio precioUnitario;
 
-    public ItemCarrito(long articuloId, int cantidad, Precio precioUnitario, int stockDisponible) {
+    public ItemCarrito(long articuloId, int cantidad, Precio precioUnitario) {
         validarCantidad(cantidad);
-        validarStock(cantidad, stockDisponible);
+        validarPrecio(precioUnitario);
         this.articuloId = articuloId;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
@@ -25,14 +25,10 @@ public class ItemCarrito {
         }
     }
 
-    private void validarStock(int cantidad, int stockDisponible) {
-        if (cantidad > stockDisponible) {
-            throw new CantidadSuperaStockException();
+    private void validarPrecio(Precio precioUnitario) {
+        if (precioUnitario == null) {
+            throw new PrecioRequeridoException();
         }
-    }
-
-    public ItemCarrito conNuevaCantidad(int cantidadAdicional, int stockDisponible) {
-        return new ItemCarrito(this.articuloId, this.cantidad + cantidadAdicional, this.precioUnitario, stockDisponible);
     }
 
     public BigDecimal subtotal() {

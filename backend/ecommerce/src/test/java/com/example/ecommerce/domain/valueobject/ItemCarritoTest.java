@@ -1,6 +1,7 @@
 package com.example.ecommerce.domain.valueobject;
 
-import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.domain.exception.CantidadInvalidaException;
+import com.example.ecommerce.domain.exception.PrecioRequeridoException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -11,26 +12,35 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ItemCarritoTest {
 
     @Test
-    void unaCantidadCeroONegativaDebeLanzarReglaDominioException() {
+    void noDebePermitirUnItemConCantidadCero() {
 
         // Arrange
         Precio precio = new Precio(new BigDecimal("10000"));
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> {
-            new ItemCarrito(1L, 0, precio, 5);
+        assertThrows(CantidadInvalidaException.class, () -> {
+            new ItemCarrito(1L, 0, precio);
         });
     }
 
     @Test
-    void unaCantidadMayorAlStockDisponibleDebeLanzarReglaDominioException() {
+    void noDebePermitirUnItemConCantidadNegativa() {
 
         // Arrange
         Precio precio = new Precio(new BigDecimal("10000"));
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> {
-            new ItemCarrito(1L, 10, precio, 3);
+        assertThrows(CantidadInvalidaException.class, () -> {
+            new ItemCarrito(1L, -2, precio);
+        });
+    }
+
+    @Test
+    void noDebePermitirUnItemSinPrecio() {
+
+        // Act y Assert
+        assertThrows(PrecioRequeridoException.class, () -> {
+            new ItemCarrito(1L, 2, null);
         });
     }
 
@@ -39,7 +49,7 @@ public class ItemCarritoTest {
 
         // Arrange
         Precio precio = new Precio(new BigDecimal("10000"));
-        ItemCarrito item = new ItemCarrito(1L, 3, precio, 5);
+        ItemCarrito item = new ItemCarrito(1L, 3, precio);
 
         // Act
         BigDecimal subtotal = item.subtotal();
@@ -49,12 +59,12 @@ public class ItemCarritoTest {
     }
 
     @Test
-    void dosItemsConElMismoArticuloIdDebenSerIguales() {
+    void dosItemsConElMismoArticuloDebenSerIguales() {
 
         // Arrange
         Precio precio = new Precio(new BigDecimal("10000"));
-        ItemCarrito item1 = new ItemCarrito(1L, 2, precio, 5);
-        ItemCarrito item2 = new ItemCarrito(1L, 4, precio, 5);
+        ItemCarrito item1 = new ItemCarrito(1L, 2, precio);
+        ItemCarrito item2 = new ItemCarrito(1L, 4, precio);
 
         // Act
         // No necesitamos una accion adicional porque equals()
