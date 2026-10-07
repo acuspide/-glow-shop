@@ -34,7 +34,7 @@ public class CrearUsuarioPorAdministradorUseCaseTest {
         guardarAdministrador();
 
         // Act
-        Usuario vendedor = useCase.ejecutar(ADMIN_ID, 1L, "Vera", "vera@tienda.com", "clave123", RolUsuario.VENDEDOR);
+        Usuario vendedor = useCase.ejecutar(ADMIN_ID, 1L, "Vera", "vera@tienda.com", "Clave123", RolUsuario.VENDEDOR);
 
         // Assert
         assertEquals(RolUsuario.VENDEDOR, vendedor.getRol());
@@ -47,7 +47,7 @@ public class CrearUsuarioPorAdministradorUseCaseTest {
         guardarAdministrador();
 
         // Act
-        Usuario nuevoAdmin = useCase.ejecutar(ADMIN_ID, 2L, "Otro Admin", "otro@glow.com", "clave123", RolUsuario.ADMINISTRADOR);
+        Usuario nuevoAdmin = useCase.ejecutar(ADMIN_ID, 2L, "Otro Admin", "otro@glow.com", "Clave123", RolUsuario.ADMINISTRADOR);
 
         // Assert
         assertEquals(RolUsuario.ADMINISTRADOR, nuevoAdmin.getRol());
@@ -60,7 +60,7 @@ public class CrearUsuarioPorAdministradorUseCaseTest {
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)
         assertThrows(CreacionUsuarioNoPermitidaException.class, () ->
-                useCase.ejecutar(1L, 2L, "Vera", "vera@tienda.com", "clave123", RolUsuario.VENDEDOR));
+                useCase.ejecutar(1L, 2L, "Vera", "vera@tienda.com", "Clave123", RolUsuario.VENDEDOR));
         assertFalse(repository.existePorEmail(new Email("vera@tienda.com")));
     }
 
@@ -72,24 +72,24 @@ public class CrearUsuarioPorAdministradorUseCaseTest {
 
         // Act y Assert
         assertThrows(CreacionUsuarioNoPermitidaException.class, () ->
-                useCase.ejecutar(ADMIN_ID, 2L, "Vera", "vera@tienda.com", "clave123", RolUsuario.VENDEDOR));
+                useCase.ejecutar(ADMIN_ID, 2L, "Vera", "vera@tienda.com", "Clave123", RolUsuario.VENDEDOR));
     }
 
     @Test
     void siQuienPideNoExisteNoDebeTenerPermiso() {
         // Act y Assert
         assertThrows(CreacionUsuarioNoPermitidaException.class, () ->
-                useCase.ejecutar(999L, 2L, "Vera", "vera@tienda.com", "clave123", RolUsuario.VENDEDOR));
+                useCase.ejecutar(999L, 2L, "Vera", "vera@tienda.com", "Clave123", RolUsuario.VENDEDOR));
     }
 
     @Test
     void noDebePermitirCrearUnUsuarioConUnCorreoYaRegistrado() {
         // Arrange
         guardarAdministrador();
-        useCase.ejecutar(ADMIN_ID, 1L, "Vera", "vera@tienda.com", "clave123", RolUsuario.VENDEDOR);
+        useCase.ejecutar(ADMIN_ID, 1L, "Vera", "vera@tienda.com", "Clave123", RolUsuario.VENDEDOR);
 
         // Act y Assert
         assertThrows(CorreoElectronicoDuplicadoException.class, () ->
-                useCase.ejecutar(ADMIN_ID, 2L, "Otra Vera", "vera@tienda.com", "clave123", RolUsuario.VENDEDOR));
+                useCase.ejecutar(ADMIN_ID, 2L, "Otra Vera", "vera@tienda.com", "Clave123", RolUsuario.VENDEDOR));
     }
 }

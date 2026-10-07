@@ -20,11 +20,11 @@ public class AutenticarUsuarioUseCaseTest {
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
         new RegistrarClienteUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana Pérez", "ana@correo.com", "clave123");
+                .ejecutar(1L, "Ana Pérez", "ana@correo.com", "Clave123");
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act
-        Usuario usuario = useCase.ejecutar("ana@correo.com", "clave123");
+        Usuario usuario = useCase.ejecutar("ana@correo.com", "Clave123");
 
         // Assert
         assertEquals("ana@correo.com", usuario.getEmail().getValor());
@@ -36,7 +36,7 @@ public class AutenticarUsuarioUseCaseTest {
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
         new RegistrarClienteUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana", "ana@correo.com", "clave123");
+                .ejecutar(1L, "Ana", "ana@correo.com", "Clave123");
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
@@ -54,7 +54,7 @@ public class AutenticarUsuarioUseCaseTest {
 
         // Act y Assert
         assertThrows(CredencialesInvalidasException.class, () -> {
-            useCase.ejecutar("noexiste@correo.com", "clave123");
+            useCase.ejecutar("noexiste@correo.com", "Clave123");
         });
     }
 
@@ -64,13 +64,13 @@ public class AutenticarUsuarioUseCaseTest {
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
         Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana", "ana@correo.com", "clave123");
+                .ejecutar(1L, "Ana", "ana@correo.com", "Clave123");
         usuario.desactivar();
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
         assertThrows(UsuarioInactivoException.class, () -> {
-            useCase.ejecutar("ana@correo.com", "clave123");
+            useCase.ejecutar("ana@correo.com", "Clave123");
         });
     }
 }

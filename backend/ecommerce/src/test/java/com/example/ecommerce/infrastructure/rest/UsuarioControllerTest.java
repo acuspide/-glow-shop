@@ -3,6 +3,7 @@ package com.example.ecommerce.infrastructure.rest;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.RegistrarClienteUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
+import com.example.ecommerce.domain.exception.ContrasenaDebilException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
@@ -124,5 +125,27 @@ class UsuarioControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void deberiaRetornar400CuandoLaContrasenaEsDebil() throws Exception {
+
+        // Arrange
+        String requestJson = """
+            {
+                "nombre": "Ana",
+                "email": "ana@correo.com",
+                "contrasena": "clave123"
+            }
+            """;
+
+        when(registrarClienteUseCase.ejecutar(anyLong(), any(), any(), any()))
+                .thenThrow(new ContrasenaDebilException());
+
+        // Act y Assert
+        mockMvc.perform(post("/api/usuarios")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
     }
 }
