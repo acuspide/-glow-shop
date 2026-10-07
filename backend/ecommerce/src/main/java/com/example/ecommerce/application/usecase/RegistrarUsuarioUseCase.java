@@ -7,7 +7,9 @@ import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.ContrasenaPlana;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RegistrarUsuarioUseCase {
 
     private final UsuarioRepository repository;
