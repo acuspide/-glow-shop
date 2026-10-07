@@ -1,6 +1,7 @@
 package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.domain.exception.ArticuloNoEncontradoEnCarritoException;
+import com.example.ecommerce.domain.exception.CantidadInvalidaException;
 import com.example.ecommerce.domain.valueobject.ItemCarrito;
 import com.example.ecommerce.domain.valueobject.Precio;
 
@@ -15,22 +16,26 @@ public class Carrito {
     private final long clienteId;
     private final List<ItemCarrito> items;
 
-    public Carrito(long id, long clienteId) {
+    private Carrito(long id, long clienteId) {
         this.id = id;
         this.clienteId = clienteId;
         this.items = new ArrayList<>();
     }
-
-    public void agregarItem(long articuloId, int cantidad, Precio precioUnitario, int stockDisponible) {
-        Optional<ItemCarrito> itemExistente = buscarItem(articuloId);
-
-        if (itemExistente.isPresent()) {
-            ItemCarrito actualizado = itemExistente.get().conNuevaCantidad(cantidad, stockDisponible);
-            items.remove(itemExistente.get());
-            items.add(actualizado);
-        } else {
-            items.add(new ItemCarrito(articuloId, cantidad, precioUnitario, stockDisponible));
+    public static Carrito crear(long id, long clienteId) {
+        return new Carrito(id, clienteId);
+    }
+    public void agregarArticulo(Articulo articulo, int cantidad) {
+        if (cantidad <= 0) {
+            throw new CantidadInvalidaException();
         }
+
+        Optional<ItemCarrito> itemExistente = buscarItem(articulo.getId());
+        int cantidadTotal = cantidad + itemExistente.map(ItemCarrito::getCantidad).orElse(0);
+
+        articulo.validarDisponibleParaVenta(cantidadTotal);
+
+        itemExistente.ifPresent(items::remove);
+        items.add(new ItemCarrito(articulo.getId(), cantidadTotal, articulo.getPrecio()));
     }
 
     public void eliminarItem(long articuloId) {
