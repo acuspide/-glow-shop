@@ -2,7 +2,8 @@ package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.application.PasswordHasher;
 import com.example.ecommerce.domain.entity.Usuario;
-import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
+import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
@@ -40,7 +41,7 @@ public class AutenticarUsuarioUseCaseTest {
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> {
+        assertThrows(CredencialesInvalidasException.class, () -> {
             useCase.ejecutar("ana@correo.com", "claveIncorrecta");
         });
     }
@@ -53,7 +54,7 @@ public class AutenticarUsuarioUseCaseTest {
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> {
+        assertThrows(CredencialesInvalidasException.class, () -> {
             useCase.ejecutar("noexiste@correo.com", "clave123");
         });
     }
@@ -69,7 +70,7 @@ public class AutenticarUsuarioUseCaseTest {
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> {
+        assertThrows(UsuarioInactivoException.class, () -> {
             useCase.ejecutar("ana@correo.com", "clave123");
         });
     }

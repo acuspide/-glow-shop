@@ -6,7 +6,9 @@ import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.Email;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AutenticarUsuarioUseCase {
 
     private final UsuarioRepository repository;

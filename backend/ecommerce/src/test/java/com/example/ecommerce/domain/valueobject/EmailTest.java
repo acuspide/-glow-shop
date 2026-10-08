@@ -34,4 +34,19 @@ public class EmailTest {
             new Email("correo-invalido");
         });
     }
+
+    @Test
+    void unCorreoNuloDebeLanzarReglaDominioException() {
+        // Act y Assert
+        assertThrows(ReglaDominioException.class, () -> {
+            new Email(null);
+        });
+    }
+
+    @Test
+    void unCorreoVacioODeSoloEspaciosDebeLanzarReglaDominioException() {
+        // Act y Assert
+        assertThrows(ReglaDominioException.class, () -> new Email(""));
+        assertThrows(ReglaDominioException.class, () -> new Email("   "));
+    }
 }

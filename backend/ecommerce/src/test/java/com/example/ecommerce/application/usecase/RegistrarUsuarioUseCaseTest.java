@@ -70,4 +70,17 @@ public class RegistrarUsuarioUseCaseTest {
         // Assert
         assertNotEquals("clave123", usuario.getContrasenaHash());
     }
+
+    @Test
+    void noDebeRegistrarConContrasenaVaciaYNoDebeGuardarNada() {
+        // Arrange
+        UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
+        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        RegistrarUsuarioUseCase useCase = new RegistrarUsuarioUseCase(repository, passwordHasher);
+
+        // Act y Assert (doble verificación: la excepción y el estado intacto)
+        assertThrows(ReglaDominioException.class, () ->
+                useCase.ejecutar(1L, "Ana", "ana@correo.com", "   ", RolUsuario.CLIENTE));
+        assertFalse(repository.existePorEmail(new Email("ana@correo.com")));
+    }
 }
