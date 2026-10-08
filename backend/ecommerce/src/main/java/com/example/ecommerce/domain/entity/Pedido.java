@@ -90,6 +90,7 @@ public class Pedido {
     public void confirmar() {
         transicionarA(EstadoPedido.CONFIRMADO);
     }
+
     public void registrarPago(Pago pago) {
         if (estado != EstadoPedido.CONFIRMADO || pagoConfirmadoId != null) {
             throw new PagoNoRegistrableException();
