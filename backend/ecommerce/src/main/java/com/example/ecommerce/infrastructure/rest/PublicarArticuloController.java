@@ -4,7 +4,9 @@ import com.example.ecommerce.application.dto.response.PublicarArticuloResponse;
 import com.example.ecommerce.application.usecase.PublicarArticuloUseCase;
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.infrastructure.rest.mapper.PublicarArticuloMapper;
-
+import com.example.ecommerce.application.dto.response.MostrarDetalleArticuloResponse;
+import com.example.ecommerce.application.usecase.MostrarDetalleArticuloUseCase;
+import com.example.ecommerce.infrastructure.rest.mapper.MostrarDetalleArticuloMapper;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
@@ -19,13 +21,19 @@ import java.net.URI;
 public class PublicarArticuloController {
     private final PublicarArticuloUseCase publicarArticuloUseCase;
     private final PublicarArticuloMapper mapper;
+    private final MostrarDetalleArticuloUseCase mostrarDetalleArticuloUseCase;
+    private final MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper;
 
     public PublicarArticuloController(
             PublicarArticuloUseCase publicarArticuloUseCase,
-            PublicarArticuloMapper mapper) {
+            PublicarArticuloMapper mapper,
+            MostrarDetalleArticuloUseCase mostrarDetalleArticuloUseCase,
+            MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper) {
 
         this.publicarArticuloUseCase = publicarArticuloUseCase;
         this.mapper = mapper;
+        this.mostrarDetalleArticuloUseCase = mostrarDetalleArticuloUseCase;
+        this.mostrarDetalleArticuloMapper = mostrarDetalleArticuloMapper;
     }
     @PostMapping
     public ResponseEntity<PublicarArticuloResponse> publicar(
@@ -46,5 +54,16 @@ public class PublicarArticuloController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<MostrarDetalleArticuloResponse> mostrarDetalle(
+            @PathVariable long id) {
+
+        Articulo articulo = mostrarDetalleArticuloUseCase.ejecutar(id);
+
+        MostrarDetalleArticuloResponse response =
+                mostrarDetalleArticuloMapper.toResponse(articulo);
+
+        return ResponseEntity.ok(response);
     }
 }

@@ -147,6 +147,19 @@ public class Articulo {
         }
         inventario.validarDisponibilidad(cantidad);
     }
+    public void validarDisponibleParaConsulta() {
+        if (!publicado || eliminado) {
+            throw new ArticuloNoPublicadoParaVentaException();
+        }
+
+        if (fechaVencimiento.estaVencida()) {
+            throw new ArticuloVencidoParaVentaException();
+        }
+
+        if (getCantidadDisponible() == 0) {
+            throw new ArticuloAgotadoException();
+        }
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
