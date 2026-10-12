@@ -65,6 +65,36 @@ public class Articulo {
         return id;
     }
 
+
+    public NombreArticulo getNombre() {
+        return nombre;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public Marca getMarca() {
+        return marca;
+    }
+
+    public Tono getTono() {
+        return tono;
+    }
+
+    public List<TipoPiel> getTiposPiel() {
+        return tiposPiel;
+    }
+
+    public FechaVencimiento getFechaVencimiento() {
+        return fechaVencimiento;
+    }
+
+    public Tienda getTienda() {
+        return tienda;
+    }
+
+
     public int getCantidadDisponible() {
         return inventario.getCantidadDisponible();
     }

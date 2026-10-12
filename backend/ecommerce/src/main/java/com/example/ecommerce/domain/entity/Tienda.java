@@ -18,4 +18,12 @@ public class Tienda {
             throw new TiendaRequeridaException();
         }
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
 }

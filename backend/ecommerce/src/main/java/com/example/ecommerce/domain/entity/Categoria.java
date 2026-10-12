@@ -18,4 +18,11 @@ public class Categoria {
             throw new CategoriaRequeridaException();
         }
     }
+    public long getId() {
+        return id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
 }
