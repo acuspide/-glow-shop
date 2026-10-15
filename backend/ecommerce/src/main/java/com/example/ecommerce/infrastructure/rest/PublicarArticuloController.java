@@ -3,6 +3,11 @@ import com.example.ecommerce.application.dto.request.PublicarArticuloRequest;
 import com.example.ecommerce.application.dto.response.PublicarArticuloResponse;
 import com.example.ecommerce.application.usecase.PublicarArticuloUseCase;
 import com.example.ecommerce.domain.entity.Articulo;
+import com.example.ecommerce.application.dto.response.ListarArticulosResponse;
+import com.example.ecommerce.application.usecase.ListarArticulosUseCase;
+import com.example.ecommerce.infrastructure.rest.mapper.ListarArticulosMapper;
+
+import java.util.List;
 import com.example.ecommerce.infrastructure.rest.mapper.PublicarArticuloMapper;
 import com.example.ecommerce.application.dto.response.MostrarDetalleArticuloResponse;
 import com.example.ecommerce.application.usecase.MostrarDetalleArticuloUseCase;
@@ -23,17 +28,33 @@ public class PublicarArticuloController {
     private final PublicarArticuloMapper mapper;
     private final MostrarDetalleArticuloUseCase mostrarDetalleArticuloUseCase;
     private final MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper;
+    private final ListarArticulosUseCase listarArticulosUseCase;
+    private final ListarArticulosMapper listarArticulosMapper;
 
     public PublicarArticuloController(
             PublicarArticuloUseCase publicarArticuloUseCase,
             PublicarArticuloMapper mapper,
             MostrarDetalleArticuloUseCase mostrarDetalleArticuloUseCase,
-            MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper) {
+            MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper,
+            ListarArticulosUseCase listarArticulosUseCase,
+            ListarArticulosMapper listarArticulosMapper) {
 
         this.publicarArticuloUseCase = publicarArticuloUseCase;
         this.mapper = mapper;
         this.mostrarDetalleArticuloUseCase = mostrarDetalleArticuloUseCase;
         this.mostrarDetalleArticuloMapper = mostrarDetalleArticuloMapper;
+        this.listarArticulosUseCase = listarArticulosUseCase;
+        this.listarArticulosMapper = listarArticulosMapper;
+    }
+    @GetMapping
+    public ResponseEntity<List<ListarArticulosResponse>> listarArticulos() {
+
+        List<Articulo> articulos = listarArticulosUseCase.ejecutar();
+
+        List<ListarArticulosResponse> response =
+                listarArticulosMapper.toResponseList(articulos);
+
+        return ResponseEntity.ok(response);
     }
     @PostMapping
     public ResponseEntity<PublicarArticuloResponse> publicar(

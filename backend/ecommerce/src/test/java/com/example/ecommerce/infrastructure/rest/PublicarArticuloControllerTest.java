@@ -17,9 +17,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import com.example.ecommerce.application.dto.response.ListarArticulosResponse;
+import java.util.Collections;
+import com.example.ecommerce.application.usecase.ListarArticulosUseCase;
+import com.example.ecommerce.infrastructure.rest.mapper.ListarArticulosMapper;
 import com.example.ecommerce.application.dto.request.PublicarArticuloRequest;
 import com.example.ecommerce.application.dto.response.PublicarArticuloResponse;
 import com.example.ecommerce.domain.exception.ArticuloVencidoException;
+
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +50,12 @@ public class PublicarArticuloControllerTest {
 
     @MockitoBean
     private MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper;
+
+    @MockitoBean
+    private ListarArticulosUseCase listarArticulosUseCase;
+
+    @MockitoBean
+    private ListarArticulosMapper listarArticulosMapper;
 
     @Test
     void debeMostrarDetalleDeArticuloCuandoExiste() throws Exception {
@@ -205,6 +217,45 @@ public class PublicarArticuloControllerTest {
                 any()
         );
     }
+
+    @Test
+    void debeListarArticulosCorrectamente() throws Exception {
+
+        ListarArticulosResponse articulo = new ListarArticulosResponse(
+                1L,
+                "Labial",
+                new BigDecimal("20000"),
+                1L,
+                "Labios",
+                1L,
+                "Maybelline",
+                "CLARO",
+                List.of("NORMAL"),
+                10,
+                LocalDate.of(2027, 12, 31),
+                1L,
+                "Tienda Beauty"
+        );
+
+        when(listarArticulosUseCase.ejecutar())
+                .thenReturn(List.of(mock(Articulo.class)));
+
+        when(listarArticulosMapper.toResponseList(anyList()))
+                .thenReturn(List.of(articulo));
+
+        mockMvc.perform(get("/api/articulos"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nombre").value("Labial"))
+                .andExpect(jsonPath("$[0].precio").value(20000))
+                .andExpect(jsonPath("$[0].marcaNombre").value("Maybelline"))
+                .andExpect(jsonPath("$[0].cantidadDisponible").value(10));
+
+        verify(listarArticulosUseCase).ejecutar();
+        verify(listarArticulosMapper).toResponseList(anyList());
+    }
+
 
 
 }

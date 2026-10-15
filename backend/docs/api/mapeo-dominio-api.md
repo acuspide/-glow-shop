@@ -2,7 +2,9 @@
 |---|---|---| 
 | crear rutina de cuidado | POST | /rutinas |
 | consultar una rutina de cuidado | GET | /rutinas/{id} |
+| listar artículos disponibles | GET| /articulos |
 | publicar articulo | POST | /articulos |
+| Consultar detalle de un artículo | GET | /api/articulos/{id} |
 | Aumentar inventario de un artículo | POST | /api/articulos/{id}/inventario/aumentar |
 | Disminuir inventario de un artículo | POST | /api/articulos/{id}/inventario/disminuir |
 
