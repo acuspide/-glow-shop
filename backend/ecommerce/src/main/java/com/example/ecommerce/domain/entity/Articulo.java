@@ -4,6 +4,7 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.domain.exception.*;
 import com.example.ecommerce.domain.valueobject.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +22,7 @@ public class Articulo {
     private boolean eliminado;
     private boolean publicado;
 
-    public Articulo(
+    private Articulo(
             long id,
             NombreArticulo nombre,
             Precio precio,
@@ -46,6 +47,31 @@ public class Articulo {
         this.eliminado = false;
         this.publicado = false;
 
+    }
+    public static Articulo crear(
+            long id,
+            NombreArticulo nombre,
+            Precio precio,
+            Categoria categoria,
+            Marca marca,
+            Tono tono,
+            List<TipoPiel> tiposPiel,
+            Inventario inventario,
+            FechaVencimiento fechaVencimiento,
+            Tienda tienda
+    ) {
+        return new Articulo(
+                id,
+                nombre,
+                precio,
+                categoria,
+                marca,
+                tono,
+                tiposPiel,
+                inventario,
+                fechaVencimiento,
+                tienda
+        );
     }
 
     public void publicar(){
@@ -159,6 +185,40 @@ public class Articulo {
         if (getCantidadDisponible() == 0) {
             throw new ArticuloAgotadoException();
         }
+    }
+    //metodos para la busqueda
+    public boolean coincideConTexto(String texto) {
+        return nombre.valor()
+                .toLowerCase()
+                .contains(texto.trim().toLowerCase());
+    }
+
+    public boolean perteneceACategoria(Long categoriaId) {
+        return categoria.getId() == categoriaId;
+    }
+
+    public boolean esDeMarca(Long marcaId) {
+        return marca.getId() == marcaId;
+    }
+
+    public boolean perteneceATienda(Long tiendaId) {
+        return tienda.getId() == tiendaId;
+    }
+
+    public boolean tienePrecioMinimo(BigDecimal precioMinimo) {
+        return precio.valor().compareTo(precioMinimo) >= 0;
+    }
+
+    public boolean tienePrecioMaximo(BigDecimal precioMaximo) {
+        return precio.valor().compareTo(precioMaximo) <= 0;
+    }
+
+    public boolean tieneTono(Tono tono) {
+        return this.tono == tono;
+    }
+
+    public boolean esCompatibleConTipoPiel(TipoPiel tipoPiel) {
+        return tiposPiel.contains(tipoPiel);
     }
     @Override
     public boolean equals(Object o) {

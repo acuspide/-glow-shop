@@ -19,17 +19,17 @@ public class ListarArticulosUseCaseTest {
             String nombre,
             int cantidad
     ) {
-        return new Articulo(
+        return Articulo.crear(
                 id,
                 new NombreArticulo(nombre),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(cantidad),
+                Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
     }
 
@@ -143,17 +143,17 @@ public class ListarArticulosUseCaseTest {
 
         Articulo disponible = crearArticulo(1L, "Labial", 10);
 
-        Articulo vencido = new Articulo(
+        Articulo vencido = Articulo.crear(
                 2L,
                 new NombreArticulo("Crema vencida"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Rostro"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Rostro"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(5),
+                Inventario.crear(5),
                 new FechaVencimiento(LocalDate.of(2025, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         disponible.publicar();

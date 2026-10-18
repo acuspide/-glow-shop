@@ -12,12 +12,20 @@ public class RutinaCuidado {
     private final String nombre;
     private final List<Articulo> articulos;
 
-    public RutinaCuidado(long id, String nombre, List<Articulo> articulos) {
+    private RutinaCuidado(long id, String nombre, List<Articulo> articulos) {
         validarArticulos(articulos);
 
         this.id = id;
         this.nombre = nombre;
         this.articulos = List.copyOf(articulos);
+    }
+
+    public static RutinaCuidado crear(
+            long id,
+            String nombre,
+            List<Articulo> articulos
+    ) {
+        return new RutinaCuidado(id, nombre, articulos);
     }
 
     private void validarArticulos(List<Articulo> articulos) {

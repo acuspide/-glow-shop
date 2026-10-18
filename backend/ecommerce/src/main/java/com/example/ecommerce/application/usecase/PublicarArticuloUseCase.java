@@ -27,7 +27,7 @@ public class PublicarArticuloUseCase {
             FechaVencimiento fechaVencimiento,
             Tienda tienda) {
 
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 id,
                 nombre,
                 precio,

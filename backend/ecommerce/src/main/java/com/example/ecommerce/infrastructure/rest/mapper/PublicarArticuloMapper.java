@@ -17,17 +17,17 @@ import org.springframework.stereotype.Component;
 public class PublicarArticuloMapper {
 
     public Articulo toEntity(PublicarArticuloRequest request) {
-        return new Articulo(
+        return Articulo.crear(
                 request.id(),
                 new NombreArticulo(request.nombre()),
                 new Precio(request.precio()),
-                new Categoria(request.categoriaId(), request.categoriaNombre()),
-                new Marca(request.marcaId(), request.marcaNombre()),
+                Categoria.crear(request.categoriaId(), request.categoriaNombre()),
+                Marca.crear(request.marcaId(), request.marcaNombre()),
                 request.tono(),
                 request.tiposPiel(),
-                new Inventario(request.cantidadDisponible()),
+                Inventario.crear(request.cantidadDisponible()),
                 new FechaVencimiento(request.fechaVencimiento()),
-                new Tienda(request.tiendaId(), request.tiendaNombre())
+                Tienda.crear(request.tiendaId(), request.tiendaNombre())
         );
     }
 

@@ -23,17 +23,17 @@ public class ActualizarInventarioUseCaseTest {
         ArticuloRepositoryEnMemoria repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 1L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         repository.guardar(articulo);
@@ -54,17 +54,17 @@ public class ActualizarInventarioUseCaseTest {
         ArticuloRepositoryEnMemoria repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 2L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         repository.guardar(articulo);
@@ -100,17 +100,17 @@ public class ActualizarInventarioUseCaseTest {
         ArticuloRepositoryEnMemoria repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 3L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(5),
+                Inventario.crear(5),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         repository.guardar(articulo);
@@ -133,17 +133,17 @@ public class ActualizarInventarioUseCaseTest {
         ArticuloRepositoryEnMemoria repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 4L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         repository.guardar(articulo);

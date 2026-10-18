@@ -7,6 +7,7 @@
 | Consultar detalle de un artículo | GET | /api/articulos/{id} |
 | Aumentar inventario de un artículo | POST | /api/articulos/{id}/inventario/aumentar |
 | Disminuir inventario de un artículo | POST | /api/articulos/{id}/inventario/disminuir |
+| Buscar artículos aplicando filtros opcionales | GET | /api/buscarArticulos |
 
 # Mapeo Dominio -> API - Carrito
 

@@ -7,10 +7,13 @@ public class Tienda {
     private long id;
     private String nombre;
 
-    public Tienda(long id, String nombre) {
+    private Tienda(long id, String nombre) {
         validarNombre(nombre);
         this.id = id;
         this.nombre = nombre;
+    }
+    public static Tienda crear(long id, String nombre) {
+        return new Tienda(id, nombre);
     }
 
     private void validarNombre(String nombre) {
