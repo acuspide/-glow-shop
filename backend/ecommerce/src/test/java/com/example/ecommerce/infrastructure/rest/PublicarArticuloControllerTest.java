@@ -1,8 +1,12 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.application.dto.response.ConsultarInventarioResponse;
 import com.example.ecommerce.application.dto.response.MostrarDetalleArticuloResponse;
+import com.example.ecommerce.application.usecase.ConsultarInventarioUseCase;
 import com.example.ecommerce.application.usecase.MostrarDetalleArticuloUseCase;
 import com.example.ecommerce.domain.entity.Articulo;
+import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
+import com.example.ecommerce.infrastructure.rest.mapper.ConsultarInventarioMapper;
 import com.example.ecommerce.infrastructure.rest.mapper.MostrarDetalleArticuloMapper;
 import com.example.ecommerce.application.usecase.PublicarArticuloUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.PublicarArticuloMapper;
@@ -56,6 +60,12 @@ public class PublicarArticuloControllerTest {
 
     @MockitoBean
     private ListarArticulosMapper listarArticulosMapper;
+
+    @MockitoBean
+    private ConsultarInventarioUseCase consultarInventarioUseCase;
+
+    @MockitoBean
+    private ConsultarInventarioMapper consultarInventarioMapper;
 
     @Test
     void debeMostrarDetalleDeArticuloCuandoExiste() throws Exception {
@@ -254,6 +264,36 @@ public class PublicarArticuloControllerTest {
 
         verify(listarArticulosUseCase).ejecutar();
         verify(listarArticulosMapper).toResponseList(anyList());
+    }
+    @Test
+    void debeConsultarInventarioDeArticuloExistente() throws Exception {
+        Articulo articulo = mock(Articulo.class);
+
+        ConsultarInventarioResponse response =
+                new ConsultarInventarioResponse(1L, "Labial", 10);
+
+        when(consultarInventarioUseCase.ejecutar(1L))
+                .thenReturn(articulo);
+
+        when(consultarInventarioMapper.toResponse(articulo))
+                .thenReturn(response);
+
+        mockMvc.perform(get("/api/articulos/1/inventario"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.articuloId").value(1))
+                .andExpect(jsonPath("$.nombre").value("Labial"))
+                .andExpect(jsonPath("$.cantidadDisponible").value(10));
+    }
+
+    @Test
+    void debeRetornar404CuandoNoExisteInventarioDelArticulo()
+            throws Exception {
+
+        when(consultarInventarioUseCase.ejecutar(999L))
+                .thenThrow(new ArticuloNoEncontradoException(999L));
+
+        mockMvc.perform(get("/api/articulos/999/inventario"))
+                .andExpect(status().isNotFound());
     }
 
 

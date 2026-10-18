@@ -7,6 +7,10 @@ import com.example.ecommerce.application.dto.response.ListarArticulosResponse;
 import com.example.ecommerce.application.usecase.ListarArticulosUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.ListarArticulosMapper;
 
+import com.example.ecommerce.application.dto.response.ConsultarInventarioResponse;
+import com.example.ecommerce.application.usecase.ConsultarInventarioUseCase;
+import com.example.ecommerce.infrastructure.rest.mapper.ConsultarInventarioMapper;
+
 import java.util.List;
 import com.example.ecommerce.infrastructure.rest.mapper.PublicarArticuloMapper;
 import com.example.ecommerce.application.dto.response.MostrarDetalleArticuloResponse;
@@ -30,6 +34,8 @@ public class PublicarArticuloController {
     private final MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper;
     private final ListarArticulosUseCase listarArticulosUseCase;
     private final ListarArticulosMapper listarArticulosMapper;
+    private final ConsultarInventarioUseCase consultarInventarioUseCase;
+    private final ConsultarInventarioMapper consultarInventarioMapper;
 
     public PublicarArticuloController(
             PublicarArticuloUseCase publicarArticuloUseCase,
@@ -37,7 +43,9 @@ public class PublicarArticuloController {
             MostrarDetalleArticuloUseCase mostrarDetalleArticuloUseCase,
             MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper,
             ListarArticulosUseCase listarArticulosUseCase,
-            ListarArticulosMapper listarArticulosMapper) {
+            ListarArticulosMapper listarArticulosMapper,
+            ConsultarInventarioUseCase consultarInventarioUseCase,
+            ConsultarInventarioMapper consultarInventarioMapper) {
 
         this.publicarArticuloUseCase = publicarArticuloUseCase;
         this.mapper = mapper;
@@ -45,6 +53,8 @@ public class PublicarArticuloController {
         this.mostrarDetalleArticuloMapper = mostrarDetalleArticuloMapper;
         this.listarArticulosUseCase = listarArticulosUseCase;
         this.listarArticulosMapper = listarArticulosMapper;
+        this.consultarInventarioUseCase = consultarInventarioUseCase;
+        this.consultarInventarioMapper = consultarInventarioMapper;
     }
     @GetMapping
     public ResponseEntity<List<ListarArticulosResponse>> listarArticulos() {
@@ -87,4 +97,17 @@ public class PublicarArticuloController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}/inventario")
+    public ResponseEntity<ConsultarInventarioResponse> consultarInventario(
+            @PathVariable long id) {
+
+        Articulo articulo = consultarInventarioUseCase.ejecutar(id);
+
+        ConsultarInventarioResponse response =
+                consultarInventarioMapper.toResponse(articulo);
+
+        return ResponseEntity.ok(response);
+    }
+
 }
