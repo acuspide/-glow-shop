@@ -193,6 +193,80 @@ public class Articulo {
                 .contains(texto.trim().toLowerCase());
     }
 
+
+    public void actualizarDatos(
+            NombreArticulo nombre,
+            Precio precio,
+            Categoria categoria,
+            Marca marca,
+            Tono tono,
+            List<TipoPiel> tiposPiel,
+            FechaVencimiento fechaVencimiento
+    ) {
+        if (eliminado) {
+            throw new IllegalStateException(
+                    "No se puede actualizar un artículo eliminado."
+            );
+        }
+
+        if (nombre == null) {
+            throw new NombreArticuloRequeridoException();
+        }
+
+        if (precio == null) {
+            throw new PrecioRequeridoException();
+        }
+
+        if (categoria == null) {
+            throw new CategoriaRequeridaException();
+        }
+
+        if (marca == null) {
+            throw new MarcaRequeridaException();
+        }
+
+        if (tono == null) {
+            throw new IllegalArgumentException(
+                    "El tono es obligatorio."
+            );
+        }
+
+        if (tiposPiel == null || tiposPiel.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Debe especificarse al menos un tipo de piel."
+            );
+        }
+
+        if (fechaVencimiento == null) {
+            throw new FechaVencimientoRequeridaException();
+        }
+
+        if (fechaVencimiento.estaVencida()) {
+            throw new ArticuloVencidoException();
+        }
+
+        // Todas las validaciones se realizan antes de modificar los datos.
+        this.nombre = nombre;
+        this.precio = precio;
+        this.categoria = categoria;
+        this.marca = marca;
+        this.tono = tono;
+        this.tiposPiel = List.copyOf(tiposPiel);
+        this.fechaVencimiento = fechaVencimiento;
+    }
+
+    public void eliminar() {
+        if (eliminado) {
+            throw new IllegalStateException(
+                    "El artículo ya está eliminado."
+            );
+        }
+
+        eliminado = true;
+    }
+
+
+
     public boolean perteneceACategoria(Long categoriaId) {
         return categoria.getId() == categoriaId;
     }
@@ -231,8 +305,6 @@ public class Articulo {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-
 
 
 }

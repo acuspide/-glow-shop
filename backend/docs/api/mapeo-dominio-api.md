@@ -5,6 +5,7 @@
 | listar artículos disponibles | GET| /articulos |
 | publicar articulo | POST | /articulos |
 | Consultar detalle de un artículo | GET | /api/articulos/{id} |
+| Eliminar artículo (eliminación lógica) | DELETE | /api/articulos/{id} |
 | Consultar inventario completo | GET | /api/inventario |
 | Consultar inventario de un artículo | GET | /api/articulos/{id}/inventario |
 | Aumentar inventario de un artículo | POST | /api/articulos/{id}/inventario/aumentar |
