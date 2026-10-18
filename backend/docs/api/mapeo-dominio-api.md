@@ -11,6 +11,7 @@
 | Aumentar inventario de un artículo | POST | /api/articulos/{id}/inventario/aumentar |
 | Disminuir inventario de un artículo | POST | /api/articulos/{id}/inventario/disminuir |
 | Buscar artículos aplicando filtros opcionales | GET | /api/buscarArticulos |
+| Alertar stock bajo | GET | /api/inventario/stock-bajo |
 
 # Mapeo Dominio -> API - Carrito
 
