@@ -3,7 +3,7 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.domain.exception.ArticuloNoPublicadoException;
 import com.example.ecommerce.domain.exception.ArticuloSinDisponibilidadException;
 import com.example.ecommerce.domain.exception.RutinaSinMinimoDeArticulosException;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,6 +44,16 @@ public class RutinaCuidado {
                 throw new ArticuloSinDisponibilidadException();
             }
         }
+    }
+    public RutinaCuidado agregarArticulo(Articulo articulo) {
+        List<Articulo> articulosActualizados = new ArrayList<>(articulos);
+        articulosActualizados.add(articulo);
+
+        return RutinaCuidado.crear(
+                this.id,
+                this.nombre,
+                articulosActualizados
+        );
     }
 
     public long getId() {

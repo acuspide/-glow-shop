@@ -7,6 +7,7 @@ import com.example.ecommerce.application.usecase.CrearRutinaCuidadoUseCase;
 import com.example.ecommerce.application.usecase.ObtenerRutinaCuidadoUseCase;
 import com.example.ecommerce.domain.entity.RutinaCuidado;
 import com.example.ecommerce.infrastructure.rest.mapper.RutinaCuidadoMapper;
+import com.example.ecommerce.application.usecase.AgregarArticuloARutinaUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -37,6 +38,9 @@ public class RutinaCuidadoControllerTest {
 
     @MockitoBean
     private RutinaCuidadoMapper mapper;
+
+    @MockitoBean
+    private AgregarArticuloARutinaUseCase agregarArticuloARutinaUseCase;
 
     @Test
     void debeActualizarUnaRutina() throws Exception {
@@ -100,4 +104,24 @@ public class RutinaCuidadoControllerTest {
 
         verifyNoInteractions(actualizarRutinaCuidadoUseCase);
     }
+
+    @Test
+    void debeAgregarArticuloAUnaRutina() throws Exception {
+        RutinaCuidado rutina = mock(RutinaCuidado.class);
+
+        RutinaCuidadoResponse response = mock(RutinaCuidadoResponse.class);
+
+        when(agregarArticuloARutinaUseCase.ejecutar(1L, 3L))
+                .thenReturn(rutina);
+
+        when(mapper.toResponse(rutina)).thenReturn(response);
+
+        mockMvc.perform(post("/api/rutinas/1/articulos/3"))
+                .andExpect(status().isOk());
+
+        verify(agregarArticuloARutinaUseCase).ejecutar(1L, 3L);
+
+        verify(mapper).toResponse(rutina);
+    }
+
 }

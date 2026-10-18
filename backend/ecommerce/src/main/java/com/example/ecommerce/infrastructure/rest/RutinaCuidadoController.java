@@ -8,6 +8,7 @@ import com.example.ecommerce.infrastructure.rest.mapper.RutinaCuidadoMapper;
 import com.example.ecommerce.application.usecase.ObtenerRutinaCuidadoUseCase;
 import com.example.ecommerce.application.dto.request.ActualizarRutinaCuidadoRequest;
 import com.example.ecommerce.application.usecase.ActualizarRutinaCuidadoUseCase;
+import com.example.ecommerce.application.usecase.AgregarArticuloARutinaUseCase;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -24,18 +25,21 @@ public class RutinaCuidadoController {
     private final ObtenerRutinaCuidadoUseCase obtenerRutinaCuidadoUseCase;
     private final RutinaCuidadoMapper mapper;
     private final ActualizarRutinaCuidadoUseCase actualizarRutinaCuidadoUseCase;
+    private final AgregarArticuloARutinaUseCase agregarArticuloARutinaUseCase;
 
 
     public RutinaCuidadoController(
             CrearRutinaCuidadoUseCase crearRutinaCuidadoUseCase,
             ObtenerRutinaCuidadoUseCase obtenerRutinaCuidadoUseCase,
             RutinaCuidadoMapper mapper,
-            ActualizarRutinaCuidadoUseCase actualizarRutinaCuidadoUseCase) {
+            ActualizarRutinaCuidadoUseCase actualizarRutinaCuidadoUseCase,
+            AgregarArticuloARutinaUseCase agregarArticuloARutinaUseCase) {
 
         this.crearRutinaCuidadoUseCase = crearRutinaCuidadoUseCase;
         this.obtenerRutinaCuidadoUseCase = obtenerRutinaCuidadoUseCase;
         this.mapper = mapper;
         this.actualizarRutinaCuidadoUseCase = actualizarRutinaCuidadoUseCase;
+        this.agregarArticuloARutinaUseCase = agregarArticuloARutinaUseCase;
     }
 
     @PostMapping
@@ -86,5 +90,19 @@ public class RutinaCuidadoController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/{id}/articulos/{articuloId}")
+    public ResponseEntity<RutinaCuidadoResponse> agregarArticulo(
+            @PathVariable long id,
+            @PathVariable long articuloId) {
+
+        RutinaCuidado rutina = agregarArticuloARutinaUseCase
+                .ejecutar(id, articuloId);
+
+        RutinaCuidadoResponse response = mapper.toResponse(rutina);
+
+        return ResponseEntity.ok(response);
+    }
+
 
 }
