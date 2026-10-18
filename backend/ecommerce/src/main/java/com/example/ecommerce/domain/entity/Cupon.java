@@ -18,30 +18,33 @@ public class Cupon {
     private final int porcentaje;
     private final LocalDate fechaExpiracion;
 
-    public Cupon(long id, String codigo, int porcentaje, LocalDate fechaExpiracion) {
-        validarCodigo(codigo);
-        validarPorcentaje(porcentaje);
-        validarFechaExpiracion(fechaExpiracion);
-
+    private Cupon(long id, String codigo, int porcentaje, LocalDate fechaExpiracion) {
         this.id = id;
         this.codigo = codigo;
         this.porcentaje = porcentaje;
         this.fechaExpiracion = fechaExpiracion;
     }
 
-    private void validarCodigo(String codigo) {
+    public static Cupon crear(long id, String codigo, int porcentaje, LocalDate fechaExpiracion) {
+        validarCodigo(codigo);
+        validarPorcentaje(porcentaje);
+        validarFechaExpiracion(fechaExpiracion);
+        return new Cupon(id, codigo, porcentaje, fechaExpiracion);
+    }
+
+    private static void validarCodigo(String codigo) {
         if (codigo == null || codigo.trim().isEmpty()) {
             throw new CodigoCuponRequeridoException();
         }
     }
 
-    private void validarPorcentaje(int porcentaje) {
+    private static void validarPorcentaje(int porcentaje) {
         if (porcentaje <= 0 || porcentaje > 100) {
             throw new PorcentajeDescuentoInvalidoException();
         }
     }
 
-    private void validarFechaExpiracion(LocalDate fechaExpiracion) {
+    private static void validarFechaExpiracion(LocalDate fechaExpiracion) {
         if (fechaExpiracion == null) {
             throw new FechaVencimientoRequeridaException();
         }

@@ -29,19 +29,23 @@ public class Pedido {
     private Precio costoEnvio;
     private Long pagoConfirmadoId;
 
-    public Pedido(long id, long clienteId, DetallePedido primerDetalle) {
-        if (primerDetalle == null) {
-            throw new PedidoSinDetallesException();
-        }
+    private Pedido(long id, long clienteId) {
         this.id = id;
         this.clienteId = clienteId;
         this.detalles = new ArrayList<>();
-        this.detalles.add(primerDetalle);
         this.estado = EstadoPedido.PENDIENTE;
         this.descuento = new Precio(BigDecimal.ZERO);
         this.impuestos = new Precio(BigDecimal.ZERO);
         this.costoEnvio = new Precio(BigDecimal.ZERO);
+    }
 
+    public static Pedido crear(long id, long clienteId, List<DetallePedido> detalles) {
+        if (detalles == null || detalles.isEmpty()) {
+            throw new PedidoSinDetallesException();
+        }
+        Pedido pedido = new Pedido(id, clienteId);
+        detalles.forEach(pedido::agregarDetalle);
+        return pedido;
     }
 
     public void agregarDetalle(DetallePedido detalle) {
