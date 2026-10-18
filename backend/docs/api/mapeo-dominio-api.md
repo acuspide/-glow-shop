@@ -1,7 +1,9 @@
 | Operacion del dominio | Método HTTP | Endpoint | 
 |---|---|---| 
 | crear rutina de cuidado | POST | /rutinas |
+| Listar rutinas de cuidado | GET | /rutinas |
 | consultar una rutina de cuidado | GET | /rutinas/{id} |
+| Actualizar rutina de cuidado | PUT | /api/rutinas/{id}|
 | listar artículos disponibles | GET| /articulos |
 | publicar articulo | POST | /articulos |
 | Consultar detalle de un artículo | GET | /api/articulos/{id} |
