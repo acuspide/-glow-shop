@@ -6,15 +6,26 @@ public class Marca {
     private long id;
     private String nombre;
 
-    public Marca(long id, String nombre) {
+    private Marca(long id, String nombre) {
         validarNombre(nombre);
         this.id = id;
         this.nombre = nombre;
+    }
+    public static Marca crear(long id, String nombre) {
+        return new Marca(id, nombre);
     }
 
     private void validarNombre(String nombre) {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new MarcaRequeridaException();
         }
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public long getId() {
+        return id;
     }
 }

@@ -7,9 +7,12 @@ import com.example.ecommerce.domain.exception.StockNegativoException;
 public class Inventario {
     private int cantidadDisponible;
 
-    public Inventario(int cantidadDisponible) {
+    private Inventario(int cantidadDisponible) {
         validarCantidad(cantidadDisponible);
         this.cantidadDisponible = cantidadDisponible;
+    }
+    public static Inventario crear(int cantidadDisponible) {
+        return new Inventario(cantidadDisponible);
     }
 
     public void aumentar(int cantidad) {

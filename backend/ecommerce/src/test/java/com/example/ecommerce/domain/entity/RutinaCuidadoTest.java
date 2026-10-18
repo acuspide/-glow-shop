@@ -18,17 +18,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RutinaCuidadoTest {
     private Articulo crearArticulo(long id, int cantidad) {
-        return new Articulo(
+        return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
                 new Precio(new BigDecimal("25000")),
-                new Categoria(1L, "Cuidado capilar"),
-                new Marca(1L, "Marca prueba"),
+                Categoria.crear(1L, "Cuidado capilar"),
+                Marca.crear(1L, "Marca prueba"),
                 Tono.MEDIO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(cantidad),
+                Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                new Tienda(1L, "Tienda prueba")
+                Tienda.crear(1L, "Tienda prueba")
         );
     }
     @Test
@@ -42,7 +42,7 @@ public class RutinaCuidadoTest {
         articulo2.publicar();
 
         // Act
-        RutinaCuidado rutina = new RutinaCuidado(
+        RutinaCuidado rutina = RutinaCuidado.crear(
                 1L,
                 "Rutina de cuidado diario",
                 List.of(articulo1, articulo2)
@@ -63,7 +63,7 @@ public class RutinaCuidadoTest {
         // Act + Assert
         assertThrows(
                 RutinaSinMinimoDeArticulosException.class,
-                () -> new RutinaCuidado(
+                () -> RutinaCuidado.crear(
                         1L,
                         "Rutina facial",
                         List.of(articulo)
@@ -84,7 +84,7 @@ public class RutinaCuidadoTest {
         // Act + Assert
         assertThrows(
                 ArticuloNoPublicadoException.class,
-                () -> new RutinaCuidado(
+                () -> RutinaCuidado.crear(
                         1L,
                         "Rutina facial",
                         List.of(articulo1, articulo2)
@@ -104,7 +104,7 @@ public class RutinaCuidadoTest {
         // Act + Assert
         assertThrows(
                 ArticuloSinDisponibilidadException.class,
-                () -> new RutinaCuidado(
+                () -> RutinaCuidado.crear(
                         1L,
                         "Rutina facial",
                         List.of(articulo1, articulo2)
@@ -122,7 +122,7 @@ public class RutinaCuidadoTest {
         articulo2.publicar();
 
         // Act
-        RutinaCuidado rutina = new RutinaCuidado(
+        RutinaCuidado rutina = RutinaCuidado.crear(
                 1L,
                 "Rutina completa",
                 List.of(articulo1, articulo2)
@@ -142,13 +142,13 @@ public class RutinaCuidadoTest {
         articulo2.publicar();
 
         // Act
-        RutinaCuidado rutina1 = new RutinaCuidado(
+        RutinaCuidado rutina1 = RutinaCuidado.crear(
                 1L,
                 "Rutina facial",
                 List.of(articulo1, articulo2)
         );
 
-        RutinaCuidado rutina2 = new RutinaCuidado(
+        RutinaCuidado rutina2 = RutinaCuidado.crear(
                 2L,
                 "Rutina hidratante",
                 List.of(articulo1, articulo2)

@@ -19,17 +19,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CarritoTest {
 
     private Articulo crearArticulo(long id, String precio, int stock) {
-        return new Articulo(
+        return Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal(precio)),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Bloom"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Bloom"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(stock),
+                Inventario.crear(stock),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
     }
 

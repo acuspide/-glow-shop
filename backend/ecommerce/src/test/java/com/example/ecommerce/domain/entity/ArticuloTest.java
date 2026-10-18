@@ -20,30 +20,30 @@ public class ArticuloTest {
     void dosArticulosConElMismoIdDebenSerIguales() {
 
         // Arrange
-        Articulo articulo1 = new Articulo(
+        Articulo articulo1 = Articulo.crear(
                 1L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
-        Articulo articulo2 = new Articulo(
+        Articulo articulo2 = Articulo.crear(
                 1L,
                 new NombreArticulo("Base"),
                 new Precio(new BigDecimal("50000")),
-                new Categoria(2L, "Rostro"),
-                new Marca(2L, "MAC"),
+                Categoria.crear(2L, "Rostro"),
+                Marca.crear(2L, "MAC"),
                 Tono.OSCURO,
                 List.of(TipoPiel.SECA),
-                new Inventario(20),
+                Inventario.crear(20),
                 new FechaVencimiento(LocalDate.of(2028, 5, 20)),
-                new Tienda(2L, "Otra Tienda")
+                Tienda.crear(2L, "Otra Tienda")
         );
 
         // Act
@@ -56,17 +56,17 @@ public class ArticuloTest {
     void noDebePermitirPublicarArticuloVencido() {
 
         // Arrange
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 2L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2025, 1, 1)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         // Act y Assert
@@ -81,17 +81,17 @@ public class ArticuloTest {
     void noDebePermitirPublicarArticuloSinCategoria() {
 
         // Arrange
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 3L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 null,
-                new Marca(1L, "Maybelline"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         // Act y Assert
@@ -106,17 +106,17 @@ public class ArticuloTest {
     void noDebePermitirPublicarArticuloSinPrecio() {
 
         // Arrange
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 4L,
                 new NombreArticulo("Labial"),
                 null,
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         // Act y Assert
@@ -131,17 +131,17 @@ public class ArticuloTest {
     void debeDisminuirElInventarioDelArticulo() {
 
         // Arrange
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 6L,
                 new NombreArticulo("Base"),
                 new Precio(new BigDecimal("50000")),
-                new Categoria(2L, "Rostro"),
-                new Marca(2L, "MAC"),
+                Categoria.crear(2L, "Rostro"),
+                Marca.crear(2L, "MAC"),
                 Tono.CLARO,
                 List.of(TipoPiel.SECA),
-                new Inventario(20),
+                Inventario.crear(20),
                 new FechaVencimiento(LocalDate.of(2028, 5, 20)),
-                new Tienda(2L, "Tienda Beauty")
+                Tienda.crear(2L, "Tienda Beauty")
         );
 
         // Act
@@ -154,17 +154,17 @@ public class ArticuloTest {
     void debeAumentarElInventarioDelArticulo() {
 
         // Arrange
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 5L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
 
         // Act
@@ -175,17 +175,17 @@ public class ArticuloTest {
     }
 
     private Articulo crearArticulo(int stock) {
-        return new Articulo(
+        return  Articulo.crear(
                 10L,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Maybelline"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(stock),
+                Inventario.crear(stock),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
     }
 

@@ -1,0 +1,54 @@
+package com.example.ecommerce.infrastructure.rest;
+
+import com.example.ecommerce.application.dto.request.ActualizarInventarioRequest;
+import com.example.ecommerce.application.dto.response.ActualizarInventarioResponse;
+import com.example.ecommerce.application.usecase.ActualizarInventarioUseCase;
+import com.example.ecommerce.domain.entity.Articulo;
+import com.example.ecommerce.infrastructure.rest.mapper.ActualizarInventarioMapper;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/articulos")
+public class ActualizarInventarioController {
+    private final ActualizarInventarioUseCase actualizarInventarioUseCase;
+    private final ActualizarInventarioMapper mapper;
+
+    public ActualizarInventarioController(
+            ActualizarInventarioUseCase actualizarInventarioUseCase,
+            ActualizarInventarioMapper mapper) {
+        this.actualizarInventarioUseCase = actualizarInventarioUseCase;
+        this.mapper = mapper;
+}
+    @PostMapping("/{id}/inventario/aumentar")
+    public ResponseEntity<ActualizarInventarioResponse> aumentar(
+            @PathVariable long id,
+            @Valid @RequestBody ActualizarInventarioRequest request) {
+
+        Articulo articulo = actualizarInventarioUseCase.aumentar(
+                id,
+                request.cantidad()
+        );
+
+        ActualizarInventarioResponse response = mapper.toResponse(articulo);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{id}/inventario/disminuir")
+    public ResponseEntity<ActualizarInventarioResponse> disminuir(
+            @PathVariable long id,
+            @Valid @RequestBody ActualizarInventarioRequest request) {
+
+        Articulo articulo = actualizarInventarioUseCase.disminuir(
+                id,
+                request.cantidad()
+        );
+
+        ActualizarInventarioResponse response = mapper.toResponse(articulo);
+
+        return ResponseEntity.ok(response);
+    }
+
+}
