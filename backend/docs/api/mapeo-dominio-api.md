@@ -9,3 +9,4 @@
 | Operacion del dominio | Método HTTP | Endpoint |
 |---|---|---|
 | agregarArticulo(articulo, cantidad) | POST | /api/carritos/{clienteId}/items |
+| ver carrito | GET | /carritos/{clienteId} |
