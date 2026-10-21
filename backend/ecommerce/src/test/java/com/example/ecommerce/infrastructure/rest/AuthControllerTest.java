@@ -6,6 +6,9 @@ import com.example.ecommerce.application.dto.response.LoginResponse;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.CerrarSesionUseCase;
 import com.example.ecommerce.application.usecase.IniciarSesionUseCase;
+import com.example.ecommerce.application.usecase.RestablecerContrasenaUseCase;
+import com.example.ecommerce.application.usecase.SolicitarRecuperacionContrasenaUseCase;
+import com.example.ecommerce.domain.exception.CodigoRecuperacionInvalidoException;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.TokenInvalidoException;
@@ -44,6 +47,12 @@ class AuthControllerTest {
 
     @MockitoBean
     private CerrarSesionUseCase cerrarSesionUseCase;
+
+    @MockitoBean
+    private SolicitarRecuperacionContrasenaUseCase solicitarRecuperacionUseCase;
+
+    @MockitoBean
+    private RestablecerContrasenaUseCase restablecerContrasenaUseCase;
 
     @MockitoBean
     private UsuarioMapper mapper;
@@ -153,5 +162,46 @@ class AuthControllerTest {
         mockMvc.perform(post("/api/auth/logout")
                         .header("Authorization", "Bearer token-cerrado"))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void recuperarContrasenaDebeResponder202() throws Exception {
+        mockMvc.perform(post("/api/auth/recuperar-contrasena")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"ana@correo.com\"}"))
+                .andExpect(status().isAccepted());
+
+        verify(solicitarRecuperacionUseCase).ejecutar("ana@correo.com");
+    }
+
+    @Test
+    void restablecerContrasenaConCodigoValidoDebeResponder204() throws Exception {
+        mockMvc.perform(post("/api/auth/restablecer-contrasena")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"ana@correo.com\", \"codigo\": \"123456\", \"nuevaContrasena\": \"NuevaClave9\"}"))
+                .andExpect(status().isNoContent());
+
+        verify(restablecerContrasenaUseCase).ejecutar("ana@correo.com", "123456", "NuevaClave9");
+    }
+
+    @Test
+    void restablecerContrasenaConCodigoInvalidoDebeResponder400() throws Exception {
+        doThrow(new CodigoRecuperacionInvalidoException())
+                .when(restablecerContrasenaUseCase).ejecutar("ana@correo.com", "999999", "NuevaClave9");
+
+        mockMvc.perform(post("/api/auth/restablecer-contrasena")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"ana@correo.com\", \"codigo\": \"999999\", \"nuevaContrasena\": \"NuevaClave9\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void restablecerContrasenaConCodigoQueNoTiene6DigitosDebeResponder400() throws Exception {
+        mockMvc.perform(post("/api/auth/restablecer-contrasena")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\": \"ana@correo.com\", \"codigo\": \"12ab\", \"nuevaContrasena\": \"NuevaClave9\"}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(restablecerContrasenaUseCase);
     }
 }

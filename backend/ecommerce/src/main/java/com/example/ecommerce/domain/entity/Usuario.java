@@ -129,6 +129,12 @@ public class Usuario {
         this.activo = false;
     }
 
+    // Reemplaza la contraseña. Recibe el hash: la contraseña en texto plano nunca entra al dominio.
+    public void cambiarContrasena(String nuevoContrasenaHash) {
+        validarContrasenaHash(nuevoContrasenaHash);
+        this.contrasenaHash = nuevoContrasenaHash;
+    }
+
     public String getId() { return id; }
     public String getNombre() { return nombre; }
     public Email getEmail() { return email; }

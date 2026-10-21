@@ -166,6 +166,23 @@ public class UsuarioTest {
     }
 
     @Test
+    void cambiarContrasenaDebeReemplazarElHash() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash-viejo", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        usuario.cambiarContrasena("hash-nuevo");
+
+        assertEquals("hash-nuevo", usuario.getContrasenaHash());
+    }
+
+    @Test
+    void noDebeCambiarLaContrasenaPorUnHashVacio() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash-viejo", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(ReglaDominioException.class, () -> usuario.cambiarContrasena(" "));
+        assertEquals("hash-viejo", usuario.getContrasenaHash());
+    }
+
+    @Test
     void reconstruirDebeConservarElEstadoInactivo() {
         // Arrange y Act
         Usuario usuario = Usuario.reconstruir("u-1", "Ana", new Email("ana@correo.com"), "hash",
