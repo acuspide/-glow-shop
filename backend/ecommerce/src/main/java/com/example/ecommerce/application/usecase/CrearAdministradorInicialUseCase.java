@@ -8,6 +8,7 @@ import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.FechaNacimiento;
 import com.example.ecommerce.domain.valueobject.Telefono;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -27,6 +28,7 @@ public class CrearAdministradorInicialUseCase {
     }
 
     /** @return true si lo creó; false si ya existía un usuario con ese correo. */
+    @Transactional
     public boolean ejecutar(String id, String nombre, String email, String contrasenaPlano,
                             String telefono, LocalDate fechaNacimiento) {
         Email correo = new Email(email);

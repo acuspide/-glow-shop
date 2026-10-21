@@ -11,6 +11,7 @@ import com.example.ecommerce.domain.valueobject.FechaNacimiento;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.domain.valueobject.Telefono;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -29,6 +30,7 @@ public class CrearUsuarioPorAdministradorUseCase {
         this.passwordHasher = passwordHasher;
     }
 
+    @Transactional
     public Usuario ejecutar(
             String administradorId,
             String id,

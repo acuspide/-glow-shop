@@ -9,6 +9,7 @@ import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.FechaNacimiento;
 import com.example.ecommerce.domain.valueobject.Telefono;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -26,6 +27,7 @@ public class RegistrarClienteUseCase {
         this.passwordHasher = passwordHasher;
     }
 
+    @Transactional
     public Usuario ejecutar(String id, String nombre, String email, String contrasenaPlano,
                             String telefono, LocalDate fechaNacimiento) {
         ContrasenaPlana contrasena = new ContrasenaPlana(contrasenaPlano); // el dominio valida
