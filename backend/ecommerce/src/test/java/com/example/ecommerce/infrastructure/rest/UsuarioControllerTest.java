@@ -1,12 +1,15 @@
 package com.example.ecommerce.infrastructure.rest;
 
 import com.example.ecommerce.DatosPrueba;
+import com.example.ecommerce.application.TokenService;
+import com.example.ecommerce.application.usecase.ConsultarPerfilUseCase;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.RegistrarClienteUseCase;
 import com.example.ecommerce.application.usecase.RegistrarVendedorUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.ContrasenaDebilException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
+import com.example.ecommerce.domain.exception.TokenInvalidoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.infrastructure.rest.mapper.UsuarioMapper;
@@ -24,6 +27,7 @@ import java.time.LocalDate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,6 +44,12 @@ class UsuarioControllerTest {
 
     @MockitoBean
     private RegistrarVendedorUseCase registrarVendedorUseCase;
+
+    @MockitoBean
+    private ConsultarPerfilUseCase consultarPerfilUseCase;
+
+    @MockitoBean
+    private TokenService tokenService;
 
     @MockitoBean
     private UsuarioMapper mapper;
@@ -266,5 +276,36 @@ class UsuarioControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(sinNombre))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void consultarPerfilDebeDevolverLosDatosDelUsuarioDelToken() throws Exception {
+        // Arrange
+        Usuario ana = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
+        when(consultarPerfilUseCase.ejecutar("u-1")).thenReturn(ana);
+        when(mapper.toResponse(ana))
+                .thenReturn(new UsuarioResponse("u-1", "Ana", "ana@correo.com", "3001234567", LocalDate.of(2000, 1, 1), RolUsuario.CLIENTE, true));
+
+        // Act y Assert
+        mockMvc.perform(get("/api/usuarios/me").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("u-1"))
+                .andExpect(jsonPath("$.email").value("ana@correo.com"))
+                .andExpect(jsonPath("$.contrasenaHash").doesNotExist());
+    }
+
+    @Test
+    void consultarPerfilSinTokenDebeResponder401() throws Exception {
+        mockMvc.perform(get("/api/usuarios/me"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void consultarPerfilConTokenInvalidoDebeResponder401() throws Exception {
+        when(tokenService.extraerUsuarioId("token-falso")).thenThrow(new TokenInvalidoException());
+
+        mockMvc.perform(get("/api/usuarios/me").header("Authorization", "Bearer token-falso"))
+                .andExpect(status().isUnauthorized());
     }
 }
