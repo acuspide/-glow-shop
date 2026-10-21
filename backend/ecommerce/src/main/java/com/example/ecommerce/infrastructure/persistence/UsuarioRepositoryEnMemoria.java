@@ -5,6 +5,7 @@ import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.Email;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,11 @@ public class UsuarioRepositoryEnMemoria implements UsuarioRepository {
     @Override
     public Optional<Usuario> obtenerPorId(String id) {
         return Optional.ofNullable(usuarios.get(id));
+    }
+
+    @Override
+    public List<Usuario> listarTodos() {
+        return List.copyOf(usuarios.values());
     }
 
     @Override

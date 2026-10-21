@@ -2,6 +2,7 @@ package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
+import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
 import com.example.ecommerce.domain.exception.ContrasenaActualIncorrectaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoInvalidoException;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
@@ -202,6 +203,28 @@ public class UsuarioTest {
         usuario.desactivar();
 
         assertThrows(CredencialesInvalidasException.class, () -> usuario.autenticar("Otra", UsuarioTest::igual));
+    }
+
+    @Test
+    void unAdministradorActivoPasaLaVerificacionDeAdministrador() {
+        Usuario admin = Usuario.administradorInicial("u-1", "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertDoesNotThrow(admin::verificarQueEsAdministradorActivo);
+    }
+
+    @Test
+    void unClienteNoPasaLaVerificacionDeAdministrador() {
+        Usuario cliente = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(AccionSoloParaAdministradorException.class, cliente::verificarQueEsAdministradorActivo);
+    }
+
+    @Test
+    void unAdministradorDesactivadoNoPasaLaVerificacionDeAdministrador() {
+        Usuario admin = Usuario.administradorInicial("u-1", "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        admin.desactivar();
+
+        assertThrows(AccionSoloParaAdministradorException.class, admin::verificarQueEsAdministradorActivo);
     }
 
     @Test

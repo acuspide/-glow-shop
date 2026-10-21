@@ -4,6 +4,9 @@ import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.CrearUsuarioPorAdministradorUseCase;
+import com.example.ecommerce.application.usecase.ListarUsuariosUseCase;
+import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.valueobject.FiltroUsuarios;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.TokenInvalidoException;
@@ -19,11 +22,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +42,9 @@ class AdminUsuarioControllerTest {
 
     @MockitoBean
     private CrearUsuarioPorAdministradorUseCase crearUsuarioUseCase;
+
+    @MockitoBean
+    private ListarUsuariosUseCase listarUsuariosUseCase;
 
     @MockitoBean
     private TokenService tokenService;
@@ -141,5 +149,40 @@ class AdminUsuarioControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void listarUsuariosDebeAplicarLosFiltrosYDevolverLaLista() throws Exception {
+        // Arrange
+        Usuario vera = Usuario.registrarVendedor("u-2", "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        when(tokenService.extraerUsuarioId("token-admin")).thenReturn("a-1");
+        when(listarUsuariosUseCase.ejecutar("a-1", new FiltroUsuarios(RolUsuario.VENDEDOR, true))).thenReturn(List.of(vera));
+        when(mapper.toResponse(vera))
+                .thenReturn(new UsuarioResponse("u-2", "Vera", "vera@tienda.com", "3001234567", LocalDate.of(1995, 3, 10), RolUsuario.VENDEDOR, true));
+
+        // Act y Assert
+        mockMvc.perform(get("/api/admin/usuarios")
+                        .header("Authorization", "Bearer token-admin")
+                        .param("rol", "VENDEDOR")
+                        .param("activo", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value("u-2"))
+                .andExpect(jsonPath("$[0].rol").value("VENDEDOR"));
+    }
+
+    @Test
+    void listarUsuariosSinSerAdministradorDebeResponder403() throws Exception {
+        when(tokenService.extraerUsuarioId("token-cliente")).thenReturn("u-1");
+        when(listarUsuariosUseCase.ejecutar(eq("u-1"), any())).thenThrow(new AccionSoloParaAdministradorException());
+
+        mockMvc.perform(get("/api/admin/usuarios").header("Authorization", "Bearer token-cliente"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void listarUsuariosSinTokenDebeResponder401() throws Exception {
+        mockMvc.perform(get("/api/admin/usuarios"))
+                .andExpect(status().isUnauthorized());
     }
 }

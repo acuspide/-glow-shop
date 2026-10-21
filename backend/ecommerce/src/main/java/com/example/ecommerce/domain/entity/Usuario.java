@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.entity;
 
+import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
 import com.example.ecommerce.domain.exception.ContrasenaActualIncorrectaException;
 import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoInvalidoException;
@@ -141,6 +142,13 @@ public class Usuario {
         }
         if (!activo) {
             throw new UsuarioInactivoException();
+        }
+    }
+
+    // Para las acciones de administración (listar usuarios, desactivarlos, aprobar tiendas...).
+    public void verificarQueEsAdministradorActivo() {
+        if (rol != RolUsuario.ADMINISTRADOR || !activo) {
+            throw new AccionSoloParaAdministradorException();
         }
     }
 

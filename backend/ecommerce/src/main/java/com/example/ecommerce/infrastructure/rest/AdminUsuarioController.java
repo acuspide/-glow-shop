@@ -4,38 +4,36 @@ import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.request.CrearUsuarioConRolRequest;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.CrearUsuarioPorAdministradorUseCase;
+import com.example.ecommerce.application.usecase.ListarUsuariosUseCase;
+import com.example.ecommerce.domain.valueobject.FiltroUsuarios;
+import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.domain.entity.Usuario;
-import com.example.ecommerce.domain.exception.TokenInvalidoException;
 import com.example.ecommerce.infrastructure.rest.mapper.UsuarioMapper;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/admin/usuarios")
 public class AdminUsuarioController {
 
-    private static final String PREFIJO_BEARER = "Bearer ";
-
     private final CrearUsuarioPorAdministradorUseCase crearUsuarioUseCase;
+    private final ListarUsuariosUseCase listarUsuariosUseCase;
     private final TokenService tokenService;
     private final UsuarioMapper mapper;
-
-    public AdminUsuarioController(CrearUsuarioPorAdministradorUseCase crearUsuarioUseCase,
-                                  TokenService tokenService,
-                                  UsuarioMapper mapper) {
-        this.crearUsuarioUseCase = crearUsuarioUseCase;
-        this.tokenService = tokenService;
-        this.mapper = mapper;
-    }
 
     // Un administrador crea vendedores u otros administradores. Requiere "Authorization: Bearer <token>".
     @PostMapping
@@ -43,7 +41,7 @@ public class AdminUsuarioController {
             @RequestHeader(value = "Authorization", required = false) String autorizacion,
             @Valid @RequestBody CrearUsuarioConRolRequest request) {
 
-        String administradorId = tokenService.extraerUsuarioId(extraerToken(autorizacion));
+        String administradorId = tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
 
         Usuario nuevo = crearUsuarioUseCase.ejecutar(
                 administradorId,
@@ -65,10 +63,19 @@ public class AdminUsuarioController {
         return ResponseEntity.created(location).body(mapper.toResponse(nuevo));
     }
 
-    private String extraerToken(String autorizacion) {
-        if (autorizacion == null || !autorizacion.startsWith(PREFIJO_BEARER)) {
-            throw new TokenInvalidoException();
-        }
-        return autorizacion.substring(PREFIJO_BEARER.length()).trim();
+    // CU-07: lista los usuarios. Filtros opcionales: ?rol=VENDEDOR&activo=true
+    @GetMapping
+    public ResponseEntity<List<UsuarioResponse>> listar(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @RequestParam(required = false) RolUsuario rol,
+            @RequestParam(required = false) Boolean activo) {
+
+        String administradorId = tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
+        List<UsuarioResponse> usuarios = listarUsuariosUseCase
+                .ejecutar(administradorId, new FiltroUsuarios(rol, activo)).stream()
+                .map(mapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(usuarios);
     }
 }
