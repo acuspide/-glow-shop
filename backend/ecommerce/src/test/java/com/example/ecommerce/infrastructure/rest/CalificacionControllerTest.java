@@ -6,7 +6,9 @@ import com.example.ecommerce.application.dto.response.CalificacionResponse;
 import com.example.ecommerce.application.dto.response.CalificacionesArticuloResponse;
 import com.example.ecommerce.application.usecase.ConsultarCalificacionesArticuloUseCase;
 import com.example.ecommerce.domain.valueobject.ResumenCalificaciones;
+import com.example.ecommerce.application.usecase.ActualizarCalificacionUseCase;
 import com.example.ecommerce.application.usecase.CalificarArticuloUseCase;
+import com.example.ecommerce.domain.exception.CalificacionAjenaException;
 import com.example.ecommerce.domain.entity.Calificacion;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
@@ -31,6 +33,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -46,6 +49,9 @@ class CalificacionControllerTest {
 
     @MockitoBean
     private ConsultarCalificacionesArticuloUseCase consultarCalificacionesUseCase;
+
+    @MockitoBean
+    private ActualizarCalificacionUseCase actualizarCalificacionUseCase;
 
     @MockitoBean
     private TokenService tokenService;
@@ -152,6 +158,50 @@ class CalificacionControllerTest {
                 .thenThrow(new com.example.ecommerce.domain.exception.ArticuloNoEncontradoException(99L));
 
         mockMvc.perform(get("/api/articulos/99/calificaciones"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void actualizarCalificacionDebeResponder200ConLosDatosNuevos() throws Exception {
+        // Arrange
+        LocalDateTime fecha = LocalDateTime.of(2026, 10, 20, 10, 0);
+        Calificacion calificacion = Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(3), "Regular", fecha);
+        when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
+        when(actualizarCalificacionUseCase.ejecutar("c-1", "u-1", 3, "Regular")).thenReturn(calificacion);
+        when(mapper.toResponse(calificacion)).thenReturn(new CalificacionResponse("c-1", 10L, "u-1", 3, "Regular", fecha));
+
+        // Act y Assert
+        mockMvc.perform(put("/api/calificaciones/c-1")
+                        .header("Authorization", "Bearer token-ana")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"puntuacion\": 3, \"comentario\": \"Regular\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.puntuacion").value(3))
+                .andExpect(jsonPath("$.comentario").value("Regular"));
+    }
+
+    @Test
+    void actualizarLaCalificacionDeOtroDebeResponder403() throws Exception {
+        when(tokenService.extraerUsuarioId("token-bruno")).thenReturn("u-2");
+        when(actualizarCalificacionUseCase.ejecutar("c-1", "u-2", 1, "Malo")).thenThrow(new CalificacionAjenaException());
+
+        mockMvc.perform(put("/api/calificaciones/c-1")
+                        .header("Authorization", "Bearer token-bruno")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"puntuacion\": 1, \"comentario\": \"Malo\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void actualizarUnaCalificacionQueNoExisteDebeResponder404() throws Exception {
+        when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
+        when(actualizarCalificacionUseCase.ejecutar("no-existe", "u-1", 3, "Regular"))
+                .thenThrow(new java.util.NoSuchElementException());
+
+        mockMvc.perform(put("/api/calificaciones/no-existe")
+                        .header("Authorization", "Bearer token-ana")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"puntuacion\": 3, \"comentario\": \"Regular\"}"))
                 .andExpect(status().isNotFound());
     }
 }

@@ -4,6 +4,7 @@ import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.request.CalificarArticuloRequest;
 import com.example.ecommerce.application.dto.response.CalificacionResponse;
 import com.example.ecommerce.application.dto.response.CalificacionesArticuloResponse;
+import com.example.ecommerce.application.usecase.ActualizarCalificacionUseCase;
 import com.example.ecommerce.application.usecase.CalificarArticuloUseCase;
 import com.example.ecommerce.application.usecase.ConsultarCalificacionesArticuloUseCase;
 import com.example.ecommerce.domain.entity.Calificacion;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,7 @@ public class CalificacionController {
 
     private final CalificarArticuloUseCase calificarArticuloUseCase;
     private final ConsultarCalificacionesArticuloUseCase consultarCalificacionesUseCase;
+    private final ActualizarCalificacionUseCase actualizarCalificacionUseCase;
     private final TokenService tokenService;
     private final CalificacionMapper mapper;
 
@@ -57,5 +60,19 @@ public class CalificacionController {
                 .toUri();
 
         return ResponseEntity.created(location).body(mapper.toResponse(calificacion));
+    }
+
+    // CU-92: el autor edita su calificación (mismas reglas que al crearla: 1-5 estrellas, comentario hasta 500).
+    @PutMapping("/calificaciones/{id}")
+    public ResponseEntity<CalificacionResponse> actualizar(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @PathVariable String id,
+            @Valid @RequestBody CalificarArticuloRequest request) {
+
+        String clienteId = tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
+        Calificacion calificacion = actualizarCalificacionUseCase.ejecutar(
+                id, clienteId, request.puntuacion(), request.comentario());
+
+        return ResponseEntity.ok(mapper.toResponse(calificacion));
     }
 }

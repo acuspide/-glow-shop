@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.entity;
 
+import com.example.ecommerce.domain.exception.CalificacionAjenaException;
 import com.example.ecommerce.domain.exception.ComentarioInvalidoException;
 import com.example.ecommerce.domain.valueobject.Puntuacion;
 
@@ -50,6 +51,24 @@ public class Calificacion {
     public static Calificacion reconstruir(String id, long articuloId, String clienteId, Puntuacion puntuacion,
                                            String comentario, LocalDateTime fecha) {
         return new Calificacion(id, articuloId, clienteId, puntuacion, comentario, fecha);
+    }
+
+    /**
+     * CU-92: el autor edita sus estrellas y su comentario.
+     * La fecha original se conserva.
+     */
+    public void actualizarPor(Usuario cliente, Puntuacion nuevaPuntuacion, String nuevoComentario) {
+        verificarQueEsDelAutor(cliente);
+        validarComentario(nuevoComentario);
+        this.puntuacion = nuevaPuntuacion;
+        this.comentario = nuevoComentario.trim();
+    }
+
+    private void verificarQueEsDelAutor(Usuario cliente) {
+        cliente.verificarQueEsClienteActivo();
+        if (!clienteId.equals(cliente.getId())) {
+            throw new CalificacionAjenaException();
+        }
     }
 
     private static void validarComentario(String comentario) {

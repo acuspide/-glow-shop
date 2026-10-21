@@ -2,6 +2,7 @@ package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
+import com.example.ecommerce.domain.exception.CalificacionAjenaException;
 import com.example.ecommerce.domain.exception.ComentarioInvalidoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.Puntuacion;
@@ -48,6 +49,36 @@ public class CalificacionTest {
 
         assertThrows(AccionSoloParaClienteException.class,
                 () -> Calificacion.calificar("c-1", 10L, vera, new Puntuacion(4), "Bueno", ahora));
+    }
+
+    @Test
+    void elAutorPuedeActualizarSuCalificacionYSeConservaLaFecha() {
+        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+
+        calificacion.actualizarPor(ana, new Puntuacion(3), "  Después de un mes, regular  ");
+
+        assertEquals(3, calificacion.getPuntuacion().valor());
+        assertEquals("Después de un mes, regular", calificacion.getComentario());
+        assertEquals(ahora, calificacion.getFecha());
+    }
+
+    @Test
+    void otroClienteNoPuedeActualizarLaCalificacion() {
+        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        Usuario bruno = Usuario.registrarCliente("u-2", "Bruno", new Email("bruno@correo.com"), "hash",
+                DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(CalificacionAjenaException.class,
+                () -> calificacion.actualizarPor(bruno, new Puntuacion(1), "Malo"));
+        assertEquals(5, calificacion.getPuntuacion().valor());
+    }
+
+    @Test
+    void alActualizarElComentarioSigueSiendoObligatorio() {
+        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+
+        assertThrows(ComentarioInvalidoException.class, () -> calificacion.actualizarPor(ana, new Puntuacion(4), " "));
+        assertEquals("Excelente", calificacion.getComentario());
     }
 
     @Test
