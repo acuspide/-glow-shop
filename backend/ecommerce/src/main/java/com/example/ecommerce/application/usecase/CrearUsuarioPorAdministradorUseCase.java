@@ -10,6 +10,7 @@ import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.FechaNacimiento;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.domain.valueobject.Telefono;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,18 +21,12 @@ import java.time.LocalDate;
  * Quién puede hacerlo lo decide el dominio (Usuario.crearUsuarioConRol).
  */
 @Service
+@RequiredArgsConstructor
 public class CrearUsuarioPorAdministradorUseCase {
 
     private final UsuarioRepository repository;
     private final PasswordHasher passwordHasher;
     private final VerificadorDeCorreoUnico verificadorDeCorreoUnico;
-
-    public CrearUsuarioPorAdministradorUseCase(UsuarioRepository repository, PasswordHasher passwordHasher,
-                                               VerificadorDeCorreoUnico verificadorDeCorreoUnico) {
-        this.repository = repository;
-        this.passwordHasher = passwordHasher;
-        this.verificadorDeCorreoUnico = verificadorDeCorreoUnico;
-    }
 
     @Transactional
     public Usuario ejecutar(

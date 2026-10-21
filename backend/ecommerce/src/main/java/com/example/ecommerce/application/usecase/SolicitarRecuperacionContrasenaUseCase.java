@@ -7,6 +7,7 @@ import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.repository.CodigoRecuperacionRepository;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.Email;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
  * así nadie puede usar este servicio para averiguar qué correos están registrados.
  */
 @Service
+@RequiredArgsConstructor
 public class SolicitarRecuperacionContrasenaUseCase {
 
     private final UsuarioRepository usuarioRepository;
@@ -27,16 +29,6 @@ public class SolicitarRecuperacionContrasenaUseCase {
     private final PasswordHasher passwordHasher;
     private final NotificadorCorreo notificador;
     private final SecureRandom aleatorio = new SecureRandom();
-
-    public SolicitarRecuperacionContrasenaUseCase(UsuarioRepository usuarioRepository,
-                                                  CodigoRecuperacionRepository codigoRepository,
-                                                  PasswordHasher passwordHasher,
-                                                  NotificadorCorreo notificador) {
-        this.usuarioRepository = usuarioRepository;
-        this.codigoRepository = codigoRepository;
-        this.passwordHasher = passwordHasher;
-        this.notificador = notificador;
-    }
 
     @Transactional
     public void ejecutar(String email) {

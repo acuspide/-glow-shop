@@ -1,6 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.application.TokenService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -8,13 +9,10 @@ import org.springframework.stereotype.Service;
  * aunque todavía no haya expirado.
  */
 @Service
+@RequiredArgsConstructor
 public class CerrarSesionUseCase {
 
     private final TokenService tokenService;
-
-    public CerrarSesionUseCase(TokenService tokenService) {
-        this.tokenService = tokenService;
-    }
 
     public void ejecutar(String token) {
         tokenService.revocar(token);

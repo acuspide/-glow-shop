@@ -8,6 +8,7 @@ import com.example.ecommerce.domain.repository.CodigoRecuperacionRepository;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.valueobject.ContrasenaPlana;
 import com.example.ecommerce.domain.valueobject.Email;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,19 +18,12 @@ import java.time.LocalDateTime;
  * CU-04 Recuperar contraseña (paso 2): con el código recibido por correo, define una contraseña nueva.
  */
 @Service
+@RequiredArgsConstructor
 public class RestablecerContrasenaUseCase {
 
     private final UsuarioRepository usuarioRepository;
     private final CodigoRecuperacionRepository codigoRepository;
     private final PasswordHasher passwordHasher;
-
-    public RestablecerContrasenaUseCase(UsuarioRepository usuarioRepository,
-                                        CodigoRecuperacionRepository codigoRepository,
-                                        PasswordHasher passwordHasher) {
-        this.usuarioRepository = usuarioRepository;
-        this.codigoRepository = codigoRepository;
-        this.passwordHasher = passwordHasher;
-    }
 
     @Transactional(noRollbackFor = CodigoRecuperacionInvalidoException.class)
     public void ejecutar(String email, String codigo, String nuevaContrasenaPlano) {

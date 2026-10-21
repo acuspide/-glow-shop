@@ -7,6 +7,7 @@ import com.example.ecommerce.domain.valueobject.ContrasenaPlana;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.FechaNacimiento;
 import com.example.ecommerce.domain.valueobject.Telefono;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,15 +18,11 @@ import java.time.LocalDate;
  * Es idempotente: si el correo ya existe, no hace nada.
  */
 @Service
+@RequiredArgsConstructor
 public class CrearAdministradorInicialUseCase {
 
     private final UsuarioRepository repository;
     private final PasswordHasher passwordHasher;
-
-    public CrearAdministradorInicialUseCase(UsuarioRepository repository, PasswordHasher passwordHasher) {
-        this.repository = repository;
-        this.passwordHasher = passwordHasher;
-    }
 
     /** @return true si lo creó; false si ya existía un usuario con ese correo. */
     @Transactional
