@@ -74,6 +74,23 @@ public class UsuarioTest {
     }
 
     @Test
+    void registrarVendedorDebeCrearUnUsuarioActivoConRolVendedor() {
+        // Arrange y Act
+        Usuario usuario = Usuario.registrarVendedor("u-1", "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        // Assert
+        assertEquals(RolUsuario.VENDEDOR, usuario.getRol());
+        assertTrue(usuario.isActivo());
+    }
+
+    @Test
+    void registrarVendedorDebeValidarLosDatosComoCualquierUsuario() {
+        // Act y Assert
+        assertThrows(ReglaDominioException.class, () ->
+                Usuario.registrarVendedor("u-1", " ", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
+    }
+
+    @Test
     void unAdministradorActivoDebePoderCrearUnVendedor() {
         // Arrange
         Usuario admin = Usuario.administradorInicial("u-1", "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);

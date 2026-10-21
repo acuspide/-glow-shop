@@ -67,6 +67,13 @@ public class Usuario {
         return new Usuario(id, nombre, email, contrasenaHash, telefono, fechaNacimiento, RolUsuario.CLIENTE);
     }
 
+    // Autorregistro de vendedor: el vendedor se crea solo. Para publicar necesitará
+    // que un administrador apruebe su tienda (RN05, RN06).
+    public static Usuario registrarVendedor(String id, String nombre, Email email, String contrasenaHash,
+                                            Telefono telefono, FechaNacimiento fechaNacimiento) {
+        return new Usuario(id, nombre, email, contrasenaHash, telefono, fechaNacimiento, RolUsuario.VENDEDOR);
+    }
+
     // Primer administrador del sistema: nadie lo puede crear, así que nace "sembrado" al arrancar.
     public static Usuario administradorInicial(String id, String nombre, Email email, String contrasenaHash,
                                                Telefono telefono, FechaNacimiento fechaNacimiento) {
