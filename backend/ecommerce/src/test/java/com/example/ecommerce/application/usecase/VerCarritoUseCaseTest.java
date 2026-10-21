@@ -17,17 +17,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class VerCarritoUseCaseTest {
 
     private Articulo crearArticuloPublicado(long id, String precio) {
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal(precio)),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Bloom"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Bloom"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
         articulo.publicar();
         return articulo;
