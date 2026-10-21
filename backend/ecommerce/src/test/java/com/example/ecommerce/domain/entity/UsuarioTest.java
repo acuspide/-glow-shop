@@ -3,6 +3,8 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.exception.AutodesactivacionNoPermitidaException;
+import com.example.ecommerce.domain.exception.UsuarioYaDesactivadoException;
 import com.example.ecommerce.domain.exception.ContrasenaActualIncorrectaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoInvalidoException;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
@@ -203,6 +205,42 @@ public class UsuarioTest {
         usuario.desactivar();
 
         assertThrows(CredencialesInvalidasException.class, () -> usuario.autenticar("Otra", UsuarioTest::igual));
+    }
+
+    @Test
+    void unAdministradorPuedeDesactivarAOtroUsuario() {
+        Usuario admin = Usuario.administradorInicial("a-1", "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        Usuario ana = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        ana.desactivarPor(admin);
+
+        assertFalse(ana.isActivo());
+    }
+
+    @Test
+    void unClienteNoPuedeDesactivarAOtroUsuario() {
+        Usuario cliente = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        Usuario vera = Usuario.registrarVendedor("u-2", "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(AccionSoloParaAdministradorException.class, () -> vera.desactivarPor(cliente));
+        assertTrue(vera.isActivo());
+    }
+
+    @Test
+    void unAdministradorNoPuedeDesactivarseASiMismo() {
+        Usuario admin = Usuario.administradorInicial("a-1", "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(AutodesactivacionNoPermitidaException.class, () -> admin.desactivarPor(admin));
+        assertTrue(admin.isActivo());
+    }
+
+    @Test
+    void noSePuedeDesactivarDosVecesAlMismoUsuario() {
+        Usuario admin = Usuario.administradorInicial("a-1", "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        Usuario ana = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        ana.desactivarPor(admin);
+
+        assertThrows(UsuarioYaDesactivadoException.class, () -> ana.desactivarPor(admin));
     }
 
     @Test

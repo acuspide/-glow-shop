@@ -4,6 +4,7 @@ import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.request.CrearUsuarioConRolRequest;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.CrearUsuarioPorAdministradorUseCase;
+import com.example.ecommerce.application.usecase.DesactivarUsuarioUseCase;
 import com.example.ecommerce.application.usecase.ListarUsuariosUseCase;
 import com.example.ecommerce.domain.valueobject.FiltroUsuarios;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
@@ -13,7 +14,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +35,7 @@ public class AdminUsuarioController {
 
     private final CrearUsuarioPorAdministradorUseCase crearUsuarioUseCase;
     private final ListarUsuariosUseCase listarUsuariosUseCase;
+    private final DesactivarUsuarioUseCase desactivarUsuarioUseCase;
     private final TokenService tokenService;
     private final UsuarioMapper mapper;
 
@@ -77,5 +81,17 @@ public class AdminUsuarioController {
                 .toList();
 
         return ResponseEntity.ok(usuarios);
+    }
+
+    // CU-08: bloquea la cuenta de un usuario (baja lógica).
+    @PutMapping("/{id}/desactivar")
+    public ResponseEntity<Void> desactivar(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @PathVariable String id) {
+
+        String administradorId = tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
+        desactivarUsuarioUseCase.ejecutar(administradorId, id);
+
+        return ResponseEntity.noContent().build(); // 204
     }
 }

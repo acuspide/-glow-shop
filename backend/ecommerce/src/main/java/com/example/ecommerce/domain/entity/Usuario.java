@@ -1,6 +1,7 @@
 package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.exception.AutodesactivacionNoPermitidaException;
 import com.example.ecommerce.domain.exception.ContrasenaActualIncorrectaException;
 import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoInvalidoException;
@@ -11,6 +12,7 @@ import com.example.ecommerce.domain.exception.NombreUsuarioRequeridoException;
 import com.example.ecommerce.domain.exception.RolRequeridoException;
 import com.example.ecommerce.domain.exception.TelefonoInvalidoException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
+import com.example.ecommerce.domain.exception.UsuarioYaDesactivadoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.FechaNacimiento;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
@@ -152,7 +154,22 @@ public class Usuario {
         }
     }
 
+    /**
+     * CU-08: un administrador bloquea esta cuenta. Es una baja lógica: el usuario no se borra
+     * y su historial (pedidos, calificaciones...) se conserva; solo deja de poder iniciar sesión.
+     */
+    public void desactivarPor(Usuario administrador) {
+        administrador.verificarQueEsAdministradorActivo();
+        if (this.equals(administrador)) {
+            throw new AutodesactivacionNoPermitidaException();
+        }
+        desactivar();
+    }
+
     public void desactivar() {
+        if (!activo) {
+            throw new UsuarioYaDesactivadoException();
+        }
         this.activo = false;
     }
 
