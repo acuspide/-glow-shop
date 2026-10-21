@@ -74,4 +74,20 @@ public class AutenticarUsuarioUseCaseTest {
             useCase.ejecutar("ana@correo.com", "Clave123");
         });
     }
+
+    @Test
+    void unUsuarioDesactivadoConContrasenaIncorrectaRecibeCredencialesInvalidas() {
+        // Arrange
+        UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
+        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher)
+                .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+        usuario.desactivar();
+        AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
+
+        // Act y Assert: no debe revelar que la cuenta existe y está desactivada
+        assertThrows(CredencialesInvalidasException.class, () -> {
+            useCase.ejecutar("ana@correo.com", "claveIncorrecta");
+        });
+    }
 }

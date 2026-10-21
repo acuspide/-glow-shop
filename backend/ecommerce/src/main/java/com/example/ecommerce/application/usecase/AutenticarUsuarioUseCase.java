@@ -25,12 +25,14 @@ public class AutenticarUsuarioUseCase {
         Usuario usuario = repository.buscarPorEmail(correo)
                 .orElseThrow(CredencialesInvalidasException::new);
 
-        if (!usuario.isActivo()) {
-            throw new UsuarioInactivoException();
-        }
-
+        // Primero la contraseña: así, sin conocerla, nadie puede averiguar
+        // qué correos existen y están desactivados.
         if (!passwordHasher.verificar(contrasenaPlano, usuario.getContrasenaHash())) {
             throw new CredencialesInvalidasException();
+        }
+
+        if (!usuario.isActivo()) {
+            throw new UsuarioInactivoException();
         }
 
         return usuario;
