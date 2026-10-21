@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.entity;
 
+import com.example.ecommerce.domain.exception.ContrasenaActualIncorrectaException;
 import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoInvalidoException;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
@@ -145,6 +146,27 @@ public class Usuario {
 
     public void desactivar() {
         this.activo = false;
+    }
+
+    // Edita los datos personales. El correo no se cambia aquí (RN07 exige que siga siendo único).
+    public void actualizarDatos(String nombre, Telefono telefono) {
+        validarNombre(nombre);
+        validarTelefono(telefono);
+        this.nombre = nombre;
+        this.telefono = telefono;
+    }
+
+    /**
+     * Cambio directo de contraseña desde el perfil: exige conocer la contraseña actual.
+     *
+     * @param coincideConHash compara la contraseña escrita con el hash guardado.
+     */
+    public void cambiarContrasena(String contrasenaActual, String nuevoContrasenaHash,
+                                  BiPredicate<String, String> coincideConHash) {
+        if (contrasenaActual == null || !coincideConHash.test(contrasenaActual, contrasenaHash)) {
+            throw new ContrasenaActualIncorrectaException();
+        }
+        cambiarContrasena(nuevoContrasenaHash);
     }
 
     // Reemplaza la contraseña. Recibe el hash: la contraseña en texto plano nunca entra al dominio.

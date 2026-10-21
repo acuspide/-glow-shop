@@ -2,6 +2,7 @@ package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
+import com.example.ecommerce.domain.exception.ContrasenaActualIncorrectaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoInvalidoException;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
@@ -10,6 +11,7 @@ import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.exception.TelefonoInvalidoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
+import com.example.ecommerce.domain.valueobject.Telefono;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -200,6 +202,43 @@ public class UsuarioTest {
         usuario.desactivar();
 
         assertThrows(CredencialesInvalidasException.class, () -> usuario.autenticar("Otra", UsuarioTest::igual));
+    }
+
+    @Test
+    void actualizarDatosDebeCambiarNombreYTelefono() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        usuario.actualizarDatos("Ana María", new Telefono("3109876543"));
+
+        assertEquals("Ana María", usuario.getNombre());
+        assertEquals("3109876543", usuario.getTelefono().valor());
+    }
+
+    @Test
+    void actualizarDatosConNombreVacioNoDebeCambiarNada() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(ReglaDominioException.class, () -> usuario.actualizarDatos(" ", new Telefono("3109876543")));
+        assertEquals("Ana", usuario.getNombre());
+        assertEquals(DatosPrueba.TELEFONO, usuario.getTelefono());
+    }
+
+    @Test
+    void cambiarContrasenaConLaActualCorrectaDebeReemplazarElHash() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "Clave123", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        usuario.cambiarContrasena("Clave123", "NuevaClave9", UsuarioTest::igual);
+
+        assertEquals("NuevaClave9", usuario.getContrasenaHash());
+    }
+
+    @Test
+    void cambiarContrasenaConLaActualIncorrectaNoDebeCambiarla() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "Clave123", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(ContrasenaActualIncorrectaException.class,
+                () -> usuario.cambiarContrasena("Otra", "NuevaClave9", UsuarioTest::igual));
+        assertEquals("Clave123", usuario.getContrasenaHash());
     }
 
     @Test
