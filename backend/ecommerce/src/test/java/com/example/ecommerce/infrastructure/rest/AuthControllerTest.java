@@ -4,9 +4,11 @@ import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.application.SesionIniciada;
 import com.example.ecommerce.application.dto.response.LoginResponse;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
+import com.example.ecommerce.application.usecase.CerrarSesionUseCase;
 import com.example.ecommerce.application.usecase.IniciarSesionUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
+import com.example.ecommerce.domain.exception.TokenInvalidoException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
@@ -23,6 +25,9 @@ import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -36,6 +41,9 @@ class AuthControllerTest {
 
     @MockitoBean
     private IniciarSesionUseCase iniciarSesionUseCase;
+
+    @MockitoBean
+    private CerrarSesionUseCase cerrarSesionUseCase;
 
     @MockitoBean
     private UsuarioMapper mapper;
@@ -115,5 +123,35 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void logoutDebeResponder204YCerrarLaSesionDelToken() throws Exception {
+        // Act y Assert
+        mockMvc.perform(post("/api/auth/logout")
+                        .header("Authorization", "Bearer token-valido"))
+                .andExpect(status().isNoContent());
+
+        verify(cerrarSesionUseCase).ejecutar("token-valido");
+    }
+
+    @Test
+    void logoutSinTokenDebeResponder401() throws Exception {
+        // Act y Assert
+        mockMvc.perform(post("/api/auth/logout"))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(cerrarSesionUseCase);
+    }
+
+    @Test
+    void logoutConTokenInvalidoOYaCerradoDebeResponder401() throws Exception {
+        // Arrange
+        doThrow(new TokenInvalidoException()).when(cerrarSesionUseCase).ejecutar("token-cerrado");
+
+        // Act y Assert
+        mockMvc.perform(post("/api/auth/logout")
+                        .header("Authorization", "Bearer token-cerrado"))
+                .andExpect(status().isUnauthorized());
     }
 }
