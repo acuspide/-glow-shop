@@ -3,6 +3,9 @@ package com.example.ecommerce.infrastructure.rest;
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.response.CalificacionResponse;
+import com.example.ecommerce.application.dto.response.CalificacionesArticuloResponse;
+import com.example.ecommerce.application.usecase.ConsultarCalificacionesArticuloUseCase;
+import com.example.ecommerce.domain.valueobject.ResumenCalificaciones;
 import com.example.ecommerce.application.usecase.CalificarArticuloUseCase;
 import com.example.ecommerce.domain.entity.Calificacion;
 import com.example.ecommerce.domain.entity.Usuario;
@@ -19,12 +22,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,6 +43,9 @@ class CalificacionControllerTest {
 
     @MockitoBean
     private CalificarArticuloUseCase calificarArticuloUseCase;
+
+    @MockitoBean
+    private ConsultarCalificacionesArticuloUseCase consultarCalificacionesUseCase;
 
     @MockitoBean
     private TokenService tokenService;
@@ -118,5 +126,32 @@ class CalificacionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CALIFICACION_JSON))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void consultarCalificacionesEsPublicoYDevuelveElPromedio() throws Exception {
+        // Arrange
+        LocalDateTime fecha = LocalDateTime.of(2026, 10, 20, 10, 0);
+        ResumenCalificaciones resumen = new ResumenCalificaciones(10L, List.of());
+        when(consultarCalificacionesUseCase.ejecutar(10L)).thenReturn(resumen);
+        when(mapper.toResumenResponse(resumen)).thenReturn(new CalificacionesArticuloResponse(10L, 4.5, 2,
+                List.of(new CalificacionResponse("c-1", 10L, "u-1", 5, "Excelente", fecha),
+                        new CalificacionResponse("c-2", 10L, "u-2", 4, "Muy bueno", fecha))));
+
+        // Act y Assert: sin encabezado Authorization
+        mockMvc.perform(get("/api/articulos/10/calificaciones"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.promedio").value(4.5))
+                .andExpect(jsonPath("$.total").value(2))
+                .andExpect(jsonPath("$.calificaciones.length()").value(2));
+    }
+
+    @Test
+    void consultarCalificacionesDeUnArticuloQueNoExisteDebeResponder404() throws Exception {
+        when(consultarCalificacionesUseCase.ejecutar(99L))
+                .thenThrow(new com.example.ecommerce.domain.exception.ArticuloNoEncontradoException(99L));
+
+        mockMvc.perform(get("/api/articulos/99/calificaciones"))
+                .andExpect(status().isNotFound());
     }
 }

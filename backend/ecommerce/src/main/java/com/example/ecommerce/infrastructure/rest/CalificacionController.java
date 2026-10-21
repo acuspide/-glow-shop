@@ -3,12 +3,15 @@ package com.example.ecommerce.infrastructure.rest;
 import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.request.CalificarArticuloRequest;
 import com.example.ecommerce.application.dto.response.CalificacionResponse;
+import com.example.ecommerce.application.dto.response.CalificacionesArticuloResponse;
 import com.example.ecommerce.application.usecase.CalificarArticuloUseCase;
+import com.example.ecommerce.application.usecase.ConsultarCalificacionesArticuloUseCase;
 import com.example.ecommerce.domain.entity.Calificacion;
 import com.example.ecommerce.infrastructure.rest.mapper.CalificacionMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,8 +29,15 @@ import java.util.UUID;
 public class CalificacionController {
 
     private final CalificarArticuloUseCase calificarArticuloUseCase;
+    private final ConsultarCalificacionesArticuloUseCase consultarCalificacionesUseCase;
     private final TokenService tokenService;
     private final CalificacionMapper mapper;
+
+    // CU-91: público. Promedio y comentarios de un artículo, del más reciente al más antiguo.
+    @GetMapping("/articulos/{articuloId}/calificaciones")
+    public ResponseEntity<CalificacionesArticuloResponse> consultar(@PathVariable long articuloId) {
+        return ResponseEntity.ok(mapper.toResumenResponse(consultarCalificacionesUseCase.ejecutar(articuloId)));
+    }
 
     // CU-90: el cliente con sesión iniciada califica un artículo que recibió.
     @PostMapping("/articulos/{articuloId}/calificaciones")
