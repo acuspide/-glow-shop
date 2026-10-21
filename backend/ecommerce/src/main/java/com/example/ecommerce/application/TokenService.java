@@ -10,5 +10,5 @@ public interface TokenService {
     String generar(Usuario usuario);
 
     /** @throws com.example.ecommerce.domain.exception.TokenInvalidoException si es falso, alterado o expiró. */
-    long extraerUsuarioId(String token);
+    String extraerUsuarioId(String token);
 }

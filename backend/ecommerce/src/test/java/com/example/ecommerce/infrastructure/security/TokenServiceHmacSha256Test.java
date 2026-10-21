@@ -16,7 +16,7 @@ public class TokenServiceHmacSha256Test {
     private final TokenServiceHmacSha256 tokenService = new TokenServiceHmacSha256(SECRETO, 60);
 
     private Usuario administrador() {
-        return Usuario.administradorInicial(7L, "Admin", new Email("admin@glow.com"), "hash",
+        return Usuario.administradorInicial("u-7", "Admin", new Email("admin@glow.com"), "hash",
                 DatosPrueba.TELEFONO, DatosPrueba.FECHA);
     }
 
@@ -26,10 +26,10 @@ public class TokenServiceHmacSha256Test {
         String token = tokenService.generar(administrador());
 
         // Act
-        long id = tokenService.extraerUsuarioId(token);
+        String id = tokenService.extraerUsuarioId(token);
 
         // Assert
-        assertEquals(7L, id);
+        assertEquals("u-7", id);
         assertEquals(3, token.split("\\.").length);
     }
 

@@ -23,7 +23,7 @@ public class CrearAdministradorInicialUseCaseTest {
     @Test
     void debeCrearElAdministradorInicialSiNoExiste() {
         // Act
-        boolean creado = useCase.ejecutar(1L, "Admin", "admin@glow.com", "Admin12345",
+        boolean creado = useCase.ejecutar("u-1", "Admin", "admin@glow.com", "Admin12345",
                 DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Assert
@@ -35,23 +35,23 @@ public class CrearAdministradorInicialUseCaseTest {
     @Test
     void noDebeDuplicarAlAdministradorSiYaExiste() {
         // Arrange
-        useCase.ejecutar(1L, "Admin", "admin@glow.com", "Admin12345",
+        useCase.ejecutar("u-1", "Admin", "admin@glow.com", "Admin12345",
                 DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Act
-        boolean creadoOtraVez = useCase.ejecutar(2L, "Admin", "admin@glow.com", "Admin12345",
+        boolean creadoOtraVez = useCase.ejecutar("u-2", "Admin", "admin@glow.com", "Admin12345",
                 DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Assert
         assertFalse(creadoOtraVez);
-        assertTrue(repository.obtenerPorId(2L).isEmpty());
+        assertTrue(repository.obtenerPorId("u-2").isEmpty());
     }
 
     @Test
     void noDebeCrearElAdministradorConUnaContrasenaDebilYNoDebeGuardarNada() {
         // Act y Assert (doble verificación: la excepción y el estado intacto)
         assertThrows(ContrasenaDebilException.class, () ->
-                useCase.ejecutar(1L, "Admin", "admin@glow.com", "admin",
+                useCase.ejecutar("u-1", "Admin", "admin@glow.com", "admin",
                         DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR));
         assertFalse(repository.existePorEmail(new Email("admin@glow.com")));
     }

@@ -21,7 +21,7 @@ public class AutenticarUsuarioUseCaseTest {
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
         new RegistrarClienteUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana Pérez", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+                .ejecutar("u-1", "Ana Pérez", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act
@@ -37,7 +37,7 @@ public class AutenticarUsuarioUseCaseTest {
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
         new RegistrarClienteUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+                .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
@@ -65,7 +65,7 @@ public class AutenticarUsuarioUseCaseTest {
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
         Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+                .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         usuario.desactivar();
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 

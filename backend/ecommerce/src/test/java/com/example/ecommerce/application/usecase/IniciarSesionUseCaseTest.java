@@ -25,13 +25,13 @@ public class IniciarSesionUseCaseTest {
     void debeEntregarUnTokenQueIdentificaAlUsuarioAutenticado() {
         // Arrange
         new RegistrarClienteUseCase(repository, passwordHasher)
-                .ejecutar(5L, "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+                .ejecutar("u-5", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Act
         SesionIniciada sesion = useCase.ejecutar("ana@correo.com", "Clave123");
 
         // Assert
-        assertEquals(5L, tokenService.extraerUsuarioId(sesion.token()));
+        assertEquals("u-5", tokenService.extraerUsuarioId(sesion.token()));
         assertEquals("ana@correo.com", sesion.usuario().getEmail().getValor());
     }
 
@@ -39,7 +39,7 @@ public class IniciarSesionUseCaseTest {
     void noDebeEntregarTokenConCredencialesIncorrectas() {
         // Arrange
         new RegistrarClienteUseCase(repository, passwordHasher)
-                .ejecutar(5L, "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+                .ejecutar("u-5", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Act y Assert
         assertThrows(CredencialesInvalidasException.class, () ->

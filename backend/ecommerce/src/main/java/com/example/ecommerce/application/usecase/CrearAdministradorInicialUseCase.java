@@ -27,7 +27,7 @@ public class CrearAdministradorInicialUseCase {
     }
 
     /** @return true si lo creó; false si ya existía un usuario con ese correo. */
-    public boolean ejecutar(long id, String nombre, String email, String contrasenaPlano,
+    public boolean ejecutar(String id, String nombre, String email, String contrasenaPlano,
                             String telefono, LocalDate fechaNacimiento) {
         Email correo = new Email(email);
         if (repository.existePorEmail(correo)) {

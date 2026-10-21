@@ -52,12 +52,12 @@ class AuthControllerTest {
 
         // Arrange
         Usuario usuarioSimulado = Usuario.registrarCliente(
-                1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+                "u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
         when(iniciarSesionUseCase.ejecutar(anyString(), anyString()))
                 .thenReturn(new SesionIniciada("token.de.prueba", usuarioSimulado));
         when(mapper.toLoginResponse(any()))
                 .thenReturn(new LoginResponse("token.de.prueba", "Bearer",
-                        new UsuarioResponse(1L, "Ana", "ana@correo.com", "3001234567",
+                        new UsuarioResponse("u-1", "Ana", "ana@correo.com", "3001234567",
                                 LocalDate.of(2000, 1, 1), RolUsuario.CLIENTE, true)));
 
         // Act y Assert

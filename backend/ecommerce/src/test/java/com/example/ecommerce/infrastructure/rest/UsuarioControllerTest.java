@@ -8,7 +8,6 @@ import com.example.ecommerce.domain.exception.ContrasenaDebilException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
-import com.example.ecommerce.infrastructure.persistence.SecuenciaIdUsuario;
 import com.example.ecommerce.infrastructure.rest.mapper.UsuarioMapper;
 
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -41,8 +40,6 @@ class UsuarioControllerTest {
     @MockitoBean
     private UsuarioMapper mapper;
 
-    @MockitoBean
-    private SecuenciaIdUsuario secuenciaId;
 
     @Test
     void deberiaRegistrarUsuarioYNoExponerLaContrasena() throws Exception {
@@ -59,11 +56,11 @@ class UsuarioControllerTest {
             """;
 
         Usuario usuarioSimulado = Usuario.registrarCliente(
-                1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
-        when(registrarClienteUseCase.ejecutar(anyLong(), any(), any(), any(), any(), any()))
+                "u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        when(registrarClienteUseCase.ejecutar(anyString(), any(), any(), any(), any(), any()))
                 .thenReturn(usuarioSimulado);
         when(mapper.toResponse(any()))
-                .thenReturn(new UsuarioResponse(1L, "Ana", "ana@correo.com", "3001234567", LocalDate.of(2000, 1, 1), RolUsuario.CLIENTE, true));
+                .thenReturn(new UsuarioResponse("u-1", "Ana", "ana@correo.com", "3001234567", LocalDate.of(2000, 1, 1), RolUsuario.CLIENTE, true));
 
         // Act y Assert
         mockMvc.perform(post("/api/usuarios")
@@ -133,7 +130,7 @@ class UsuarioControllerTest {
             }
             """;
 
-        when(registrarClienteUseCase.ejecutar(anyLong(), any(), any(), any(), any(), any()))
+        when(registrarClienteUseCase.ejecutar(anyString(), any(), any(), any(), any(), any()))
                 .thenThrow(new CorreoElectronicoDuplicadoException());
 
         // Act y Assert
@@ -157,7 +154,7 @@ class UsuarioControllerTest {
             }
             """;
 
-        when(registrarClienteUseCase.ejecutar(anyLong(), any(), any(), any(), any(), any()))
+        when(registrarClienteUseCase.ejecutar(anyString(), any(), any(), any(), any(), any()))
                 .thenThrow(new ContrasenaDebilException());
 
         // Act y Assert

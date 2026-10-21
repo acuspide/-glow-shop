@@ -30,8 +30,8 @@ public class CrearUsuarioPorAdministradorUseCase {
     }
 
     public Usuario ejecutar(
-            long administradorId,
-            long id,
+            String administradorId,
+            String id,
             String nombre,
             String email,
             String contrasenaPlano,

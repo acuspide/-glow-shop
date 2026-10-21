@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class Usuario {
 
-    private final long id;
+    private final String id;
     private String nombre;
     private Email email;
     private String contrasenaHash;
@@ -26,7 +26,7 @@ public class Usuario {
     private boolean activo;
 
     // Constructor privado: nadie crea un Usuario sin pasar por un método de fábrica.
-    private Usuario(long id, String nombre, Email email, String contrasenaHash,
+    private Usuario(String id, String nombre, Email email, String contrasenaHash,
                     Telefono telefono, FechaNacimiento fechaNacimiento, RolUsuario rol, boolean activo) {
         this.id = id;
         this.nombre = nombre;
@@ -40,7 +40,7 @@ public class Usuario {
 
     // Constructor de un usuario NUEVO: siempre nace activo y, si un dato rompe una regla,
     // lanza la excepción y el objeto nunca llega a usarse.
-    private Usuario(long id, String nombre, Email email, String contrasenaHash,
+    private Usuario(String id, String nombre, Email email, String contrasenaHash,
                     Telefono telefono, FechaNacimiento fechaNacimiento, RolUsuario rol) {
         this(id, nombre, email, contrasenaHash, telefono, fechaNacimiento, rol, true);
         validarNombre(nombre);
@@ -55,26 +55,26 @@ public class Usuario {
      * Solo para el adaptador de persistencia: "revive" un usuario que YA existía.
      * NO valida: esos datos ya pasaron por las reglas cuando el usuario nació.
      */
-    public static Usuario reconstruir(long id, String nombre, Email email, String contrasenaHash,
+    public static Usuario reconstruir(String id, String nombre, Email email, String contrasenaHash,
                                       Telefono telefono, FechaNacimiento fechaNacimiento,
                                       RolUsuario rol, boolean activo) {
         return new Usuario(id, nombre, email, contrasenaHash, telefono, fechaNacimiento, rol, activo);
     }
 
     // Autorregistro: los clientes se crean solos (RN03).
-    public static Usuario registrarCliente(long id, String nombre, Email email, String contrasenaHash,
+    public static Usuario registrarCliente(String id, String nombre, Email email, String contrasenaHash,
                                            Telefono telefono, FechaNacimiento fechaNacimiento) {
         return new Usuario(id, nombre, email, contrasenaHash, telefono, fechaNacimiento, RolUsuario.CLIENTE);
     }
 
     // Primer administrador del sistema: nadie lo puede crear, así que nace "sembrado" al arrancar.
-    public static Usuario administradorInicial(long id, String nombre, Email email, String contrasenaHash,
+    public static Usuario administradorInicial(String id, String nombre, Email email, String contrasenaHash,
                                                Telefono telefono, FechaNacimiento fechaNacimiento) {
         return new Usuario(id, nombre, email, contrasenaHash, telefono, fechaNacimiento, RolUsuario.ADMINISTRADOR);
     }
 
     // Solo un administrador activo puede crear vendedores u otros administradores (RN03).
-    public Usuario crearUsuarioConRol(long id, String nombre, Email email, String contrasenaHash,
+    public Usuario crearUsuarioConRol(String id, String nombre, Email email, String contrasenaHash,
                                       Telefono telefono, FechaNacimiento fechaNacimiento, RolUsuario rol) {
         if (this.rol != RolUsuario.ADMINISTRADOR || !this.activo) {
             throw new CreacionUsuarioNoPermitidaException();
@@ -122,7 +122,7 @@ public class Usuario {
         this.activo = false;
     }
 
-    public long getId() { return id; }
+    public String getId() { return id; }
     public String getNombre() { return nombre; }
     public Email getEmail() { return email; }
     public String getContrasenaHash() { return contrasenaHash; }
@@ -135,7 +135,7 @@ public class Usuario {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Usuario otro)) return false;
-        return id == otro.id;
+        return id.equals(otro.id);
     }
 
     @Override

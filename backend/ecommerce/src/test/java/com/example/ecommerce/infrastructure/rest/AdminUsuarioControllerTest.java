@@ -9,7 +9,6 @@ import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaExceptio
 import com.example.ecommerce.domain.exception.TokenInvalidoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
-import com.example.ecommerce.infrastructure.persistence.SecuenciaIdUsuario;
 import com.example.ecommerce.infrastructure.rest.mapper.UsuarioMapper;
 
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -45,8 +44,6 @@ class AdminUsuarioControllerTest {
     @MockitoBean
     private UsuarioMapper mapper;
 
-    @MockitoBean
-    private SecuenciaIdUsuario secuenciaId;
 
     private static final String VENDEDOR_JSON = """
         {
@@ -63,13 +60,13 @@ class AdminUsuarioControllerTest {
     void deberiaCrearUnVendedorCuandoQuienPideEsAdministrador() throws Exception {
 
         // Arrange
-        Usuario vendedor = Usuario.reconstruir(2L, "Vera", new Email("vera@tienda.com"), "hash",
+        Usuario vendedor = Usuario.reconstruir("u-2", "Vera", new Email("vera@tienda.com"), "hash",
                 DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR, true);
-        when(tokenService.extraerUsuarioId("token-valido")).thenReturn(1L);
-        when(crearUsuarioUseCase.ejecutar(eq(1L), anyLong(), any(), any(), any(), any(), any(), any()))
+        when(tokenService.extraerUsuarioId("token-valido")).thenReturn("u-1");
+        when(crearUsuarioUseCase.ejecutar(eq("u-1"), anyString(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(vendedor);
         when(mapper.toResponse(any()))
-                .thenReturn(new UsuarioResponse(2L, "Vera", "vera@tienda.com", "3001234567",
+                .thenReturn(new UsuarioResponse("u-2", "Vera", "vera@tienda.com", "3001234567",
                         LocalDate.of(1995, 3, 10), RolUsuario.VENDEDOR, true));
 
         // Act y Assert
@@ -111,8 +108,8 @@ class AdminUsuarioControllerTest {
     void deberiaRetornar403CuandoQuienPideNoEsAdministrador() throws Exception {
 
         // Arrange
-        when(tokenService.extraerUsuarioId("token-cliente")).thenReturn(9L);
-        when(crearUsuarioUseCase.ejecutar(eq(9L), anyLong(), any(), any(), any(), any(), any(), any()))
+        when(tokenService.extraerUsuarioId("token-cliente")).thenReturn("u-9");
+        when(crearUsuarioUseCase.ejecutar(eq("u-9"), anyString(), any(), any(), any(), any(), any(), any()))
                 .thenThrow(new CreacionUsuarioNoPermitidaException());
 
         // Act y Assert
@@ -136,7 +133,7 @@ class AdminUsuarioControllerTest {
                 "fechaNacimiento": "1995-03-10"
             }
             """;
-        when(tokenService.extraerUsuarioId("token-valido")).thenReturn(1L);
+        when(tokenService.extraerUsuarioId("token-valido")).thenReturn("u-1");
 
         // Act y Assert
         mockMvc.perform(post("/api/admin/usuarios")

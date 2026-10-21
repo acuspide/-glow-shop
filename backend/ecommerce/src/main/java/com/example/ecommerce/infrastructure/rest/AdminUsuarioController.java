@@ -6,7 +6,6 @@ import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.CrearUsuarioPorAdministradorUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.TokenInvalidoException;
-import com.example.ecommerce.infrastructure.persistence.SecuenciaIdUsuario;
 import com.example.ecommerce.infrastructure.rest.mapper.UsuarioMapper;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/admin/usuarios")
@@ -28,16 +28,13 @@ public class AdminUsuarioController {
     private final CrearUsuarioPorAdministradorUseCase crearUsuarioUseCase;
     private final TokenService tokenService;
     private final UsuarioMapper mapper;
-    private final SecuenciaIdUsuario secuenciaId;
 
     public AdminUsuarioController(CrearUsuarioPorAdministradorUseCase crearUsuarioUseCase,
                                   TokenService tokenService,
-                                  UsuarioMapper mapper,
-                                  SecuenciaIdUsuario secuenciaId) {
+                                  UsuarioMapper mapper) {
         this.crearUsuarioUseCase = crearUsuarioUseCase;
         this.tokenService = tokenService;
         this.mapper = mapper;
-        this.secuenciaId = secuenciaId;
     }
 
     // Un administrador crea vendedores u otros administradores. Requiere "Authorization: Bearer <token>".
@@ -46,11 +43,11 @@ public class AdminUsuarioController {
             @RequestHeader(value = "Authorization", required = false) String autorizacion,
             @Valid @RequestBody CrearUsuarioConRolRequest request) {
 
-        long administradorId = tokenService.extraerUsuarioId(extraerToken(autorizacion));
+        String administradorId = tokenService.extraerUsuarioId(extraerToken(autorizacion));
 
         Usuario nuevo = crearUsuarioUseCase.ejecutar(
                 administradorId,
-                secuenciaId.siguiente(),
+                UUID.randomUUID().toString(),
                 request.nombre(),
                 request.email(),
                 request.contrasena(),

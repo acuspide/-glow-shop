@@ -12,10 +12,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UsuarioRepositoryEnMemoria implements UsuarioRepository {
 
-    private final Map<Long, Usuario> usuarios = new HashMap<>();
+    private final Map<String, Usuario> usuarios = new HashMap<>();
 
     @Override
-    public Optional<Usuario> obtenerPorId(long id) {
+    public Optional<Usuario> obtenerPorId(String id) {
         return Optional.ofNullable(usuarios.get(id));
     }
 

@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 public class TokenServiceHmacSha256 implements TokenService {
 
     private static final String HEADER_JSON = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
-    private static final Pattern SUB = Pattern.compile("\"sub\":\"(\\d+)\"");
+    private static final Pattern SUB = Pattern.compile("\"sub\":\"([^\"]+)\"");
     private static final Pattern EXP = Pattern.compile("\"exp\":(\\d+)");
     private static final Base64.Encoder CODIFICADOR = Base64.getUrlEncoder().withoutPadding();
     private static final Base64.Decoder DECODIFICADOR = Base64.getUrlDecoder();
@@ -55,7 +55,7 @@ public class TokenServiceHmacSha256 implements TokenService {
     }
 
     @Override
-    public long extraerUsuarioId(String token) {
+    public String extraerUsuarioId(String token) {
         if (token == null) {
             throw new TokenInvalidoException();
         }
@@ -87,7 +87,7 @@ public class TokenServiceHmacSha256 implements TokenService {
             if (Instant.now().getEpochSecond() >= Long.parseLong(exp.group(1))) {
                 throw new TokenInvalidoException();
             }
-            return Long.parseLong(sub.group(1));
+            return sub.group(1);
         } catch (IllegalArgumentException e) { // base64 o número mal formado
             throw new TokenInvalidoException();
         }

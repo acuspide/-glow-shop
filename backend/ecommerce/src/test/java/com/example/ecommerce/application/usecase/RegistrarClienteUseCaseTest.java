@@ -25,7 +25,7 @@ public class RegistrarClienteUseCaseTest {
         RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
 
         // Act
-        Usuario usuario = useCase.ejecutar(1L, "Ana Pérez", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+        Usuario usuario = useCase.ejecutar("u-1", "Ana Pérez", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Assert
         assertEquals(RolUsuario.CLIENTE, usuario.getRol());
@@ -38,11 +38,11 @@ public class RegistrarClienteUseCaseTest {
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
         RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
-        useCase.ejecutar(1L, "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+        useCase.ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Act y Assert
         assertThrows(CorreoElectronicoDuplicadoException.class, () -> {
-            useCase.ejecutar(2L, "Otra Ana", "ana@correo.com", "OtraClave1", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+            useCase.ejecutar("u-2", "Otra Ana", "ana@correo.com", "OtraClave1", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         });
     }
 
@@ -54,7 +54,7 @@ public class RegistrarClienteUseCaseTest {
         RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
 
         // Act
-        Usuario usuario = useCase.ejecutar(1L, "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+        Usuario usuario = useCase.ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Assert
         assertNotEquals("Clave123", usuario.getContrasenaHash());
@@ -69,7 +69,7 @@ public class RegistrarClienteUseCaseTest {
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)
         assertThrows(ContrasenaRequeridaException.class, () ->
-                useCase.ejecutar(1L, "Ana", "ana@correo.com", "   ", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR));
+                useCase.ejecutar("u-1", "Ana", "ana@correo.com", "   ", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR));
         assertFalse(repository.existePorEmail(new Email("ana@correo.com")));
     }
 
@@ -82,7 +82,7 @@ public class RegistrarClienteUseCaseTest {
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)
         assertThrows(ContrasenaDebilException.class, () ->
-                useCase.ejecutar(1L, "Ana", "ana@correo.com", "clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR));
+                useCase.ejecutar("u-1", "Ana", "ana@correo.com", "clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR));
         assertFalse(repository.existePorEmail(new Email("ana@correo.com")));
     }
 }

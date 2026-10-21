@@ -26,7 +26,7 @@ public class RegistrarClienteUseCase {
         this.passwordHasher = passwordHasher;
     }
 
-    public Usuario ejecutar(long id, String nombre, String email, String contrasenaPlano,
+    public Usuario ejecutar(String id, String nombre, String email, String contrasenaPlano,
                             String telefono, LocalDate fechaNacimiento) {
         ContrasenaPlana contrasena = new ContrasenaPlana(contrasenaPlano); // el dominio valida
         Email correo = new Email(email);                                   // el dominio valida
