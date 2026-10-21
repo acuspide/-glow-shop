@@ -24,7 +24,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.example.ecommerce.application.usecase.VerCarritoUseCase;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 @WebMvcTest(CarritoController.class)
 class CarritoControllerTest {
 
@@ -33,6 +34,8 @@ class CarritoControllerTest {
 
     @MockitoBean
     private AgregarAlCarritoUseCase agregarAlCarritoUseCase;
+    @MockitoBean
+    private VerCarritoUseCase verCarritoUseCase;
 
     @MockitoBean
     private CarritoMapper mapper;
@@ -120,6 +123,33 @@ class CarritoControllerTest {
         mockMvc.perform(post("/api/carritos/100/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    void deberiaMostrarElCarritoDelCliente() throws Exception {
+
+        // Arrange
+        when(verCarritoUseCase.ejecutar(anyLong()))
+                .thenReturn(Carrito.crear(1L, 100L));
+        when(mapper.toResponse(any()))
+                .thenReturn(new CarritoResponse(1L, 100L, List.of(), new BigDecimal("90000")));
+
+        // Act y Assert
+        mockMvc.perform(get("/api/carritos/100"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.clienteId").value(100))
+                .andExpect(jsonPath("$.total").value(90000));
+    }
+
+    @Test
+    void deberiaRetornar404CuandoElClienteNoTieneCarrito() throws Exception {
+
+        // Arrange
+        when(verCarritoUseCase.ejecutar(anyLong()))
+                .thenThrow(new NoSuchElementException());
+
+        // Act y Assert
+        mockMvc.perform(get("/api/carritos/100"))
                 .andExpect(status().isNotFound());
     }
 }

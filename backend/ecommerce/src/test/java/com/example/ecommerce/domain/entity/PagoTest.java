@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class PagoTest {
 
     private Pago crearPago() {
-        return new Pago(1L, 10L, new Precio(new BigDecimal("50000")));
+        return Pago.crear(1L, 10L, new Precio(new BigDecimal("50000")));
     }
 
     @Test
@@ -34,7 +34,7 @@ public class PagoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> {
-            new Pago(1L, 10L, null);
+            Pago.crear(1L, 10L, null);
         });
     }
 

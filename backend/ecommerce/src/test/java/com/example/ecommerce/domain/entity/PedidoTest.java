@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.entity;
 
+import com.example.ecommerce.domain.exception.PedidoSinDetallesException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.valueobject.DetallePedido;
 import com.example.ecommerce.domain.valueobject.EstadoPedido;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -19,15 +21,15 @@ public class PedidoTest {
     }
 
     private Pedido crearPedido() {
-        return new Pedido(1L, 100L, detalle(1L, 2, "10000"));
+        return Pedido.crear(1L, 100L, List.of(detalle(1L, 2, "10000")));
     }
 
     private Cupon cuponVigente(long id, int porcentaje) {
-        return new Cupon(id, "CUPON" + id, porcentaje, LocalDate.now().plusDays(5));
+        return Cupon.crear(id, "CUPON" + id, porcentaje, LocalDate.now().plusDays(5));
     }
 
     private Pago pagoAprobado(long pagoId, long pedidoId, String monto) {
-        Pago pago = new Pago(pagoId, pedidoId, new Precio(new BigDecimal(monto)));
+        Pago pago = Pago.crear(pagoId, pedidoId, new Precio(new BigDecimal(monto)));
         pago.aprobar();
         return pago;
     }
@@ -37,7 +39,28 @@ public class PedidoTest {
     void unPedidoNoDebePoderCrearseSinDetalles() {
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> new Pedido(1L, 100L, null));
+        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear(1L, 100L, List.of()));
+    }
+
+    @Test
+    void unPedidoNoDebePoderCrearseConListaDeDetallesNula() {
+
+        // Act y Assert
+        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear(1L, 100L, null));
+    }
+
+    @Test
+    void unPedidoDebeCrearseConTodosSusDetalles() {
+
+        // Arrange
+        List<DetallePedido> detalles = List.of(detalle(1L, 2, "10000"), detalle(2L, 1, "5000"));
+
+        // Act
+        Pedido pedido = Pedido.crear(1L, 100L, detalles);
+
+        // Assert
+        assertEquals(2, pedido.getDetalles().size());
+        assertEquals(new BigDecimal("25000"), pedido.calcularTotal());
     }
 
     @Test
@@ -69,7 +92,7 @@ public class PedidoTest {
     void elPrecioDeUnDetalleYaAgregadoNoCambiaSiCambiaElPrecioDelArticulo() {
 
         // Arrange
-        Pedido pedido = new Pedido(1L, 100L, detalle(1L, 1, "10000"));
+        Pedido pedido = Pedido.crear(1L, 100L, List.of(detalle(1L, 1, "10000")));
 
         // Act
         // Simulamos que el precio del artículo cambia después de la compra
@@ -207,7 +230,7 @@ public class PedidoTest {
 
         // Arrange
         Pedido pedido = crearPedido();
-        Cupon vencido = new Cupon(1L, "VENCIDO", 10, LocalDate.now().minusDays(1));
+        Cupon vencido = Cupon.crear(1L, "VENCIDO", 10, LocalDate.now().minusDays(1));
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> pedido.aplicarCupon(vencido));
@@ -236,6 +259,7 @@ public class PedidoTest {
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> pedido.asignarImpuestos(null));
     }
+
     @Test
     void unPedidoConfirmadoSinPagoNoDebePoderPrepararse() {
 
@@ -269,7 +293,7 @@ public class PedidoTest {
         // Arrange
         Pedido pedido = crearPedido();
         pedido.confirmar();
-        Pago pagoPendiente = new Pago(50L, 1L, new Precio(new BigDecimal("20000")));
+        Pago pagoPendiente =Pago.crear(50L, 1L, new Precio(new BigDecimal("20000")));
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> pedido.registrarPago(pagoPendiente));
@@ -298,6 +322,7 @@ public class PedidoTest {
         assertThrows(ReglaDominioException.class,
                 () -> pedido.registrarPago(pagoAprobado(50L, 1L, "19999")));
     }
+
     @Test
     void noDebePermitirRegistrarUnPagoMayorAlTotal() {
 
