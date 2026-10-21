@@ -22,17 +22,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AgregarAlCarritoUseCaseTest {
 
     private Articulo guardarArticulo(ArticuloRepository articuloRepository, long id, boolean publicado) {
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                new Categoria(1L, "Labios"),
-                new Marca(1L, "Bloom"),
+                Categoria.crear(1L, "Labios"),
+                Marca.crear(1L, "Bloom"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
-                new Inventario(10),
+                Inventario.crear(10),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                new Tienda(1L, "Tienda Beauty")
+                Tienda.crear(1L, "Tienda Beauty")
         );
         if (publicado) {
             articulo.publicar();
