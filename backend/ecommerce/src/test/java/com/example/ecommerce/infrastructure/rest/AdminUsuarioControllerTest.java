@@ -63,8 +63,8 @@ class AdminUsuarioControllerTest {
     void deberiaCrearUnVendedorCuandoQuienPideEsAdministrador() throws Exception {
 
         // Arrange
-        Usuario vendedor = new Usuario(2L, "Vera", new Email("vera@tienda.com"), "hash",
-                DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR);
+        Usuario vendedor = Usuario.reconstruir(2L, "Vera", new Email("vera@tienda.com"), "hash",
+                DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR, true);
         when(tokenService.extraerUsuarioId("token-valido")).thenReturn(1L);
         when(crearUsuarioUseCase.ejecutar(eq(1L), anyLong(), any(), any(), any(), any(), any(), any()))
                 .thenReturn(vendedor);

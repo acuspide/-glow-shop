@@ -25,15 +25,9 @@ public class Usuario {
     private RolUsuario rol;
     private boolean activo;
 
-    public Usuario(long id, String nombre, Email email, String contrasenaHash,
-                   Telefono telefono, FechaNacimiento fechaNacimiento, RolUsuario rol) {
-        validarNombre(nombre);
-        validarEmail(email);
-        validarContrasenaHash(contrasenaHash);
-        validarTelefono(telefono);
-        validarFechaNacimiento(fechaNacimiento);
-        validarRol(rol);
-
+    // Constructor privado: nadie crea un Usuario sin pasar por un método de fábrica.
+    private Usuario(long id, String nombre, Email email, String contrasenaHash,
+                    Telefono telefono, FechaNacimiento fechaNacimiento, RolUsuario rol, boolean activo) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
@@ -41,7 +35,30 @@ public class Usuario {
         this.telefono = telefono;
         this.fechaNacimiento = fechaNacimiento;
         this.rol = rol;
-        this.activo = true;
+        this.activo = activo;
+    }
+
+    // Constructor de un usuario NUEVO: siempre nace activo y, si un dato rompe una regla,
+    // lanza la excepción y el objeto nunca llega a usarse.
+    private Usuario(long id, String nombre, Email email, String contrasenaHash,
+                    Telefono telefono, FechaNacimiento fechaNacimiento, RolUsuario rol) {
+        this(id, nombre, email, contrasenaHash, telefono, fechaNacimiento, rol, true);
+        validarNombre(nombre);
+        validarEmail(email);
+        validarContrasenaHash(contrasenaHash);
+        validarTelefono(telefono);
+        validarFechaNacimiento(fechaNacimiento);
+        validarRol(rol);
+    }
+
+    /**
+     * Solo para el adaptador de persistencia: "revive" un usuario que YA existía.
+     * NO valida: esos datos ya pasaron por las reglas cuando el usuario nació.
+     */
+    public static Usuario reconstruir(long id, String nombre, Email email, String contrasenaHash,
+                                      Telefono telefono, FechaNacimiento fechaNacimiento,
+                                      RolUsuario rol, boolean activo) {
+        return new Usuario(id, nombre, email, contrasenaHash, telefono, fechaNacimiento, rol, activo);
     }
 
     // Autorregistro: los clientes se crean solos (RN03).

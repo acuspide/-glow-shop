@@ -24,7 +24,7 @@ public class CrearUsuarioPorAdministradorUseCaseTest {
             new CrearUsuarioPorAdministradorUseCase(repository, passwordHasher);
 
     private Usuario guardarAdministrador() {
-        Usuario admin = new Usuario(ADMIN_ID, "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.ADMINISTRADOR);
+        Usuario admin = Usuario.administradorInicial(ADMIN_ID, "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
         repository.guardar(admin);
         return admin;
     }
@@ -57,7 +57,7 @@ public class CrearUsuarioPorAdministradorUseCaseTest {
     @Test
     void unClienteNoDebePoderCrearVendedoresYNoDebeGuardarNada() {
         // Arrange
-        repository.guardar(new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE));
+        repository.guardar(Usuario.registrarCliente(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)
         assertThrows(CreacionUsuarioNoPermitidaException.class, () ->

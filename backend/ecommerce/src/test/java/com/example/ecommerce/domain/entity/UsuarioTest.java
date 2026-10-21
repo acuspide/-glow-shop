@@ -17,8 +17,8 @@ public class UsuarioTest {
     @Test
     void dosUsuariosConElMismoIdDebenSerIguales() {
         // Arrange
-        Usuario usuario1 = new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash1", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE);
-        Usuario usuario2 = new Usuario(1L, "Otro nombre", new Email("otro@correo.com"), "hash2", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR);
+        Usuario usuario1 = Usuario.reconstruir(1L, "Ana", new Email("ana@correo.com"), "hash1", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE, true);
+        Usuario usuario2 = Usuario.reconstruir(1L, "Otro nombre", new Email("otro@correo.com"), "hash2", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR, true);
 
         // Act y Assert
         assertEquals(usuario1, usuario2);
@@ -27,7 +27,7 @@ public class UsuarioTest {
     @Test
     void unUsuarioNuevoDebeQuedarActivo() {
         // Arrange y Act
-        Usuario usuario = new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE);
+        Usuario usuario = Usuario.registrarCliente(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
 
         // Assert
         assertTrue(usuario.isActivo());
@@ -36,7 +36,7 @@ public class UsuarioTest {
     @Test
     void desactivarCambiaElEstadoDelUsuario() {
         // Arrange
-        Usuario usuario = new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE);
+        Usuario usuario = Usuario.registrarCliente(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
 
         // Act
         usuario.desactivar();
@@ -49,15 +49,18 @@ public class UsuarioTest {
     void noDebeCrearUsuarioSinNombre() {
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> {
-            new Usuario(1L, " ", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE);
+            Usuario.registrarCliente(1L, " ", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
         });
     }
 
     @Test
     void noDebeCrearUsuarioSinRol() {
+        // Arrange
+        Usuario admin = Usuario.administradorInicial(1L, "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> {
-            new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, null);
+            admin.crearUsuarioConRol(2L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, null);
         });
     }
 
@@ -73,7 +76,7 @@ public class UsuarioTest {
     @Test
     void unAdministradorActivoDebePoderCrearUnVendedor() {
         // Arrange
-        Usuario admin = new Usuario(1L, "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.ADMINISTRADOR);
+        Usuario admin = Usuario.administradorInicial(1L, "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
 
         // Act
         Usuario vendedor = admin.crearUsuarioConRol(2L, "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR);
@@ -85,7 +88,7 @@ public class UsuarioTest {
     @Test
     void unClienteNoDebePoderCrearUsuariosConRol() {
         // Arrange
-        Usuario cliente = new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE);
+        Usuario cliente = Usuario.registrarCliente(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
 
         // Act y Assert
         assertThrows(CreacionUsuarioNoPermitidaException.class, () ->
@@ -95,7 +98,7 @@ public class UsuarioTest {
     @Test
     void unVendedorNoDebePoderCrearUsuariosConRol() {
         // Arrange
-        Usuario vendedor = new Usuario(1L, "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR);
+        Usuario vendedor = Usuario.reconstruir(1L, "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR, true);
 
         // Act y Assert
         assertThrows(CreacionUsuarioNoPermitidaException.class, () ->
@@ -105,7 +108,7 @@ public class UsuarioTest {
     @Test
     void unAdministradorInactivoNoDebePoderCrearUsuariosConRol() {
         // Arrange
-        Usuario admin = new Usuario(1L, "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.ADMINISTRADOR);
+        Usuario admin = Usuario.administradorInicial(1L, "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
         admin.desactivar();
 
         // Act y Assert
@@ -128,21 +131,32 @@ public class UsuarioTest {
     void noDebeCrearUsuarioSinTelefono() {
         // Act y Assert
         assertThrows(TelefonoInvalidoException.class, () ->
-                new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", null, DatosPrueba.FECHA, RolUsuario.CLIENTE));
+                Usuario.registrarCliente(1L, "Ana", new Email("ana@correo.com"), "hash", null, DatosPrueba.FECHA));
     }
 
     @Test
     void noDebeCrearUsuarioSinFechaDeNacimiento() {
         // Act y Assert
         assertThrows(FechaNacimientoInvalidaException.class, () ->
-                new Usuario(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, null, RolUsuario.CLIENTE));
+                Usuario.registrarCliente(1L, "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, null));
     }
 
     @Test
     void noDebeCrearUsuarioSinCorreo() {
         // Act y Assert
         assertThrows(CorreoElectronicoInvalidoException.class, () ->
-                new Usuario(1L, "Ana", null, "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE));
+                Usuario.registrarCliente(1L, "Ana", null, "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
+    }
+
+    @Test
+    void reconstruirDebeConservarElEstadoInactivo() {
+        // Arrange y Act
+        Usuario usuario = Usuario.reconstruir(1L, "Ana", new Email("ana@correo.com"), "hash",
+                DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.CLIENTE, false);
+
+        // Assert
+        assertFalse(usuario.isActivo());
+        assertEquals(RolUsuario.CLIENTE, usuario.getRol());
     }
 
     @Test
