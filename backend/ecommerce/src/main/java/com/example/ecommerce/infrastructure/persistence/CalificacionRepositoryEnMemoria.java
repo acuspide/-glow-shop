@@ -27,6 +27,7 @@ public class CalificacionRepositoryEnMemoria implements CalificacionRepository {
     @Override
     public boolean existePorClienteYArticulo(String clienteId, long articuloId) {
         return calificaciones.values().stream()
+                .filter(c -> !c.isEliminada()) // si la eliminó, puede volver a calificar
                 .anyMatch(c -> c.getClienteId().equals(clienteId) && c.getArticuloId() == articuloId);
     }
 

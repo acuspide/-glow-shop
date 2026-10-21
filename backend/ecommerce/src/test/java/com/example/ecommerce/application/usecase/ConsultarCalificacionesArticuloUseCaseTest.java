@@ -29,9 +29,9 @@ public class ConsultarCalificacionesArticuloUseCaseTest {
         Articulo articulo = mock(Articulo.class);
         when(articulos.obtenerPorId(10L)).thenReturn(Optional.of(articulo));
         LocalDateTime ahora = LocalDateTime.now();
-        calificaciones.guardar(Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(5), "Excelente", ahora));
-        calificaciones.guardar(Calificacion.reconstruir("c-2", 10L, "u-2", new Puntuacion(2), "Regular", ahora));
-        calificaciones.guardar(Calificacion.reconstruir("c-3", 11L, "u-1", new Puntuacion(1), "De otro artículo", ahora));
+        calificaciones.guardar(Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(5), "Excelente", ahora, false));
+        calificaciones.guardar(Calificacion.reconstruir("c-2", 10L, "u-2", new Puntuacion(2), "Regular", ahora, false));
+        calificaciones.guardar(Calificacion.reconstruir("c-3", 11L, "u-1", new Puntuacion(1), "De otro artículo", ahora, false));
 
         ResumenCalificaciones resumen = useCase.ejecutar(10L);
 

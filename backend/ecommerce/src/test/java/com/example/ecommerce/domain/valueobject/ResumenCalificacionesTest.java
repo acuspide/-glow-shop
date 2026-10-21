@@ -13,7 +13,7 @@ public class ResumenCalificacionesTest {
     private final LocalDateTime base = LocalDateTime.of(2026, 10, 1, 10, 0);
 
     private Calificacion calificacion(String id, int estrellas, int diasDespues) {
-        return Calificacion.reconstruir(id, 10L, "u-" + id, new Puntuacion(estrellas), "Comentario", base.plusDays(diasDespues));
+        return Calificacion.reconstruir(id, 10L, "u-" + id, new Puntuacion(estrellas), "Comentario", base.plusDays(diasDespues), false);
     }
 
     @Test
@@ -23,6 +23,15 @@ public class ResumenCalificacionesTest {
 
         assertEquals(4.3, resumen.promedio());
         assertEquals(3, resumen.total());
+    }
+
+    @Test
+    void lasCalificacionesEliminadasNoSeMuestranNiCuentanEnElPromedio() {
+        Calificacion eliminada = Calificacion.reconstruir("x", 10L, "u-x", new Puntuacion(1), "Retirada", base, true);
+        ResumenCalificaciones resumen = new ResumenCalificaciones(10L, List.of(calificacion("1", 5, 0), eliminada));
+
+        assertEquals(5.0, resumen.promedio());
+        assertEquals(1, resumen.total());
     }
 
     @Test

@@ -11,6 +11,7 @@ public interface CalificacionRepository {
 
     Optional<Calificacion> obtenerPorId(String id);
 
+    /** Solo cuenta las calificaciones vigentes (no eliminadas). */
     boolean existePorClienteYArticulo(String clienteId, long articuloId);
 
     List<Calificacion> listarPorArticulo(long articuloId);

@@ -8,6 +8,7 @@ import com.example.ecommerce.application.usecase.ConsultarCalificacionesArticulo
 import com.example.ecommerce.domain.valueobject.ResumenCalificaciones;
 import com.example.ecommerce.application.usecase.ActualizarCalificacionUseCase;
 import com.example.ecommerce.application.usecase.CalificarArticuloUseCase;
+import com.example.ecommerce.application.usecase.EliminarCalificacionUseCase;
 import com.example.ecommerce.domain.exception.CalificacionAjenaException;
 import com.example.ecommerce.domain.entity.Calificacion;
 import com.example.ecommerce.domain.entity.Usuario;
@@ -31,6 +32,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -52,6 +56,9 @@ class CalificacionControllerTest {
 
     @MockitoBean
     private ActualizarCalificacionUseCase actualizarCalificacionUseCase;
+
+    @MockitoBean
+    private EliminarCalificacionUseCase eliminarCalificacionUseCase;
 
     @MockitoBean
     private TokenService tokenService;
@@ -165,7 +172,7 @@ class CalificacionControllerTest {
     void actualizarCalificacionDebeResponder200ConLosDatosNuevos() throws Exception {
         // Arrange
         LocalDateTime fecha = LocalDateTime.of(2026, 10, 20, 10, 0);
-        Calificacion calificacion = Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(3), "Regular", fecha);
+        Calificacion calificacion = Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(3), "Regular", fecha, false);
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
         when(actualizarCalificacionUseCase.ejecutar("c-1", "u-1", 3, "Regular")).thenReturn(calificacion);
         when(mapper.toResponse(calificacion)).thenReturn(new CalificacionResponse("c-1", 10L, "u-1", 3, "Regular", fecha));
@@ -203,5 +210,32 @@ class CalificacionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"puntuacion\": 3, \"comentario\": \"Regular\"}"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void eliminarCalificacionDebeResponder204() throws Exception {
+        when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
+
+        mockMvc.perform(delete("/api/calificaciones/c-1").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isNoContent());
+
+        verify(eliminarCalificacionUseCase).ejecutar("c-1", "u-1");
+    }
+
+    @Test
+    void eliminarLaCalificacionDeOtroDebeResponder403() throws Exception {
+        when(tokenService.extraerUsuarioId("token-bruno")).thenReturn("u-2");
+        doThrow(new CalificacionAjenaException()).when(eliminarCalificacionUseCase).ejecutar("c-1", "u-2");
+
+        mockMvc.perform(delete("/api/calificaciones/c-1").header("Authorization", "Bearer token-bruno"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void eliminarSinTokenDebeResponder401() throws Exception {
+        mockMvc.perform(delete("/api/calificaciones/c-1"))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(eliminarCalificacionUseCase);
     }
 }

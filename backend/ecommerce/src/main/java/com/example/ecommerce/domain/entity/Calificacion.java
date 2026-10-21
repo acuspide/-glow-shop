@@ -1,6 +1,7 @@
 package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.domain.exception.CalificacionAjenaException;
+import com.example.ecommerce.domain.exception.CalificacionEliminadaException;
 import com.example.ecommerce.domain.exception.ComentarioInvalidoException;
 import com.example.ecommerce.domain.valueobject.Puntuacion;
 
@@ -13,7 +14,8 @@ import java.util.Objects;
  * Reglas que protege:
  *  - la puntuación va de 1 a 5 (Puntuacion);
  *  - el comentario es obligatorio y tiene máximo 500 caracteres;
- *  - guarda solo los ids del artículo y del cliente: son otros agregados.
+ *  - guarda solo los ids del artículo y del cliente: son otros agregados;
+ *  - se elimina de forma lógica (no se borra) y una eliminada ya no se modifica.
  *
  * Que el cliente haya recibido el artículo y que no lo haya calificado antes
  * lo verifica el servicio de dominio VerificadorDeCalificacion (necesita mirar otros datos).
@@ -28,15 +30,17 @@ public class Calificacion {
     private Puntuacion puntuacion;
     private String comentario;
     private final LocalDateTime fecha;
+    private boolean eliminada;
 
     private Calificacion(String id, long articuloId, String clienteId, Puntuacion puntuacion,
-                         String comentario, LocalDateTime fecha) {
+                         String comentario, LocalDateTime fecha, boolean eliminada) {
         this.id = id;
         this.articuloId = articuloId;
         this.clienteId = clienteId;
         this.puntuacion = puntuacion;
         this.comentario = comentario;
         this.fecha = fecha;
+        this.eliminada = eliminada;
     }
 
     // Único punto de entrada para crear una calificación: valida ANTES de existir.
@@ -44,13 +48,13 @@ public class Calificacion {
                                          Puntuacion puntuacion, String comentario, LocalDateTime fecha) {
         cliente.verificarQueEsClienteActivo();
         validarComentario(comentario);
-        return new Calificacion(id, articuloId, cliente.getId(), puntuacion, comentario.trim(), fecha);
+        return new Calificacion(id, articuloId, cliente.getId(), puntuacion, comentario.trim(), fecha, false);
     }
 
     /** Solo para el adaptador de persistencia. */
     public static Calificacion reconstruir(String id, long articuloId, String clienteId, Puntuacion puntuacion,
-                                           String comentario, LocalDateTime fecha) {
-        return new Calificacion(id, articuloId, clienteId, puntuacion, comentario, fecha);
+                                           String comentario, LocalDateTime fecha, boolean eliminada) {
+        return new Calificacion(id, articuloId, clienteId, puntuacion, comentario, fecha, eliminada);
     }
 
     /**
@@ -64,7 +68,19 @@ public class Calificacion {
         this.comentario = nuevoComentario.trim();
     }
 
+    /**
+     * CU-93: el autor retira su calificación. Es una baja lógica: deja de mostrarse y de contar
+     * en el promedio, pero no se borra.
+     */
+    public void eliminarPor(Usuario cliente) {
+        verificarQueEsDelAutor(cliente);
+        this.eliminada = true;
+    }
+
     private void verificarQueEsDelAutor(Usuario cliente) {
+        if (eliminada) {
+            throw new CalificacionEliminadaException();
+        }
         cliente.verificarQueEsClienteActivo();
         if (!clienteId.equals(cliente.getId())) {
             throw new CalificacionAjenaException();
@@ -83,6 +99,7 @@ public class Calificacion {
     public Puntuacion getPuntuacion() { return puntuacion; }
     public String getComentario() { return comentario; }
     public LocalDateTime getFecha() { return fecha; }
+    public boolean isEliminada() { return eliminada; }
 
     @Override
     public boolean equals(Object o) {

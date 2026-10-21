@@ -7,12 +7,14 @@ import java.util.List;
 
 /**
  * Calificaciones de un artículo con su promedio visible.
- * Las calificaciones quedan ordenadas de la más reciente a la más antigua.
+ * Las calificaciones quedan ordenadas de la más reciente a la más antigua
+ * y no incluye las eliminadas (ni se muestran ni cuentan en el promedio).
  */
 public record ResumenCalificaciones(long articuloId, List<Calificacion> calificaciones) {
 
     public ResumenCalificaciones {
         calificaciones = calificaciones.stream()
+                .filter(calificacion -> !calificacion.isEliminada())
                 .sorted(Comparator.comparing(Calificacion::getFecha).reversed())
                 .toList();
     }

@@ -6,12 +6,14 @@ import com.example.ecommerce.application.dto.response.CalificacionResponse;
 import com.example.ecommerce.application.dto.response.CalificacionesArticuloResponse;
 import com.example.ecommerce.application.usecase.ActualizarCalificacionUseCase;
 import com.example.ecommerce.application.usecase.CalificarArticuloUseCase;
+import com.example.ecommerce.application.usecase.EliminarCalificacionUseCase;
 import com.example.ecommerce.application.usecase.ConsultarCalificacionesArticuloUseCase;
 import com.example.ecommerce.domain.entity.Calificacion;
 import com.example.ecommerce.infrastructure.rest.mapper.CalificacionMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +35,7 @@ public class CalificacionController {
     private final CalificarArticuloUseCase calificarArticuloUseCase;
     private final ConsultarCalificacionesArticuloUseCase consultarCalificacionesUseCase;
     private final ActualizarCalificacionUseCase actualizarCalificacionUseCase;
+    private final EliminarCalificacionUseCase eliminarCalificacionUseCase;
     private final TokenService tokenService;
     private final CalificacionMapper mapper;
 
@@ -74,5 +77,17 @@ public class CalificacionController {
                 id, clienteId, request.puntuacion(), request.comentario());
 
         return ResponseEntity.ok(mapper.toResponse(calificacion));
+    }
+
+    // CU-93: el autor retira su calificación (baja lógica).
+    @DeleteMapping("/calificaciones/{id}")
+    public ResponseEntity<Void> eliminar(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @PathVariable String id) {
+
+        String clienteId = tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
+        eliminarCalificacionUseCase.ejecutar(id, clienteId);
+
+        return ResponseEntity.noContent().build(); // 204
     }
 }

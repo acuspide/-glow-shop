@@ -3,6 +3,7 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
 import com.example.ecommerce.domain.exception.CalificacionAjenaException;
+import com.example.ecommerce.domain.exception.CalificacionEliminadaException;
 import com.example.ecommerce.domain.exception.ComentarioInvalidoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.Puntuacion;
@@ -82,9 +83,38 @@ public class CalificacionTest {
     }
 
     @Test
+    void elAutorPuedeEliminarSuCalificacion() {
+        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+
+        calificacion.eliminarPor(ana);
+
+        assertTrue(calificacion.isEliminada());
+    }
+
+    @Test
+    void otroClienteNoPuedeEliminarLaCalificacion() {
+        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        Usuario bruno = Usuario.registrarCliente("u-2", "Bruno", new Email("bruno@correo.com"), "hash",
+                DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(CalificacionAjenaException.class, () -> calificacion.eliminarPor(bruno));
+        assertFalse(calificacion.isEliminada());
+    }
+
+    @Test
+    void unaCalificacionEliminadaNoSePuedeEliminarNiEditar() {
+        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        calificacion.eliminarPor(ana);
+
+        assertThrows(CalificacionEliminadaException.class, () -> calificacion.eliminarPor(ana));
+        assertThrows(CalificacionEliminadaException.class,
+                () -> calificacion.actualizarPor(ana, new Puntuacion(1), "Otro"));
+    }
+
+    @Test
     void dosCalificacionesConElMismoIdSonLaMisma() {
         Calificacion a = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
-        Calificacion b = Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(1), "Otro texto", ahora);
+        Calificacion b = Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(1), "Otro texto", ahora, false);
 
         assertEquals(a, b);
     }

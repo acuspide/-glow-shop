@@ -32,8 +32,15 @@ public class VerificadorDeCalificacionTest {
     }
 
     @Test
+    void siEliminoSuCalificacionPuedeVolverACalificar() {
+        calificaciones.guardar(Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(5), "Excelente", LocalDateTime.now(), true));
+
+        assertDoesNotThrow(() -> verificador.verificarQuePuedeCalificar("u-1", 10L));
+    }
+
+    @Test
     void noSePuedeCalificarDosVecesElMismoArticulo() {
-        calificaciones.guardar(Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(5), "Excelente", LocalDateTime.now()));
+        calificaciones.guardar(Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(5), "Excelente", LocalDateTime.now(), false));
 
         assertThrows(CalificacionDuplicadaException.class, () -> verificador.verificarQuePuedeCalificar("u-1", 10L));
     }
