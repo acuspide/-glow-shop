@@ -1,6 +1,7 @@
 package com.example.ecommerce.infrastructure.rest.exception;
 
 import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
@@ -72,6 +73,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccionSoloParaAdministradorException.class)
     public ResponseEntity<Map<String, Object>> manejarAccionSoloParaAdministrador(
             AccionSoloParaAdministradorException ex) {
+
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
+    @ExceptionHandler(AccionSoloParaClienteException.class)
+    public ResponseEntity<Map<String, Object>> manejarAccionSoloParaCliente(
+            AccionSoloParaClienteException ex) {
 
         return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
     }

@@ -1,6 +1,9 @@
 package com.example.ecommerce.infrastructure.config;
 
+import com.example.ecommerce.domain.repository.CalificacionRepository;
+import com.example.ecommerce.domain.repository.HistorialDeCompras;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.service.VerificadorDeCalificacion;
 import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,5 +17,11 @@ public class DomainServiceConfig {
     @Bean
     public VerificadorDeCorreoUnico verificadorDeCorreoUnico(UsuarioRepository usuarioRepository) {
         return new VerificadorDeCorreoUnico(usuarioRepository);
+    }
+
+    @Bean
+    public VerificadorDeCalificacion verificadorDeCalificacion(HistorialDeCompras historialDeCompras,
+                                                               CalificacionRepository calificacionRepository) {
+        return new VerificadorDeCalificacion(historialDeCompras, calificacionRepository);
     }
 }
