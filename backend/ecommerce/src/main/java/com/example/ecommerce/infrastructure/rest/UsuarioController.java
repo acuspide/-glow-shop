@@ -1,8 +1,10 @@
 package com.example.ecommerce.infrastructure.rest;
 
 import com.example.ecommerce.application.dto.request.RegistrarClienteRequest;
+import com.example.ecommerce.application.dto.request.RegistrarVendedorRequest;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.RegistrarClienteUseCase;
+import com.example.ecommerce.application.usecase.RegistrarVendedorUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.infrastructure.rest.mapper.UsuarioMapper;
 import jakarta.validation.Valid;
@@ -21,11 +23,14 @@ import java.util.UUID;
 public class UsuarioController {
 
     private final RegistrarClienteUseCase registrarClienteUseCase;
+    private final RegistrarVendedorUseCase registrarVendedorUseCase;
     private final UsuarioMapper mapper;
 
     public UsuarioController(RegistrarClienteUseCase registrarClienteUseCase,
+                             RegistrarVendedorUseCase registrarVendedorUseCase,
                              UsuarioMapper mapper) {
         this.registrarClienteUseCase = registrarClienteUseCase;
+        this.registrarVendedorUseCase = registrarVendedorUseCase;
         this.mapper = mapper;
     }
 
@@ -50,5 +55,28 @@ public class UsuarioController {
                 .toUri();
 
         return ResponseEntity.created(location).body(mapper.toResponse(cliente));
+    }
+
+    // Autorregistro público de vendedor: siempre crea un VENDEDOR.
+    @PostMapping("/vendedores")
+    public ResponseEntity<UsuarioResponse> registrarVendedor(
+            @Valid @RequestBody RegistrarVendedorRequest request) {
+
+        Usuario vendedor = registrarVendedorUseCase.ejecutar(
+                UUID.randomUUID().toString(),
+                request.nombre(),
+                request.email(),
+                request.contrasena(),
+                request.telefono(),
+                request.fechaNacimiento()
+        );
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/api/usuarios/{id}")
+                .buildAndExpand(vendedor.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(mapper.toResponse(vendedor));
     }
 }

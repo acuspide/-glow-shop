@@ -3,6 +3,7 @@ package com.example.ecommerce.infrastructure.rest;
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
 import com.example.ecommerce.application.usecase.RegistrarClienteUseCase;
+import com.example.ecommerce.application.usecase.RegistrarVendedorUseCase;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.ContrasenaDebilException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
@@ -36,6 +37,9 @@ class UsuarioControllerTest {
 
     @MockitoBean
     private RegistrarClienteUseCase registrarClienteUseCase;
+
+    @MockitoBean
+    private RegistrarVendedorUseCase registrarVendedorUseCase;
 
     @MockitoBean
     private UsuarioMapper mapper;
@@ -203,6 +207,64 @@ class UsuarioControllerTest {
         mockMvc.perform(post("/api/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    private static final String VENDEDOR_JSON = """
+            {
+                "nombre": "Vera",
+                "email": "vera@tienda.com",
+                "contrasena": "Clave123",
+                "telefono": "3001234567",
+                "fechaNacimiento": "1995-03-10"
+            }
+            """;
+
+    @Test
+    void deberiaRegistrarUnVendedorConRolVendedor() throws Exception {
+
+        // Arrange
+        Usuario vendedorSimulado = Usuario.registrarVendedor(
+                "u-2", "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        when(registrarVendedorUseCase.ejecutar(anyString(), any(), any(), any(), any(), any()))
+                .thenReturn(vendedorSimulado);
+        when(mapper.toResponse(any()))
+                .thenReturn(new UsuarioResponse("u-2", "Vera", "vera@tienda.com", "3001234567", LocalDate.of(1995, 3, 10), RolUsuario.VENDEDOR, true));
+
+        // Act y Assert
+        mockMvc.perform(post("/api/usuarios/vendedores")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VENDEDOR_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", org.hamcrest.Matchers.endsWith("/api/usuarios/u-2")))
+                .andExpect(jsonPath("$.rol").value("VENDEDOR"))
+                .andExpect(jsonPath("$.contrasenaHash").doesNotExist());
+    }
+
+    @Test
+    void deberiaRetornar409CuandoElCorreoDelVendedorYaEstaRegistrado() throws Exception {
+
+        // Arrange
+        when(registrarVendedorUseCase.ejecutar(anyString(), any(), any(), any(), any(), any()))
+                .thenThrow(new CorreoElectronicoDuplicadoException());
+
+        // Act y Assert
+        mockMvc.perform(post("/api/usuarios/vendedores")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(VENDEDOR_JSON))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    void deberiaRetornar400CuandoAlVendedorLeFaltaElNombre() throws Exception {
+
+        // Arrange
+        String sinNombre = VENDEDOR_JSON.replace("\"nombre\": \"Vera\",", "");
+
+        // Act y Assert
+        mockMvc.perform(post("/api/usuarios/vendedores")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(sinNombre))
                 .andExpect(status().isBadRequest());
     }
 }
