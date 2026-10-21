@@ -5,6 +5,7 @@ import com.example.ecommerce.application.PasswordHasher;
 import com.example.ecommerce.application.SesionIniciada;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
 import com.example.ecommerce.infrastructure.security.TokenServiceHmacSha256;
@@ -24,7 +25,7 @@ public class IniciarSesionUseCaseTest {
     @Test
     void debeEntregarUnTokenQueIdentificaAlUsuarioAutenticado() {
         // Arrange
-        new RegistrarClienteUseCase(repository, passwordHasher)
+        new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-5", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Act
@@ -38,7 +39,7 @@ public class IniciarSesionUseCaseTest {
     @Test
     void noDebeEntregarTokenConCredencialesIncorrectas() {
         // Arrange
-        new RegistrarClienteUseCase(repository, passwordHasher)
+        new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-5", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Act y Assert

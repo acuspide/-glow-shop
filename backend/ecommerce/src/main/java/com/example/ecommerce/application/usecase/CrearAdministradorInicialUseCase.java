@@ -32,10 +32,15 @@ public class CrearAdministradorInicialUseCase {
     public boolean ejecutar(String id, String nombre, String email, String contrasenaPlano,
                             String telefono, LocalDate fechaNacimiento) {
         Email correo = new Email(email);
-        if (repository.existePorEmail(correo)) {
-            return false;
-        }
 
+        // Si ya existe un usuario con ese correo no hace nada (puede arrancar muchas veces).
+        return repository.buscarPorEmail(correo)
+                .map(existente -> false)
+                .orElseGet(() -> crear(id, nombre, correo, contrasenaPlano, telefono, fechaNacimiento));
+    }
+
+    private boolean crear(String id, String nombre, Email correo, String contrasenaPlano,
+                          String telefono, LocalDate fechaNacimiento) {
         ContrasenaPlana contrasena = new ContrasenaPlana(contrasenaPlano);
         String contrasenaHash = passwordHasher.hash(contrasena.valor());
         Usuario administrador = Usuario.administradorInicial(

@@ -9,6 +9,7 @@ import com.example.ecommerce.domain.exception.ContrasenaDebilException;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.repository.CodigoRecuperacionRepository;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.infrastructure.persistence.CodigoRecuperacionRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
@@ -48,7 +49,7 @@ public class RecuperarContrasenaUseCaseTest {
 
     @BeforeEach
     void registrarUsuario() {
-        ana = new RegistrarClienteUseCase(usuarioRepository, passwordHasher)
+        ana = new RegistrarClienteUseCase(usuarioRepository, passwordHasher, new VerificadorDeCorreoUnico(usuarioRepository))
                 .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
     }
 

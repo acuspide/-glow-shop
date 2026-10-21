@@ -3,16 +3,19 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoInvalidoException;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
+import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.FechaNacimientoInvalidaException;
 import com.example.ecommerce.domain.exception.NombreUsuarioRequeridoException;
 import com.example.ecommerce.domain.exception.RolRequeridoException;
 import com.example.ecommerce.domain.exception.TelefonoInvalidoException;
+import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.FechaNacimiento;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.domain.valueobject.Telefono;
 
 import java.util.Objects;
+import java.util.function.BiPredicate;
 
 public class Usuario {
 
@@ -122,6 +125,21 @@ public class Usuario {
     private void validarRol(RolUsuario rol) {
         if (rol == null) {
             throw new RolRequeridoException();
+        }
+    }
+
+    /**
+     * Verifica que quien inicia sesión sea este usuario.
+     * Primero la contraseña: así, sin conocerla, nadie puede averiguar qué cuentas están desactivadas.
+     *
+     * @param coincideConHash compara la contraseña escrita con el hash guardado.
+     */
+    public void autenticar(String contrasenaPlano, BiPredicate<String, String> coincideConHash) {
+        if (contrasenaPlano == null || !coincideConHash.test(contrasenaPlano, contrasenaHash)) {
+            throw new CredencialesInvalidasException();
+        }
+        if (!activo) {
+            throw new UsuarioInactivoException();
         }
     }
 

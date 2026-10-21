@@ -6,6 +6,7 @@ import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
@@ -21,7 +22,7 @@ public class CrearUsuarioPorAdministradorUseCaseTest {
     private final UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
     private final PasswordHasher passwordHasher = new PasswordHasherSha256();
     private final CrearUsuarioPorAdministradorUseCase useCase =
-            new CrearUsuarioPorAdministradorUseCase(repository, passwordHasher);
+            new CrearUsuarioPorAdministradorUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
     private Usuario guardarAdministrador() {
         Usuario admin = Usuario.administradorInicial(ADMIN_ID, "Admin", new Email("admin@glow.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);

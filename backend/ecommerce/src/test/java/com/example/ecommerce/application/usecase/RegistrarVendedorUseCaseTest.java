@@ -6,6 +6,7 @@ import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.ContrasenaDebilException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
@@ -18,7 +19,7 @@ public class RegistrarVendedorUseCaseTest {
 
     private final UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
     private final PasswordHasher passwordHasher = new PasswordHasherSha256();
-    private final RegistrarVendedorUseCase useCase = new RegistrarVendedorUseCase(repository, passwordHasher);
+    private final RegistrarVendedorUseCase useCase = new RegistrarVendedorUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
     @Test
     void debeRegistrarUnVendedorNuevoConCorreoUnico() {
@@ -34,7 +35,7 @@ public class RegistrarVendedorUseCaseTest {
     @Test
     void noDebePermitirUnCorreoYaRegistradoPorUnCliente() {
         // Arrange
-        new RegistrarClienteUseCase(repository, passwordHasher)
+        new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Vera", "vera@tienda.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Act y Assert

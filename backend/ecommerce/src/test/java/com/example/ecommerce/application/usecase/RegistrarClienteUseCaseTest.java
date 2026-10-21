@@ -7,6 +7,7 @@ import com.example.ecommerce.domain.exception.ContrasenaDebilException;
 import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
@@ -22,7 +23,7 @@ public class RegistrarClienteUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
         // Act
         Usuario usuario = useCase.ejecutar("u-1", "Ana Pérez", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
@@ -37,7 +38,7 @@ public class RegistrarClienteUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
         useCase.ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
         // Act y Assert
@@ -51,7 +52,7 @@ public class RegistrarClienteUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
         // Act
         Usuario usuario = useCase.ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
@@ -65,7 +66,7 @@ public class RegistrarClienteUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)
         assertThrows(ContrasenaRequeridaException.class, () ->
@@ -78,7 +79,7 @@ public class RegistrarClienteUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher);
+        RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)
         assertThrows(ContrasenaDebilException.class, () ->

@@ -3,6 +3,8 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoInvalidoException;
+import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
+import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.exception.FechaNacimientoInvalidaException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.exception.TelefonoInvalidoException;
@@ -163,6 +165,41 @@ public class UsuarioTest {
         // Act y Assert
         assertThrows(CorreoElectronicoInvalidoException.class, () ->
                 Usuario.registrarCliente("u-1", "Ana", null, "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
+    }
+
+    // Comparador de prueba: la contraseña coincide si es igual al "hash".
+    private static boolean igual(String contrasena, String hash) {
+        return contrasena.equals(hash);
+    }
+
+    @Test
+    void autenticarConLaContrasenaCorrectaNoLanzaError() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "Clave123", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertDoesNotThrow(() -> usuario.autenticar("Clave123", UsuarioTest::igual));
+    }
+
+    @Test
+    void autenticarConLaContrasenaIncorrectaLanzaCredencialesInvalidas() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "Clave123", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(CredencialesInvalidasException.class, () -> usuario.autenticar("Otra", UsuarioTest::igual));
+    }
+
+    @Test
+    void autenticarUnUsuarioDesactivadoConLaContrasenaCorrectaLanzaUsuarioInactivo() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "Clave123", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        usuario.desactivar();
+
+        assertThrows(UsuarioInactivoException.class, () -> usuario.autenticar("Clave123", UsuarioTest::igual));
+    }
+
+    @Test
+    void autenticarUnUsuarioDesactivadoConContrasenaIncorrectaNoRevelaQueEstaDesactivado() {
+        Usuario usuario = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "Clave123", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        usuario.desactivar();
+
+        assertThrows(CredencialesInvalidasException.class, () -> usuario.autenticar("Otra", UsuarioTest::igual));
     }
 
     @Test

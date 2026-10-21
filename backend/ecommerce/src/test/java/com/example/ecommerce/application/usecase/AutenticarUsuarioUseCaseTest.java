@@ -6,6 +6,7 @@ import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        new RegistrarClienteUseCase(repository, passwordHasher)
+        new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Ana Pérez", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
@@ -36,7 +37,7 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        new RegistrarClienteUseCase(repository, passwordHasher)
+        new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
@@ -64,7 +65,7 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher)
+        Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         usuario.desactivar();
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
@@ -80,7 +81,7 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher)
+        Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         usuario.desactivar();
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);

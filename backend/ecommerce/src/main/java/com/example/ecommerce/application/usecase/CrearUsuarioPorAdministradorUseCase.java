@@ -2,9 +2,9 @@ package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.application.PasswordHasher;
 import com.example.ecommerce.domain.entity.Usuario;
-import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
+import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.ContrasenaPlana;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.FechaNacimiento;
@@ -24,10 +24,13 @@ public class CrearUsuarioPorAdministradorUseCase {
 
     private final UsuarioRepository repository;
     private final PasswordHasher passwordHasher;
+    private final VerificadorDeCorreoUnico verificadorDeCorreoUnico;
 
-    public CrearUsuarioPorAdministradorUseCase(UsuarioRepository repository, PasswordHasher passwordHasher) {
+    public CrearUsuarioPorAdministradorUseCase(UsuarioRepository repository, PasswordHasher passwordHasher,
+                                               VerificadorDeCorreoUnico verificadorDeCorreoUnico) {
         this.repository = repository;
         this.passwordHasher = passwordHasher;
+        this.verificadorDeCorreoUnico = verificadorDeCorreoUnico;
     }
 
     @Transactional
@@ -55,9 +58,7 @@ public class CrearUsuarioPorAdministradorUseCase {
         Usuario nuevo = administrador.crearUsuarioConRol(id, nombre, correo, contrasenaHash, tel, nacimiento, rol);
 
         // RN01: se consulta después de validar permisos, para no revelar qué correos existen.
-        if (repository.existePorEmail(correo)) {
-            throw new CorreoElectronicoDuplicadoException();
-        }
+        verificadorDeCorreoUnico.verificarQueNoEsteRegistrado(correo);
 
         repository.guardar(nuevo);
 
