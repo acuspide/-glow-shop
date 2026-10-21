@@ -17,6 +17,12 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import com.example.ecommerce.application.usecase.VaciarCarritoUseCase;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -24,8 +30,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.example.ecommerce.application.usecase.VerCarritoUseCase;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
 @WebMvcTest(CarritoController.class)
 class CarritoControllerTest {
 
@@ -40,16 +49,19 @@ class CarritoControllerTest {
     @MockitoBean
     private CarritoMapper mapper;
 
+    @MockitoBean
+    private VaciarCarritoUseCase vaciarCarritoUseCase;
+
     @Test
     void deberiaAgregarArticuloCuandoDatosValidos() throws Exception {
 
         // Arrange
         String requestJson = """
-            {
-                "articuloId": 1,
-                "cantidad": 2
-            }
-            """;
+                {
+                    "articuloId": 1,
+                    "cantidad": 2
+                }
+                """;
 
         Carrito carritoSimulado = Carrito.crear(1L, 100L);
         when(agregarAlCarritoUseCase.ejecutar(anyLong(), anyLong(), anyInt()))
@@ -71,11 +83,11 @@ class CarritoControllerTest {
 
         // Arrange
         String requestJson = """
-            {
-                "articuloId": 1,
-                "cantidad": 0
-            }
-            """;
+                {
+                    "articuloId": 1,
+                    "cantidad": 0
+                }
+                """;
 
         // Act y Assert
         mockMvc.perform(post("/api/carritos/100/items")
@@ -89,11 +101,11 @@ class CarritoControllerTest {
 
         // Arrange
         String requestJson = """
-            {
-                "articuloId": 1,
-                "cantidad": 1
-            }
-            """;
+                {
+                    "articuloId": 1,
+                    "cantidad": 1
+                }
+                """;
 
         when(agregarAlCarritoUseCase.ejecutar(anyLong(), anyLong(), anyInt()))
                 .thenThrow(new ArticuloAgotadoException());
@@ -110,11 +122,11 @@ class CarritoControllerTest {
 
         // Arrange
         String requestJson = """
-            {
-                "articuloId": 99,
-                "cantidad": 1
-            }
-            """;
+                {
+                    "articuloId": 99,
+                    "cantidad": 1
+                }
+                """;
 
         when(agregarAlCarritoUseCase.ejecutar(anyLong(), anyLong(), anyInt()))
                 .thenThrow(new NoSuchElementException());
@@ -125,6 +137,7 @@ class CarritoControllerTest {
                         .content(requestJson))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     void deberiaMostrarElCarritoDelCliente() throws Exception {
 

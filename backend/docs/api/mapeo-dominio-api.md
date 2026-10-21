@@ -20,5 +20,6 @@
 
 | Operacion del dominio | Método HTTP | Endpoint |
 |---|---|---|
-| agregarArticulo(articulo, cantidad) | POST | /api/carritos/{clienteId}/items |
-| ver carrito | GET | /carritos/{clienteId} |
+| Agregar artículo al carrito | POST | /api/carritos/{clienteId}/items |
+| Ver carrito | GET | /api/carritos/{clienteId} |
+| Vaciar carrito | DELETE | /api/carritos/{clienteId}/items |
