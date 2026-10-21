@@ -36,7 +36,7 @@ public class CrearRutinaCuidadoUseCase {
             articulos.add(articulo);
         }
 
-        RutinaCuidado rutina = new RutinaCuidado(
+        RutinaCuidado rutina = RutinaCuidado.crear(
                 id,
                 nombre,
                 articulos

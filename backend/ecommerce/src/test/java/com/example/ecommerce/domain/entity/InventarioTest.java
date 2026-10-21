@@ -13,7 +13,7 @@ public class InventarioTest {
     void debeAumentarLaCantidadDisponible() {
 
         // Arrange
-        Inventario inventario = new Inventario(10);
+        Inventario inventario = Inventario.crear(10);
 
         // Act
         inventario.aumentar(5);
@@ -25,7 +25,7 @@ public class InventarioTest {
     void debeDisminuirLaCantidadDisponible() {
 
         // Arrange
-        Inventario inventario = new Inventario(10);
+        Inventario inventario = Inventario.crear(10);
 
         // Act
         inventario.disminuir(3);
@@ -37,7 +37,7 @@ public class InventarioTest {
     void noDebePermitirDisminuirPorDebajoDeCero() {
 
         // Arrange
-        Inventario inventario = new Inventario(5);
+        Inventario inventario = Inventario.crear(5);
 
         // Act y Assert
         assertThrows(StockNegativoException.class, () -> {
@@ -48,7 +48,7 @@ public class InventarioTest {
     void noDebeModificarElInventarioSiLaDisminucionGeneraStockNegativo() {
 
         // Arrange
-        Inventario inventario = new Inventario(5);
+        Inventario inventario = Inventario.crear(5);
 
         // Act y Assert
         assertThrows(StockNegativoException.class, () -> {
@@ -62,7 +62,7 @@ public class InventarioTest {
     void noDebePermitirAumentarUnaCantidadCero() {
 
         // Arrange
-        Inventario inventario = new Inventario(10);
+        Inventario inventario = Inventario.crear(10);
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {
@@ -75,7 +75,7 @@ public class InventarioTest {
     void noDebePermitirDisminuirUnaCantidadCero() {
 
         // Arrange
-        Inventario inventario = new Inventario(10);
+        Inventario inventario = Inventario.crear(10);
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {
@@ -88,7 +88,7 @@ public class InventarioTest {
     void validarDisponibilidadNoDebeModificarElInventario() {
 
         // Arrange
-        Inventario inventario = new Inventario(10);
+        Inventario inventario = Inventario.crear(10);
 
         // Act
         inventario.validarDisponibilidad(4);
@@ -101,7 +101,7 @@ public class InventarioTest {
     void noDebeEstarDisponibleSiLaCantidadSuperaElStock() {
 
         // Arrange
-        Inventario inventario = new Inventario(3);
+        Inventario inventario = Inventario.crear(3);
 
         // Act y Assert
         assertThrows(CantidadSuperaStockException.class, () -> {
@@ -113,7 +113,7 @@ public class InventarioTest {
     void noDebeValidarDisponibilidadParaUnaCantidadCero() {
 
         // Arrange
-        Inventario inventario = new Inventario(10);
+        Inventario inventario = Inventario.crear(10);
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {

@@ -3,9 +3,10 @@ package com.example.ecommerce.application.usecase;
 import com.example.ecommerce.domain.entity.*;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.valueobject.*;
-
+import org.springframework.stereotype.Service;
 import java.util.List;
 
+@Service
 public class PublicarArticuloUseCase {
 
     private final ArticuloRepository repository;
@@ -26,7 +27,7 @@ public class PublicarArticuloUseCase {
             FechaVencimiento fechaVencimiento,
             Tienda tienda) {
 
-        Articulo articulo = new Articulo(
+        Articulo articulo = Articulo.crear(
                 id,
                 nombre,
                 precio,
@@ -43,6 +44,11 @@ public class PublicarArticuloUseCase {
 
         repository.guardar(articulo);
 
+        return articulo;
+    }
+    public Articulo ejecutar(Articulo articulo) {
+        articulo.publicar();
+        repository.guardar(articulo);
         return articulo;
     }
 }
