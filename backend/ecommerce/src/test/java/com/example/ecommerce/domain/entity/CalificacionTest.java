@@ -1,0 +1,121 @@
+package com.example.ecommerce.domain.entity;
+
+import com.example.ecommerce.DatosPrueba;
+import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
+import com.example.ecommerce.domain.exception.CalificacionAjenaException;
+import com.example.ecommerce.domain.exception.CalificacionEliminadaException;
+import com.example.ecommerce.domain.exception.ComentarioInvalidoException;
+import com.example.ecommerce.domain.valueobject.Email;
+import com.example.ecommerce.domain.valueobject.Puntuacion;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CalificacionTest {
+
+    private final LocalDateTime ahora = LocalDateTime.of(2026, 10, 20, 10, 0);
+    private final Usuario ana = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash",
+            DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+    @Test
+    void calificarCreaLaCalificacionConLosIdsDelArticuloYDelCliente() {
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "  Excelente sérum  ", ahora);
+
+        assertEquals("a-10", calificacion.getArticuloId());
+        assertEquals("u-1", calificacion.getClienteId());
+        assertEquals(5, calificacion.getPuntuacion().valor());
+        assertEquals("Excelente sérum", calificacion.getComentario());
+    }
+
+    @Test
+    void elComentarioEsObligatorio() {
+        assertThrows(ComentarioInvalidoException.class,
+                () -> Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(4), "  ", ahora));
+    }
+
+    @Test
+    void elComentarioNoPuedeSuperar500Caracteres() {
+        String largo = "a".repeat(501);
+
+        assertThrows(ComentarioInvalidoException.class,
+                () -> Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(4), largo, ahora));
+    }
+
+    @Test
+    void unVendedorNoPuedeCalificar() {
+        Usuario vera = Usuario.registrarVendedor("u-2", "Vera", new Email("vera@tienda.com"), "hash",
+                DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(AccionSoloParaClienteException.class,
+                () -> Calificacion.calificar("c-1", "a-10", vera, new Puntuacion(4), "Bueno", ahora));
+    }
+
+    @Test
+    void elAutorPuedeActualizarSuCalificacionYSeConservaLaFecha() {
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
+
+        calificacion.actualizarPor(ana, new Puntuacion(3), "  Después de un mes, regular  ");
+
+        assertEquals(3, calificacion.getPuntuacion().valor());
+        assertEquals("Después de un mes, regular", calificacion.getComentario());
+        assertEquals(ahora, calificacion.getFecha());
+    }
+
+    @Test
+    void otroClienteNoPuedeActualizarLaCalificacion() {
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
+        Usuario bruno = Usuario.registrarCliente("u-2", "Bruno", new Email("bruno@correo.com"), "hash",
+                DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(CalificacionAjenaException.class,
+                () -> calificacion.actualizarPor(bruno, new Puntuacion(1), "Malo"));
+        assertEquals(5, calificacion.getPuntuacion().valor());
+    }
+
+    @Test
+    void alActualizarElComentarioSigueSiendoObligatorio() {
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
+
+        assertThrows(ComentarioInvalidoException.class, () -> calificacion.actualizarPor(ana, new Puntuacion(4), " "));
+        assertEquals("Excelente", calificacion.getComentario());
+    }
+
+    @Test
+    void elAutorPuedeEliminarSuCalificacion() {
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
+
+        calificacion.eliminarPor(ana);
+
+        assertTrue(calificacion.isEliminada());
+    }
+
+    @Test
+    void otroClienteNoPuedeEliminarLaCalificacion() {
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
+        Usuario bruno = Usuario.registrarCliente("u-2", "Bruno", new Email("bruno@correo.com"), "hash",
+                DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertThrows(CalificacionAjenaException.class, () -> calificacion.eliminarPor(bruno));
+        assertFalse(calificacion.isEliminada());
+    }
+
+    @Test
+    void unaCalificacionEliminadaNoSePuedeEliminarNiEditar() {
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
+        calificacion.eliminarPor(ana);
+
+        assertThrows(CalificacionEliminadaException.class, () -> calificacion.eliminarPor(ana));
+        assertThrows(CalificacionEliminadaException.class,
+                () -> calificacion.actualizarPor(ana, new Puntuacion(1), "Otro"));
+    }
+
+    @Test
+    void dosCalificacionesConElMismoIdSonLaMisma() {
+        Calificacion a = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
+        Calificacion b = Calificacion.reconstruir("c-1", "a-10", "u-1", new Puntuacion(1), "Otro texto", ahora, false);
+
+        assertEquals(a, b);
+    }
+}

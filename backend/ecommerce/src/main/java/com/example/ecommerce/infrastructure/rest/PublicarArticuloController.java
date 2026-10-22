@@ -6,12 +6,14 @@ import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.application.dto.response.ListarArticulosResponse;
 import com.example.ecommerce.application.usecase.ListarArticulosUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.ListarArticulosMapper;
+import lombok.RequiredArgsConstructor;
 
 import com.example.ecommerce.application.dto.response.ConsultarInventarioResponse;
 import com.example.ecommerce.application.usecase.ConsultarInventarioUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.ConsultarInventarioMapper;
 
 import java.util.List;
+import java.util.UUID;
 import com.example.ecommerce.infrastructure.rest.mapper.PublicarArticuloMapper;
 import com.example.ecommerce.application.dto.response.MostrarDetalleArticuloResponse;
 import com.example.ecommerce.application.usecase.MostrarDetalleArticuloUseCase;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/articulos")
 public class PublicarArticuloController {
     private final PublicarArticuloUseCase publicarArticuloUseCase;
@@ -37,25 +40,6 @@ public class PublicarArticuloController {
     private final ConsultarInventarioUseCase consultarInventarioUseCase;
     private final ConsultarInventarioMapper consultarInventarioMapper;
 
-    public PublicarArticuloController(
-            PublicarArticuloUseCase publicarArticuloUseCase,
-            PublicarArticuloMapper mapper,
-            MostrarDetalleArticuloUseCase mostrarDetalleArticuloUseCase,
-            MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper,
-            ListarArticulosUseCase listarArticulosUseCase,
-            ListarArticulosMapper listarArticulosMapper,
-            ConsultarInventarioUseCase consultarInventarioUseCase,
-            ConsultarInventarioMapper consultarInventarioMapper) {
-
-        this.publicarArticuloUseCase = publicarArticuloUseCase;
-        this.mapper = mapper;
-        this.mostrarDetalleArticuloUseCase = mostrarDetalleArticuloUseCase;
-        this.mostrarDetalleArticuloMapper = mostrarDetalleArticuloMapper;
-        this.listarArticulosUseCase = listarArticulosUseCase;
-        this.listarArticulosMapper = listarArticulosMapper;
-        this.consultarInventarioUseCase = consultarInventarioUseCase;
-        this.consultarInventarioMapper = consultarInventarioMapper;
-    }
     @GetMapping
     public ResponseEntity<List<ListarArticulosResponse>> listarArticulos() {
 
@@ -70,7 +54,7 @@ public class PublicarArticuloController {
     public ResponseEntity<PublicarArticuloResponse> publicar(
             @Valid @RequestBody PublicarArticuloRequest request) {
 
-        Articulo articulo = mapper.toEntity(request);
+        Articulo articulo = mapper.toEntity(UUID.randomUUID().toString(), request);
 
         Articulo articuloPublicado =
                 publicarArticuloUseCase.ejecutar(articulo);
@@ -88,7 +72,7 @@ public class PublicarArticuloController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<MostrarDetalleArticuloResponse> mostrarDetalle(
-            @PathVariable long id) {
+            @PathVariable String id) {
 
         Articulo articulo = mostrarDetalleArticuloUseCase.ejecutar(id);
 
@@ -100,7 +84,7 @@ public class PublicarArticuloController {
 
     @GetMapping("/{id}/inventario")
     public ResponseEntity<ConsultarInventarioResponse> consultarInventario(
-            @PathVariable long id) {
+            @PathVariable String id) {
 
         Articulo articulo = consultarInventarioUseCase.ejecutar(id);
 

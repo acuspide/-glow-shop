@@ -11,19 +11,19 @@ import com.example.ecommerce.domain.valueobject.Precio;
 import com.example.ecommerce.domain.valueobject.TipoPiel;
 import com.example.ecommerce.domain.valueobject.Tono;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ActualizarArticuloUseCase {
     private final ArticuloRepository repository;
 
-    public ActualizarArticuloUseCase(ArticuloRepository repository) {
-        this.repository = repository;
-    }
-
+    @Transactional
     public Articulo ejecutar(
-            long id,
+            String id,
             NombreArticulo nombre,
             Precio precio,
             Categoria categoria,

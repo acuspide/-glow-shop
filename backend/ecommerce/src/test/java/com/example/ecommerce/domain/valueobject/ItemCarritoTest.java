@@ -19,7 +19,7 @@ public class ItemCarritoTest {
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {
-            new ItemCarrito(1L, 0, precio);
+            new ItemCarrito("a-1", 0, precio);
         });
     }
 
@@ -31,7 +31,7 @@ public class ItemCarritoTest {
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {
-            new ItemCarrito(1L, -2, precio);
+            new ItemCarrito("a-1", -2, precio);
         });
     }
 
@@ -40,7 +40,7 @@ public class ItemCarritoTest {
 
         // Act y Assert
         assertThrows(PrecioRequeridoException.class, () -> {
-            new ItemCarrito(1L, 2, null);
+            new ItemCarrito("a-1", 2, null);
         });
     }
 
@@ -49,7 +49,7 @@ public class ItemCarritoTest {
 
         // Arrange
         Precio precio = new Precio(new BigDecimal("10000"));
-        ItemCarrito item = new ItemCarrito(1L, 3, precio);
+        ItemCarrito item = new ItemCarrito("a-1", 3, precio);
 
         // Act
         BigDecimal subtotal = item.subtotal();
@@ -63,8 +63,8 @@ public class ItemCarritoTest {
 
         // Arrange
         Precio precio = new Precio(new BigDecimal("10000"));
-        ItemCarrito item1 = new ItemCarrito(1L, 2, precio);
-        ItemCarrito item2 = new ItemCarrito(1L, 4, precio);
+        ItemCarrito item1 = new ItemCarrito("a-1", 2, precio);
+        ItemCarrito item2 = new ItemCarrito("a-1", 4, precio);
 
         // Act
         // No necesitamos una accion adicional porque equals()

@@ -13,6 +13,6 @@ public record CrearRutinaCuidadoRequest(
 
         @NotNull(message = "Los artículos son obligatorios")
         @Size(min = 2, message = "La rutina debe tener mínimo 2 artículos")
-        List<Long> articulosIds
+        List<String> articulosIds
 ) {
 }

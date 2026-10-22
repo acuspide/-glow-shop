@@ -14,7 +14,7 @@ public class VaciarCarritoUseCase {
     private final CarritoRepository carritoRepository;
 
     @Transactional
-    public void ejecutar(long clienteId) {
+    public void ejecutar(String clienteId) {
         Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId).orElseThrow();
         carrito.vaciar();
         carritoRepository.guardar(carrito);

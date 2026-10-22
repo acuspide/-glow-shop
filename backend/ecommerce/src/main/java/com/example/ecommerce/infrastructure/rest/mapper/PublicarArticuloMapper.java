@@ -16,9 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class PublicarArticuloMapper {
 
-    public Articulo toEntity(PublicarArticuloRequest request) {
+    public Articulo toEntity(String id, PublicarArticuloRequest request) {
         return Articulo.crear(
-                request.id(),
+                id,
                 new NombreArticulo(request.nombre()),
                 new Precio(request.precio()),
                 Categoria.crear(request.categoriaId(), request.categoriaNombre()),

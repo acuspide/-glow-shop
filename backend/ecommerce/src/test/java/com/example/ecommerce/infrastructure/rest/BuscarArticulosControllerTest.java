@@ -43,18 +43,18 @@ public class BuscarArticulosControllerTest {
 
         MostrarDetalleArticuloResponse response =
                 new MostrarDetalleArticuloResponse(
-                        1L,
+                        "a-1",
                         "Labial rojo",
                         new BigDecimal("35000"),
-                        1L,
+                        "cat-1",
                         "Labios",
-                        1L,
+                        "m-1",
                         "Maybelline",
                         "CLARO",
                         List.of("NORMAL"),
                         10,
                         LocalDate.of(2028, 12, 31),
-                        1L,
+                        "t-1",
                         "Tienda Beauty",
                         true
                 );
@@ -77,7 +77,7 @@ public class BuscarArticulosControllerTest {
                         .param("texto", "labial"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].id").value("a-1"))
                 .andExpect(jsonPath("$[0].nombre").value("Labial rojo"))
                 .andExpect(jsonPath("$[0].precio").value(35000));
 

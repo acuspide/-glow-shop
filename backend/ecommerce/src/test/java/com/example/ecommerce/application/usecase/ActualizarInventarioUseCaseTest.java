@@ -24,16 +24,16 @@ public class ActualizarInventarioUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         repository.guardar(articulo);
@@ -42,7 +42,7 @@ public class ActualizarInventarioUseCaseTest {
                 new ActualizarInventarioUseCase(repository);
 
         // Act
-        useCase.aumentar(1L, 5);
+        useCase.aumentar("a-1", 5);
 
         // Assert
         assertEquals(15, articulo.getCantidadDisponible());
@@ -55,16 +55,16 @@ public class ActualizarInventarioUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                2L,
+                "a-2",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         repository.guardar(articulo);
@@ -73,7 +73,7 @@ public class ActualizarInventarioUseCaseTest {
                 new ActualizarInventarioUseCase(repository);
 
         // Act
-        useCase.disminuir(2L, 3);
+        useCase.disminuir("a-2", 3);
 
         // Assert
         assertEquals(7, articulo.getCantidadDisponible());
@@ -90,7 +90,7 @@ public class ActualizarInventarioUseCaseTest {
 
         // Act y Assert
         assertThrows(ArticuloNoEncontradoException.class, () -> {
-            useCase.aumentar(999L, 5);
+            useCase.aumentar("a-999", 5);
         });
     }
     @Test
@@ -101,16 +101,16 @@ public class ActualizarInventarioUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                3L,
+                "a-3",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(5),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         repository.guardar(articulo);
@@ -120,7 +120,7 @@ public class ActualizarInventarioUseCaseTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> {
-            useCase.disminuir(3L, 10);
+            useCase.disminuir("a-3", 10);
         });
 
         // El inventario debe conservar su valor original
@@ -134,16 +134,16 @@ public class ActualizarInventarioUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                4L,
+                "a-4",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         repository.guardar(articulo);
@@ -153,7 +153,7 @@ public class ActualizarInventarioUseCaseTest {
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {
-            useCase.aumentar(4L, 0);
+            useCase.aumentar("a-4", 0);
         });
 
         // El inventario debe conservar su valor original

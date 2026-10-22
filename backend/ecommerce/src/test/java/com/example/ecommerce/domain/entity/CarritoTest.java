@@ -18,22 +18,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CarritoTest {
 
-    private Articulo crearArticulo(long id, String precio, int stock) {
+    private Articulo crearArticulo(String id, String precio, int stock) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal(precio)),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Bloom"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Bloom"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(stock),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
     }
 
-    private Articulo crearArticuloPublicado(long id, String precio, int stock) {
+    private Articulo crearArticuloPublicado(String id, String precio, int stock) {
         Articulo articulo = crearArticulo(id, precio, stock);
         articulo.publicar();
         return articulo;
@@ -43,19 +43,19 @@ public class CarritoTest {
     void unCarritoNuevoDebeEstarVacioYPertenecerAlCliente() {
 
         // Arrange y Act
-        Carrito carrito = Carrito.crear(1L, 100L);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
 
         // Assert
         assertTrue(carrito.estaVacio());
-        assertEquals(100L, carrito.getClienteId());
+        assertEquals("u-100", carrito.getClienteId());
     }
 
     @Test
     void agregarUnArticuloDebeSumarloAlTotalConSuPrecioVigente() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
 
         // Act
         carrito.agregarArticulo(labial, 2);
@@ -69,8 +69,8 @@ public class CarritoTest {
     void agregarElMismoArticuloDosVecesDebeAcumularLaCantidad() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
 
         // Act
         carrito.agregarArticulo(labial, 2);
@@ -85,8 +85,8 @@ public class CarritoTest {
     void noDebePermitirQueLaCantidadAcumuladaSupereElStock() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
         carrito.agregarArticulo(labial, 3);
 
         // Act y Assert
@@ -100,8 +100,8 @@ public class CarritoTest {
     void noDebePermitirAgregarUnaCantidadCero() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {
@@ -113,8 +113,8 @@ public class CarritoTest {
     void noDebePermitirAgregarUnArticuloNoPublicado() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        Articulo labialSinPublicar = crearArticulo(1L, "10000", 5);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labialSinPublicar = crearArticulo("a-1", "10000", 5);
 
         // Act y Assert
         assertThrows(ArticuloNoPublicadoParaVentaException.class, () -> {
@@ -127,8 +127,8 @@ public class CarritoTest {
     void noDebePermitirAgregarUnArticuloAgotado() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        Articulo labialAgotado = crearArticuloPublicado(1L, "10000", 0);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labialAgotado = crearArticuloPublicado("a-1", "10000", 0);
 
         // Act y Assert
         assertThrows(ArticuloAgotadoException.class, () -> {
@@ -140,8 +140,8 @@ public class CarritoTest {
     void agregarAlCarritoNoDebeDescontarElInventarioDelArticulo() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
 
         // Act
         carrito.agregarArticulo(labial, 2);
@@ -153,35 +153,35 @@ public class CarritoTest {
     void quitarUnArticuloDebeSacarloDelCarritoYActualizarElTotal() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "10000", 5), 2);
-        carrito.agregarArticulo(crearArticuloPublicado(2L, "30000", 5), 1);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "10000", 5), 2);
+        carrito.agregarArticulo(crearArticuloPublicado("a-2", "30000", 5), 1);
 
         // Act
-        carrito.quitarArticulo(1L);
+        carrito.quitarArticulo("a-1");
 
         // Assert
         assertEquals(1, carrito.getItems().size());
-        assertEquals(2L, carrito.getItems().get(0).getArticuloId());
+        assertEquals("a-2", carrito.getItems().get(0).getArticuloId());
         assertEquals(new BigDecimal("30000"), carrito.calcularTotal());
     }
     @Test
     void noDebePermitirQuitarUnArticuloQueNoEstaEnElCarrito() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
 
         // Act y Assert
         assertThrows(ArticuloNoEncontradoEnCarritoException.class, () -> {
-            carrito.quitarArticulo(99L);
+            carrito.quitarArticulo("a-99");
         });
     }
     @Test
     void vaciarElCarritoDebeDejarloSinItems() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "10000", 5), 2);
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "10000", 5), 2);
 
         // Act
         carrito.vaciar();

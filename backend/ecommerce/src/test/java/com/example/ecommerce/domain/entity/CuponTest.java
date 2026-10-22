@@ -18,7 +18,7 @@ public class CuponTest {
     void unCuponDebeCalcularElDescuentoSegunSuPorcentaje() {
 
         // Arrange
-        Cupon cupon = Cupon.crear(1L, "BIENVENIDA10", 10, LocalDate.now().plusDays(5));
+        Cupon cupon = Cupon.crear("cu-1", "BIENVENIDA10", 10, LocalDate.now().plusDays(5));
 
         // Act
         Precio descuento = cupon.calcularDescuento(new BigDecimal("50000"));
@@ -31,7 +31,7 @@ public class CuponTest {
     void unCuponConFechaFuturaDebeEstarVigente() {
 
         // Arrange
-        Cupon cupon = Cupon.crear(1L, "BIENVENIDA10", 10, LocalDate.now().plusDays(5));
+        Cupon cupon = Cupon.crear("cu-1", "BIENVENIDA10", 10, LocalDate.now().plusDays(5));
 
         // Act y Assert
         assertTrue(cupon.estaVigente());
@@ -41,7 +41,7 @@ public class CuponTest {
     void unCuponDebeSeguirVigenteElDiaQueExpira() {
 
         // Arrange
-        Cupon cupon = Cupon.crear(1L, "BIENVENIDA10", 10, LocalDate.now());
+        Cupon cupon = Cupon.crear("cu-1", "BIENVENIDA10", 10, LocalDate.now());
 
         // Act y Assert
         assertTrue(cupon.estaVigente());
@@ -51,7 +51,7 @@ public class CuponTest {
     void unCuponConFechaPasadaNoDebeEstarVigente() {
 
         // Arrange
-        Cupon cupon = Cupon.crear(1L, "BIENVENIDA10", 10, LocalDate.now().minusDays(1));
+        Cupon cupon = Cupon.crear("cu-1", "BIENVENIDA10", 10, LocalDate.now().minusDays(1));
 
         // Act y Assert
         assertFalse(cupon.estaVigente());
@@ -64,8 +64,8 @@ public class CuponTest {
         LocalDate fecha = LocalDate.now().plusDays(5);
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> Cupon.crear(1L, "X", 0, fecha));
-        assertThrows(ReglaDominioException.class, () -> Cupon.crear(1L, "X", 101, fecha));
+        assertThrows(ReglaDominioException.class, () -> Cupon.crear("cu-1", "X", 0, fecha));
+        assertThrows(ReglaDominioException.class, () -> Cupon.crear("cu-1", "X", 101, fecha));
     }
 
     @Test
@@ -75,13 +75,13 @@ public class CuponTest {
         LocalDate fecha = LocalDate.now().plusDays(5);
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> Cupon.crear(1L, " ", 10, fecha));
+        assertThrows(ReglaDominioException.class, () -> Cupon.crear("cu-1", " ", 10, fecha));
     }
 
     @Test
     void unCuponSinFechaDeExpiracionDebeLanzarReglaDominioException() {
 
         // Act y Assert
-        assertThrows(ReglaDominioException.class, () -> Cupon.crear(1L, "BIENVENIDA10", 10, null));
+        assertThrows(ReglaDominioException.class, () -> Cupon.crear("cu-1", "BIENVENIDA10", 10, null));
     }
 }

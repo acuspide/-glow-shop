@@ -30,7 +30,7 @@ public class ActualizarRutinaCuidadoUseCaseTest {
 
     @Test
     void debeActualizarUnaRutinaExistente() {
-        long rutinaId = 1L;
+        String rutinaId = "r-1";
 
         Articulo articulo1 = mock(Articulo.class);
         Articulo articulo2 = mock(Articulo.class);
@@ -38,10 +38,10 @@ public class ActualizarRutinaCuidadoUseCaseTest {
         when(rutinaRepository.obtenerPorId(rutinaId))
                 .thenReturn(Optional.of(mock(RutinaCuidado.class)));
 
-        when(articuloRepository.obtenerPorId(10L))
+        when(articuloRepository.obtenerPorId("a-10"))
                 .thenReturn(Optional.of(articulo1));
 
-        when(articuloRepository.obtenerPorId(20L))
+        when(articuloRepository.obtenerPorId("a-20"))
                 .thenReturn(Optional.of(articulo2));
 
         when(articulo1.isPublicado()).thenReturn(true);
@@ -53,7 +53,7 @@ public class ActualizarRutinaCuidadoUseCaseTest {
         RutinaCuidado resultado = useCase.ejecutar(
                 rutinaId,
                 "Rutina actualizada",
-                List.of(10L, 20L)
+                List.of("a-10", "a-20")
         );
 
         assertEquals(rutinaId, resultado.getId());
@@ -65,15 +65,15 @@ public class ActualizarRutinaCuidadoUseCaseTest {
 
     @Test
     void debeLanzarExcepcionCuandoLaRutinaNoExiste() {
-        when(rutinaRepository.obtenerPorId(99L))
+        when(rutinaRepository.obtenerPorId("r-99"))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 java.util.NoSuchElementException.class,
                 () -> useCase.ejecutar(
-                        99L,
+                        "r-99",
                         "Rutina actualizada",
-                        List.of(10L, 20L)
+                        List.of("a-10", "a-20")
                 )
         );
 

@@ -16,19 +16,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PedidoTest {
 
-    private DetallePedido detalle(long articuloId, int cantidad, String precio) {
+    private DetallePedido detalle(String articuloId, int cantidad, String precio) {
         return new DetallePedido(articuloId, cantidad, new Precio(new BigDecimal(precio)));
     }
 
     private Pedido crearPedido() {
-        return Pedido.crear(1L, 100L, List.of(detalle(1L, 2, "10000")));
+        return Pedido.crear("p-1", "u-100", List.of(detalle("a-1", 2, "10000")));
     }
 
-    private Cupon cuponVigente(long id, int porcentaje) {
+    private Cupon cuponVigente(String id, int porcentaje) {
         return Cupon.crear(id, "CUPON" + id, porcentaje, LocalDate.now().plusDays(5));
     }
 
-    private Pago pagoAprobado(long pagoId, long pedidoId, String monto) {
+    private Pago pagoAprobado(String pagoId, String pedidoId, String monto) {
         Pago pago = Pago.crear(pagoId, pedidoId, new Precio(new BigDecimal(monto)));
         pago.aprobar();
         return pago;
@@ -39,24 +39,24 @@ public class PedidoTest {
     void unPedidoNoDebePoderCrearseSinDetalles() {
 
         // Act y Assert
-        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear(1L, 100L, List.of()));
+        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear("p-1", "u-100", List.of()));
     }
 
     @Test
     void unPedidoNoDebePoderCrearseConListaDeDetallesNula() {
 
         // Act y Assert
-        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear(1L, 100L, null));
+        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear("p-1", "u-100", null));
     }
 
     @Test
     void unPedidoDebeCrearseConTodosSusDetalles() {
 
         // Arrange
-        List<DetallePedido> detalles = List.of(detalle(1L, 2, "10000"), detalle(2L, 1, "5000"));
+        List<DetallePedido> detalles = List.of(detalle("a-1", 2, "10000"), detalle("a-2", 1, "5000"));
 
         // Act
-        Pedido pedido = Pedido.crear(1L, 100L, detalles);
+        Pedido pedido = Pedido.crear("p-1", "u-100", detalles);
 
         // Assert
         assertEquals(2, pedido.getDetalles().size());
@@ -92,7 +92,7 @@ public class PedidoTest {
     void elPrecioDeUnDetalleYaAgregadoNoCambiaSiCambiaElPrecioDelArticulo() {
 
         // Arrange
-        Pedido pedido = Pedido.crear(1L, 100L, List.of(detalle(1L, 1, "10000")));
+        Pedido pedido = Pedido.crear("p-1", "u-100", List.of(detalle("a-1", 1, "10000")));
 
         // Act
         // Simulamos que el precio del artículo cambia después de la compra
@@ -122,7 +122,7 @@ public class PedidoTest {
 
         // Arrange
         Pedido pedido = crearPedido();
-        pedido.agregarDetalle(detalle(2L, 1, "10000"));
+        pedido.agregarDetalle(detalle("a-2", 1, "10000"));
 
         // Act
         BigDecimal total = pedido.calcularTotal();
@@ -136,7 +136,7 @@ public class PedidoTest {
 
         // Arrange
         Pedido pedido = crearPedido();                                   // subtotal 20000
-        pedido.aplicarCupon(cuponVigente(1L, 10));                       // descuento 2000
+        pedido.aplicarCupon(cuponVigente("cu-1", 10));                       // descuento 2000
         pedido.asignarImpuestos(new Precio(new BigDecimal("3420")));
         pedido.asignarCostoEnvio(new Precio(new BigDecimal("8000")));
 
@@ -155,7 +155,7 @@ public class PedidoTest {
         Pedido pedido = crearPedido();
 
         // Act
-        pedido.aplicarCupon(cuponVigente(1L, 100));
+        pedido.aplicarCupon(cuponVigente("cu-1", 100));
 
         // Assert
         assertEquals(0, pedido.calcularTotal().compareTo(BigDecimal.ZERO));
@@ -171,7 +171,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.agregarDetalle(detalle(2L, 1, "5000")));
+                () -> pedido.agregarDetalle(detalle("a-2", 1, "5000")));
     }
 
     @Test
@@ -183,7 +183,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.agregarDetalle(detalle(2L, 1, "5000")));
+                () -> pedido.agregarDetalle(detalle("a-2", 1, "5000")));
     }
 
     @Test
@@ -195,7 +195,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.aplicarCupon(cuponVigente(1L, 10)));
+                () -> pedido.aplicarCupon(cuponVigente("cu-1", 10)));
     }
 
     @Test
@@ -216,11 +216,11 @@ public class PedidoTest {
 
         // Arrange
         Pedido pedido = crearPedido();
-        pedido.aplicarCupon(cuponVigente(1L, 10));
+        pedido.aplicarCupon(cuponVigente("cu-1", 10));
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.aplicarCupon(cuponVigente(2L, 5)));
+                () -> pedido.aplicarCupon(cuponVigente("cu-2", 5)));
     }
 
     // Validaciones de aplicarCupon y cargos
@@ -230,7 +230,7 @@ public class PedidoTest {
 
         // Arrange
         Pedido pedido = crearPedido();
-        Cupon vencido = Cupon.crear(1L, "VENCIDO", 10, LocalDate.now().minusDays(1));
+        Cupon vencido = Cupon.crear("cu-1", "VENCIDO", 10, LocalDate.now().minusDays(1));
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> pedido.aplicarCupon(vencido));
@@ -243,10 +243,10 @@ public class PedidoTest {
         Pedido pedido = crearPedido();
 
         // Act
-        pedido.aplicarCupon(cuponVigente(7L, 10));
+        pedido.aplicarCupon(cuponVigente("cu-7", 10));
 
         // Assert
-        assertEquals(Long.valueOf(7L), pedido.getCuponId());
+        assertEquals("cu-7", pedido.getCuponId());
         assertEquals(new BigDecimal("2000"), pedido.getDescuento().valor());
     }
 
@@ -277,14 +277,14 @@ public class PedidoTest {
         // Arrange
         Pedido pedido = crearPedido();                                   // total 20000
         pedido.confirmar();
-        pedido.registrarPago(pagoAprobado(50L, 1L, "20000"));
+        pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20000"));
 
         // Act
         pedido.iniciarPreparacion();
 
         // Assert
         assertEquals(EstadoPedido.EN_PREPARACION, pedido.getEstado());
-        assertEquals(Long.valueOf(50L), pedido.getPagoConfirmadoId());
+        assertEquals("pa-50", pedido.getPagoConfirmadoId());
     }
 
     @Test
@@ -293,7 +293,7 @@ public class PedidoTest {
         // Arrange
         Pedido pedido = crearPedido();
         pedido.confirmar();
-        Pago pagoPendiente =Pago.crear(50L, 1L, new Precio(new BigDecimal("20000")));
+        Pago pagoPendiente =Pago.crear("pa-50", "p-1", new Precio(new BigDecimal("20000")));
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> pedido.registrarPago(pagoPendiente));
@@ -308,7 +308,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.registrarPago(pagoAprobado(50L, 999L, "20000")));
+                () -> pedido.registrarPago(pagoAprobado("pa-50", "p-999", "20000")));
     }
 
     @Test
@@ -320,7 +320,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.registrarPago(pagoAprobado(50L, 1L, "19999")));
+                () -> pedido.registrarPago(pagoAprobado("pa-50", "p-1", "19999")));
     }
 
     @Test
@@ -332,7 +332,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.registrarPago(pagoAprobado(50L, 1L, "20001")));
+                () -> pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20001")));
     }
 
     @Test
@@ -343,10 +343,10 @@ public class PedidoTest {
         pedido.confirmar();
 
         // Act
-        pedido.registrarPago(pagoAprobado(50L, 1L, "20000.00"));
+        pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20000.00"));
 
         // Assert
-        assertEquals(Long.valueOf(50L), pedido.getPagoConfirmadoId());
+        assertEquals("pa-50", pedido.getPagoConfirmadoId());
     }
 
     @Test
@@ -357,7 +357,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.registrarPago(pagoAprobado(50L, 1L, "20000")));
+                () -> pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20000")));
     }
 
     @Test
@@ -366,8 +366,8 @@ public class PedidoTest {
         // Arrange
         Pedido pedido = crearPedido();
         pedido.confirmar();
-        pedido.registrarPago(pagoAprobado(50L, 1L, "20000"));
-        Pago segundoPago = pagoAprobado(51L, 1L, "20000");
+        pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20000"));
+        Pago segundoPago = pagoAprobado("pa-51", "p-1", "20000");
         // Act y Assert
         assertThrows(ReglaDominioException.class,
                 () -> pedido.registrarPago(segundoPago));
@@ -381,7 +381,7 @@ public class PedidoTest {
         // Arrange
         Pedido pedido = crearPedido();
         pedido.confirmar();
-        pedido.registrarPago(pagoAprobado(50L, 1L, "20000"));
+        pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20000"));
         pedido.iniciarPreparacion();
 
         // Act
@@ -398,7 +398,7 @@ public class PedidoTest {
         // Arrange
         Pedido pedido = crearPedido();
         pedido.confirmar();
-        pedido.registrarPago(pagoAprobado(50L, 1L, "20000"));
+        pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20000"));
         pedido.iniciarPreparacion();
         pedido.enviar();
         pedido.entregar();

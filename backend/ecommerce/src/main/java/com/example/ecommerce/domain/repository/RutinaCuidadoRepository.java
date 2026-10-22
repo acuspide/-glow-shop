@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RutinaCuidadoRepository {
-    Optional<RutinaCuidado> obtenerPorId(long id);
+    Optional<RutinaCuidado> obtenerPorId(String id);
 
     void guardar(RutinaCuidado rutina);
     List<RutinaCuidado> listarTodas();

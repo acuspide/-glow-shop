@@ -5,18 +5,18 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ListarArticulosResponse(
-        long id,
+        String id,
         String nombre,
         BigDecimal precio,
-        long categoriaId,
+        String categoriaId,
         String categoriaNombre,
-        long marcaId,
+        String marcaId,
         String marcaNombre,
         String tono,
         List<String> tiposPiel,
         int cantidadDisponible,
         LocalDate fechaVencimiento,
-        long tiendaId,
+        String tiendaId,
         String tiendaNombre
 ) {
 }

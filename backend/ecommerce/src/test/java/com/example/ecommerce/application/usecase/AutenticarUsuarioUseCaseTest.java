@@ -1,11 +1,12 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.application.PasswordHasher;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
-import com.example.ecommerce.domain.valueobject.RolUsuario;
+import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,12 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        new RegistrarUsuarioUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana Pérez", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
+                .ejecutar("u-1", "Ana Pérez", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act
-        Usuario usuario = useCase.ejecutar("ana@correo.com", "clave123");
+        Usuario usuario = useCase.ejecutar("ana@correo.com", "Clave123");
 
         // Assert
         assertEquals("ana@correo.com", usuario.getEmail().getValor());
@@ -36,8 +37,8 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        new RegistrarUsuarioUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
+                .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
@@ -55,7 +56,7 @@ public class AutenticarUsuarioUseCaseTest {
 
         // Act y Assert
         assertThrows(CredencialesInvalidasException.class, () -> {
-            useCase.ejecutar("noexiste@correo.com", "clave123");
+            useCase.ejecutar("noexiste@correo.com", "Clave123");
         });
     }
 
@@ -64,14 +65,30 @@ public class AutenticarUsuarioUseCaseTest {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
         PasswordHasher passwordHasher = new PasswordHasherSha256();
-        Usuario usuario = new RegistrarUsuarioUseCase(repository, passwordHasher)
-                .ejecutar(1L, "Ana", "ana@correo.com", "clave123", RolUsuario.CLIENTE);
+        Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
+                .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         usuario.desactivar();
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
         assertThrows(UsuarioInactivoException.class, () -> {
-            useCase.ejecutar("ana@correo.com", "clave123");
+            useCase.ejecutar("ana@correo.com", "Clave123");
+        });
+    }
+
+    @Test
+    void unUsuarioDesactivadoConContrasenaIncorrectaRecibeCredencialesInvalidas() {
+        // Arrange
+        UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
+        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
+                .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
+        usuario.desactivar();
+        AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
+
+        // Act y Assert: no debe revelar que la cuenta existe y está desactivada
+        assertThrows(CredencialesInvalidasException.class, () -> {
+            useCase.ejecutar("ana@correo.com", "claveIncorrecta");
         });
     }
 }

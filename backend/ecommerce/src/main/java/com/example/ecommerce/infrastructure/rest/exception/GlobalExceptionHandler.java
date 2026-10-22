@@ -1,7 +1,12 @@
 package com.example.ecommerce.infrastructure.rest.exception;
 
+import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
+import com.example.ecommerce.domain.exception.CalificacionAjenaException;
 import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
+import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
+import com.example.ecommerce.domain.exception.TokenInvalidoException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import org.springframework.http.HttpStatus;
@@ -57,6 +62,39 @@ public class GlobalExceptionHandler {
             CredencialesInvalidasException ex) {
 
         return construirRespuesta(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(TokenInvalidoException.class)
+    public ResponseEntity<Map<String, Object>> manejarTokenInvalido(
+            TokenInvalidoException ex) {
+
+        return construirRespuesta(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(AccionSoloParaAdministradorException.class)
+    public ResponseEntity<Map<String, Object>> manejarAccionSoloParaAdministrador(
+            AccionSoloParaAdministradorException ex) {
+
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
+    @ExceptionHandler(AccionSoloParaClienteException.class)
+    public ResponseEntity<Map<String, Object>> manejarAccionSoloParaCliente(
+            AccionSoloParaClienteException ex) {
+
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
+    @ExceptionHandler(CalificacionAjenaException.class)
+    public ResponseEntity<Map<String, Object>> manejarCalificacionAjena(CalificacionAjenaException ex) {
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
+    @ExceptionHandler(CreacionUsuarioNoPermitidaException.class)
+    public ResponseEntity<Map<String, Object>> manejarCreacionNoPermitida(
+            CreacionUsuarioNoPermitidaException ex) {
+
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(UsuarioInactivoException.class)

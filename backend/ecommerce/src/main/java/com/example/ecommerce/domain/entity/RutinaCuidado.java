@@ -8,27 +8,30 @@ import java.util.List;
 import java.util.Objects;
 
 public class RutinaCuidado {
-    private final long id;
+    private final String id;
     private final String nombre;
     private final List<Articulo> articulos;
 
-    private RutinaCuidado(long id, String nombre, List<Articulo> articulos) {
-        validarArticulos(articulos);
-
+    private RutinaCuidado(String id, String nombre, List<Articulo> articulos) {
         this.id = id;
         this.nombre = nombre;
         this.articulos = List.copyOf(articulos);
     }
 
     public static RutinaCuidado crear(
-            long id,
+            String id,
             String nombre,
             List<Articulo> articulos
     ) {
+        validarArticulos(articulos);
         return new RutinaCuidado(id, nombre, articulos);
     }
 
-    private void validarArticulos(List<Articulo> articulos) {
+    public static RutinaCuidado reconstruir(String id, String nombre, List<Articulo> articulos) {
+        return new RutinaCuidado(id, nombre, articulos);
+    }
+
+    private static void validarArticulos(List<Articulo> articulos) {
 
         if (articulos == null || articulos.size() < 2) {
             throw new RutinaSinMinimoDeArticulosException();
@@ -56,7 +59,7 @@ public class RutinaCuidado {
         );
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -72,7 +75,7 @@ public class RutinaCuidado {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RutinaCuidado otra)) return false;
-        return id == otra.id;
+        return id.equals(otra.id);
     }
 
     @Override

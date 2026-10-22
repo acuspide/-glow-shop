@@ -11,10 +11,10 @@ import java.util.Optional;
 
 @Repository
 public class RutinaCuidadoRepositoryEnMemoria implements RutinaCuidadoRepository {
-    private final Map<Long, RutinaCuidado> rutinas = new HashMap<>();
+    private final Map<String, RutinaCuidado> rutinas = new HashMap<>();
 
     @Override
-    public Optional<RutinaCuidado> obtenerPorId(long id) {
+    public Optional<RutinaCuidado> obtenerPorId(String id) {
         return Optional.ofNullable(rutinas.get(id));
     }
 

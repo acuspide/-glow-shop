@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Articulo {
-    private final long id;
+    private final String id;
     private NombreArticulo nombre;
     private Precio precio;
     private Categoria categoria;
@@ -23,7 +23,7 @@ public class Articulo {
     private boolean publicado;
 
     private Articulo(
-            long id,
+            String id,
             NombreArticulo nombre,
             Precio precio,
             Categoria categoria,
@@ -32,7 +32,9 @@ public class Articulo {
             List<TipoPiel> tiposPiel,
             Inventario inventario,
             FechaVencimiento fechaVencimiento,
-            Tienda tienda){
+            Tienda tienda,
+            boolean eliminado,
+            boolean publicado){
 
         this.id = id;
         this.nombre = nombre;
@@ -44,12 +46,12 @@ public class Articulo {
         this.inventario = inventario;
         this.fechaVencimiento = fechaVencimiento;
         this.tienda = tienda;
-        this.eliminado = false;
-        this.publicado = false;
+        this.eliminado = eliminado;
+        this.publicado = publicado;
 
     }
     public static Articulo crear(
-            long id,
+            String id,
             NombreArticulo nombre,
             Precio precio,
             Categoria categoria,
@@ -70,8 +72,28 @@ public class Articulo {
                 tiposPiel,
                 inventario,
                 fechaVencimiento,
-                tienda
+                tienda,
+                false,
+                false
         );
+    }
+
+    public static Articulo reconstruir(
+            String id,
+            NombreArticulo nombre,
+            Precio precio,
+            Categoria categoria,
+            Marca marca,
+            Tono tono,
+            List<TipoPiel> tiposPiel,
+            Inventario inventario,
+            FechaVencimiento fechaVencimiento,
+            Tienda tienda,
+            boolean eliminado,
+            boolean publicado
+    ) {
+        return new Articulo(id, nombre, precio, categoria, marca, tono, tiposPiel,
+                inventario, fechaVencimiento, tienda, eliminado, publicado);
     }
 
     public void publicar(){
@@ -87,7 +109,7 @@ public class Articulo {
     }
 
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -204,9 +226,7 @@ public class Articulo {
             FechaVencimiento fechaVencimiento
     ) {
         if (eliminado) {
-            throw new IllegalStateException(
-                    "No se puede actualizar un artículo eliminado."
-            );
+            throw new ArticuloEliminadoException();
         }
 
         if (nombre == null) {
@@ -257,9 +277,7 @@ public class Articulo {
 
     public void eliminar() {
         if (eliminado) {
-            throw new IllegalStateException(
-                    "El artículo ya está eliminado."
-            );
+            throw new ArticuloEliminadoException();
         }
 
         eliminado = true;
@@ -267,16 +285,16 @@ public class Articulo {
 
 
 
-    public boolean perteneceACategoria(Long categoriaId) {
-        return categoria.getId() == categoriaId;
+    public boolean perteneceACategoria(String categoriaId) {
+        return categoria.getId().equals(categoriaId);
     }
 
-    public boolean esDeMarca(Long marcaId) {
-        return marca.getId() == marcaId;
+    public boolean esDeMarca(String marcaId) {
+        return marca.getId().equals(marcaId);
     }
 
-    public boolean perteneceATienda(Long tiendaId) {
-        return tienda.getId() == tiendaId;
+    public boolean perteneceATienda(String tiendaId) {
+        return tienda.getId().equals(tiendaId);
     }
 
     public boolean tienePrecioMinimo(BigDecimal precioMinimo) {
@@ -298,7 +316,7 @@ public class Articulo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Articulo otro)) return false;
-        return id == otro.id;
+        return id.equals(otro.id);
     }
 
     @Override

@@ -5,17 +5,17 @@ import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.valueobject.CriteriosBusquedaArticulo;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BuscarArticulosUseCase {
     private final ArticuloRepository repository;
 
-    public BuscarArticulosUseCase(ArticuloRepository repository) {
-        this.repository = repository;
-    }
-
+    @Transactional(readOnly = true)
     public List<Articulo> ejecutar(CriteriosBusquedaArticulo criterios) {
         return repository.listarTodos()
                 .stream()

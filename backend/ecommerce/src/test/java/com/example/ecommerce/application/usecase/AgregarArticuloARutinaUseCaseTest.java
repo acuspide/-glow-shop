@@ -35,17 +35,17 @@ public class AgregarArticuloARutinaUseCaseTest {
         Articulo articuloNuevo = articuloDisponible();
 
         RutinaCuidado rutina = RutinaCuidado.crear(
-                1L, "Rutina facial", List.of(articulo1, articulo2)
+                "r-1", "Rutina facial", List.of(articulo1, articulo2)
         );
 
-        when(rutinaRepository.obtenerPorId(1L))
+        when(rutinaRepository.obtenerPorId("r-1"))
                 .thenReturn(Optional.of(rutina));
-        when(articuloRepository.obtenerPorId(3L))
+        when(articuloRepository.obtenerPorId("a-3"))
                 .thenReturn(Optional.of(articuloNuevo));
 
-        RutinaCuidado resultado = useCase.ejecutar(1L, 3L);
+        RutinaCuidado resultado = useCase.ejecutar("r-1", "a-3");
 
-        assertEquals(1L, resultado.getId());
+        assertEquals("r-1", resultado.getId());
         assertEquals("Rutina facial", resultado.getNombre());
         assertEquals(3, resultado.getArticulos().size());
         assertTrue(resultado.getArticulos().contains(articuloNuevo));
@@ -55,12 +55,12 @@ public class AgregarArticuloARutinaUseCaseTest {
 
     @Test
     void debeLanzarExcepcionSiLaRutinaNoExiste() {
-        when(rutinaRepository.obtenerPorId(1L))
+        when(rutinaRepository.obtenerPorId("r-1"))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 java.util.NoSuchElementException.class,
-                () -> useCase.ejecutar(1L, 3L)
+                () -> useCase.ejecutar("r-1", "a-3")
         );
 
         verifyNoInteractions(articuloRepository);
@@ -70,19 +70,19 @@ public class AgregarArticuloARutinaUseCaseTest {
     @Test
     void debeLanzarExcepcionSiElArticuloNoExiste() {
         RutinaCuidado rutina = RutinaCuidado.crear(
-                1L,
+                "r-1",
                 "Rutina facial",
                 List.of(articuloDisponible(), articuloDisponible())
         );
 
-        when(rutinaRepository.obtenerPorId(1L))
+        when(rutinaRepository.obtenerPorId("r-1"))
                 .thenReturn(Optional.of(rutina));
-        when(articuloRepository.obtenerPorId(3L))
+        when(articuloRepository.obtenerPorId("a-3"))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 java.util.NoSuchElementException.class,
-                () -> useCase.ejecutar(1L, 3L)
+                () -> useCase.ejecutar("r-1", "a-3")
         );
 
         verify(rutinaRepository, never()).guardar(any());

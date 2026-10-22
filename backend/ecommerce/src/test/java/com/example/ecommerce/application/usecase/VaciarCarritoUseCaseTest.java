@@ -28,18 +28,18 @@ class VaciarCarritoUseCaseTest {
     @InjectMocks
     private VaciarCarritoUseCase useCase;
 
-    private Articulo crearArticuloPublicado(long id, String precio) {
+    private Articulo crearArticuloPublicado(String id, String precio) {
         Articulo articulo = Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal(precio)),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Bloom"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Bloom"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
         articulo.publicar();
         return articulo;
@@ -49,17 +49,17 @@ class VaciarCarritoUseCaseTest {
     void deberiaVaciarElCarritoCuandoElClienteTieneCarrito() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
-        carrito.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
-        when(carritoRepository.obtenerPorClienteId(100L)).thenReturn(Optional.of(carrito));
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
+        carrito.agregarArticulo(crearArticuloPublicado("a-2", "50000"), 1);
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 
         // Act
-        useCase.ejecutar(100L);
+        useCase.ejecutar("u-100");
 
         // Assert
         assertTrue(carrito.estaVacio());
-        verify(carritoRepository).obtenerPorClienteId(100L);
+        verify(carritoRepository).obtenerPorClienteId("u-100");
         verify(carritoRepository).guardar(carrito);
     }
 
@@ -67,11 +67,11 @@ class VaciarCarritoUseCaseTest {
     void deberiaLanzarExcepcionCuandoElClienteNoTieneCarrito() {
 
         // Arrange
-        when(carritoRepository.obtenerPorClienteId(100L)).thenReturn(Optional.empty());
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
         // Act y Assert
         assertThrows(NoSuchElementException.class, () -> {
-            useCase.ejecutar(100L);
+            useCase.ejecutar("u-100");
         });
 
         verify(carritoRepository, never()).guardar(any());

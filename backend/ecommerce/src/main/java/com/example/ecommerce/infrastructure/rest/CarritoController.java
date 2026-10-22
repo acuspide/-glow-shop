@@ -1,18 +1,29 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.request.AgregarArticuloAlCarritoRequest;
 import com.example.ecommerce.application.dto.response.CarritoResponse;
 import com.example.ecommerce.application.usecase.AgregarAlCarritoUseCase;
+import com.example.ecommerce.application.usecase.QuitarArticuloDelCarritoUseCase;
+import com.example.ecommerce.application.usecase.VaciarCarritoUseCase;
 import com.example.ecommerce.application.usecase.VerCarritoUseCase;
 import com.example.ecommerce.domain.entity.Carrito;
 import com.example.ecommerce.infrastructure.rest.mapper.CarritoMapper;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.ecommerce.application.usecase.VaciarCarritoUseCase;
-import com.example.ecommerce.application.usecase.QuitarArticuloDelCarritoUseCase;
+
+import java.util.UUID;
+
+/**
+ * Carrito del cliente con sesión iniciada. El cliente se identifica con el token
+ * ("Authorization: Bearer <token>"), nunca con un id en la URL: así nadie puede
+ * ver ni modificar el carrito de otra persona.
+ */
 @RestController
-@RequestMapping("/api/carritos")
+@RequiredArgsConstructor
+@RequestMapping("/api/carrito")
 public class CarritoController {
 
     private final AgregarAlCarritoUseCase agregarAlCarritoUseCase;
@@ -20,26 +31,16 @@ public class CarritoController {
     private final VerCarritoUseCase verCarritoUseCase;
     private final VaciarCarritoUseCase vaciarCarritoUseCase;
     private final QuitarArticuloDelCarritoUseCase quitarArticuloDelCarritoUseCase;
+    private final TokenService tokenService;
 
-    public CarritoController(AgregarAlCarritoUseCase agregarAlCarritoUseCase,
-                             CarritoMapper mapper,
-                             VerCarritoUseCase verCarritoUseCase,
-                             VaciarCarritoUseCase vaciarCarritoUseCase,
-                             QuitarArticuloDelCarritoUseCase quitarArticuloDelCarritoUseCase) {
-        this.agregarAlCarritoUseCase = agregarAlCarritoUseCase;
-        this.mapper = mapper;
-        this.verCarritoUseCase = verCarritoUseCase;
-        this.vaciarCarritoUseCase = vaciarCarritoUseCase;
-        this.quitarArticuloDelCarritoUseCase = quitarArticuloDelCarritoUseCase;
-    }
-
-    @PostMapping("/{clienteId}/items")
+    @PostMapping("/items")
     public ResponseEntity<CarritoResponse> agregarArticulo(
-            @PathVariable long clienteId,
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
             @Valid @RequestBody AgregarArticuloAlCarritoRequest request) {
 
         Carrito carrito = agregarAlCarritoUseCase.ejecutar(
-                clienteId,
+                UUID.randomUUID().toString(),
+                clienteDelToken(autorizacion),
                 request.articuloId(),
                 request.cantidad()
         );
@@ -47,26 +48,35 @@ public class CarritoController {
         return ResponseEntity.ok(mapper.toResponse(carrito));
     }
 
-    @GetMapping("/{clienteId}")
-    public ResponseEntity<CarritoResponse> verCarrito(@PathVariable long clienteId) {
+    @GetMapping
+    public ResponseEntity<CarritoResponse> verCarrito(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion) {
 
-        Carrito carrito = verCarritoUseCase.ejecutar(clienteId);
+        Carrito carrito = verCarritoUseCase.ejecutar(clienteDelToken(autorizacion));
 
         return ResponseEntity.ok(mapper.toResponse(carrito));
     }
-    @DeleteMapping("/{clienteId}/items")
-    public ResponseEntity<Void> vaciarCarrito(@PathVariable long clienteId) {
 
-        vaciarCarritoUseCase.ejecutar(clienteId);
+    @DeleteMapping("/items")
+    public ResponseEntity<Void> vaciarCarrito(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion) {
+
+        vaciarCarritoUseCase.ejecutar(clienteDelToken(autorizacion));
 
         return ResponseEntity.noContent().build();
     }
-    @DeleteMapping("/{clienteId}/items/{articuloId}")
-    public ResponseEntity<Void> quitarArticulo(@PathVariable long clienteId,
-                                               @PathVariable long articuloId) {
 
-        quitarArticuloDelCarritoUseCase.ejecutar(clienteId, articuloId);
+    @DeleteMapping("/items/{articuloId}")
+    public ResponseEntity<Void> quitarArticulo(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @PathVariable String articuloId) {
+
+        quitarArticuloDelCarritoUseCase.ejecutar(clienteDelToken(autorizacion), articuloId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private String clienteDelToken(String autorizacion) {
+        return tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
     }
 }

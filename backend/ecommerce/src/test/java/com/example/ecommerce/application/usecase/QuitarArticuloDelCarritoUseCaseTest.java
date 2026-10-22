@@ -29,18 +29,18 @@ class QuitarArticuloDelCarritoUseCaseTest {
     @InjectMocks
     private QuitarArticuloDelCarritoUseCase useCase;
 
-    private Articulo crearArticuloPublicado(long id, String precio) {
+    private Articulo crearArticuloPublicado(String id, String precio) {
         Articulo articulo = Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal(precio)),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Bloom"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Bloom"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
         articulo.publicar();
         return articulo;
@@ -50,17 +50,17 @@ class QuitarArticuloDelCarritoUseCaseTest {
     void deberiaQuitarElArticuloCuandoEstaEnElCarrito() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
-        carrito.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
-        when(carritoRepository.obtenerPorClienteId(100L)).thenReturn(Optional.of(carrito));
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
+        carrito.agregarArticulo(crearArticuloPublicado("a-2", "50000"), 1);
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 
         // Act
-        useCase.ejecutar(100L, 1L);
+        useCase.ejecutar("u-100", "a-1");
 
         // Assert
         assertEquals(1, carrito.getItems().size());
-        assertEquals(2L, carrito.getItems().get(0).getArticuloId());
+        assertEquals("a-2", carrito.getItems().get(0).getArticuloId());
         verify(carritoRepository).guardar(carrito);
     }
 
@@ -68,11 +68,11 @@ class QuitarArticuloDelCarritoUseCaseTest {
     void deberiaLanzarExcepcionCuandoElClienteNoTieneCarrito() {
 
         // Arrange
-        when(carritoRepository.obtenerPorClienteId(100L)).thenReturn(Optional.empty());
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
         // Act y Assert
         assertThrows(NoSuchElementException.class, () -> {
-            useCase.ejecutar(100L, 1L);
+            useCase.ejecutar("u-100", "a-1");
         });
 
         verify(carritoRepository, never()).guardar(any());
@@ -82,13 +82,13 @@ class QuitarArticuloDelCarritoUseCaseTest {
     void deberiaLanzarExcepcionCuandoElArticuloNoEstaEnElCarrito() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
-        when(carritoRepository.obtenerPorClienteId(100L)).thenReturn(Optional.of(carrito));
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 
         // Act y Assert
         assertThrows(ArticuloNoEncontradoEnCarritoException.class, () -> {
-            useCase.ejecutar(100L, 99L);
+            useCase.ejecutar("u-100", "a-99");
         });
 
         assertEquals(1, carrito.getItems().size());

@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 
 public record CriteriosBusquedaArticulo(
         String texto,
-        Long categoriaId,
-        Long marcaId,
-        Long tiendaId,
+        String categoriaId,
+        String marcaId,
+        String tiendaId,
         BigDecimal precioMinimo,
         BigDecimal precioMaximo,
         Tono tono,

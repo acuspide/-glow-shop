@@ -12,10 +12,10 @@ import java.util.Optional;
 @Repository
 public class PedidoRepositoryEnMemoria implements PedidoRepository {
 
-    private final Map<Long, Pedido> pedidos = new HashMap<>();
+    private final Map<String, Pedido> pedidos = new HashMap<>();
 
     @Override
-    public Optional<Pedido> obtenerPorId(long id) {
+    public Optional<Pedido> obtenerPorId(String id) {
         return Optional.ofNullable(pedidos.get(id));
     }
 

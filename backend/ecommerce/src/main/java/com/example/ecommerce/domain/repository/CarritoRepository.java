@@ -5,11 +5,9 @@ import com.example.ecommerce.domain.entity.Carrito;
 import java.util.Optional;
 
 public interface CarritoRepository {
-    Optional<Carrito> obtenerPorId(long id);
+    Optional<Carrito> obtenerPorId(String id);
 
-    Optional<Carrito> obtenerPorClienteId(long clienteId);
-
-    long siguienteId();
+    Optional<Carrito> obtenerPorClienteId(String clienteId);
 
     void guardar(Carrito carrito);
 }

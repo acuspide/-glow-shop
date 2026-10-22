@@ -16,6 +16,8 @@ import com.example.ecommerce.domain.valueobject.TipoPiel;
 import com.example.ecommerce.domain.valueobject.Tono;
 import com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.persistence.PedidoRepositoryEnMemoria;
+import com.example.ecommerce.domain.exception.ArticuloEliminadoException;
+import com.example.ecommerce.domain.service.VerificadorDeArticuloSinPedidosActivos;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -25,18 +27,18 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EliminarArticuloUseCaseTest {
-    private Articulo crearArticulo(long id, int cantidad) {
+    private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
                 new Precio(new BigDecimal("25000")),
-                Categoria.crear(1L, "Cuidado capilar"),
-                Marca.crear(1L, "Marca prueba"),
+                Categoria.crear("cat-1", "Cuidado capilar"),
+                Marca.crear("m-1", "Marca prueba"),
                 Tono.MEDIO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                Tienda.crear(1L, "Tienda prueba")
+                Tienda.crear("t-1", "Tienda prueba")
         );
     }
 
@@ -46,20 +48,20 @@ public class EliminarArticuloUseCaseTest {
         PedidoRepository pedidoRepository = new PedidoRepositoryEnMemoria();
 
         EliminarArticuloUseCase useCase =
-                new EliminarArticuloUseCase(repository, pedidoRepository);
+                new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
 
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         articulo.publicar();
         repository.guardar(articulo);
 
-        Articulo eliminado = useCase.ejecutar(1L);
+        Articulo eliminado = useCase.ejecutar("a-1");
 
         assertSame(articulo, eliminado);
-        assertSame(articulo, repository.obtenerPorId(1L).orElseThrow());
+        assertSame(articulo, repository.obtenerPorId("a-1").orElseThrow());
 
         assertEquals("Shampoo", eliminado.getNombre().valor());
         assertEquals(10, eliminado.getCantidadDisponible());
-        assertEquals(1L, eliminado.getTienda().getId());
+        assertEquals("t-1", eliminado.getTienda().getId());
 
         assertThrows(
                 ArticuloNoPublicadoParaVentaException.class,
@@ -78,11 +80,11 @@ public class EliminarArticuloUseCaseTest {
         PedidoRepository pedidoRepository = new PedidoRepositoryEnMemoria();
 
         EliminarArticuloUseCase useCase =
-                new EliminarArticuloUseCase(repository, pedidoRepository);
+                new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
 
         assertThrows(
                 ArticuloNoEncontradoException.class,
-                () -> useCase.ejecutar(99L)
+                () -> useCase.ejecutar("a-99")
         );
     }
 
@@ -92,18 +94,18 @@ public class EliminarArticuloUseCaseTest {
         PedidoRepository pedidoRepository = new PedidoRepositoryEnMemoria();
 
         EliminarArticuloUseCase useCase =
-                new EliminarArticuloUseCase(repository, pedidoRepository);
+                new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
 
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         repository.guardar(articulo);
 
-        useCase.ejecutar(1L);
+        useCase.ejecutar("a-1");
 
         assertThrows(
-                IllegalStateException.class,
-                () -> useCase.ejecutar(1L)
+                ArticuloEliminadoException.class,
+                () -> useCase.ejecutar("a-1")
         );
 
-        assertSame(articulo, repository.obtenerPorId(1L).orElseThrow());
+        assertSame(articulo, repository.obtenerPorId("a-1").orElseThrow());
     }
 }

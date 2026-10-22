@@ -17,39 +17,39 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RutinaCuidadoTest {
-    private Articulo crearArticulo(long id, int cantidad) {
+    private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
                 new Precio(new BigDecimal("25000")),
-                Categoria.crear(1L, "Cuidado capilar"),
-                Marca.crear(1L, "Marca prueba"),
+                Categoria.crear("cat-1", "Cuidado capilar"),
+                Marca.crear("m-1", "Marca prueba"),
                 Tono.MEDIO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                Tienda.crear(1L, "Tienda prueba")
+                Tienda.crear("t-1", "Tienda prueba")
         );
     }
     @Test
     void debeCrearRutinaConDosArticulosPublicadosYDisponibles() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();
 
         // Act
         RutinaCuidado rutina = RutinaCuidado.crear(
-                1L,
+                "r-1",
                 "Rutina de cuidado diario",
                 List.of(articulo1, articulo2)
         );
 
         // Assert
-        assertEquals(1L, rutina.getId());
+        assertEquals("r-1", rutina.getId());
         assertEquals("Rutina de cuidado diario", rutina.getNombre());
         assertEquals(2, rutina.getArticulos().size());
     }
@@ -57,14 +57,14 @@ public class RutinaCuidadoTest {
     void noDebeCrearRutinaConMenosDeDosArticulos() {
 
         // Arrange
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         articulo.publicar();
 
         // Act + Assert
         assertThrows(
                 RutinaSinMinimoDeArticulosException.class,
                 () -> RutinaCuidado.crear(
-                        1L,
+                        "r-1",
                         "Rutina facial",
                         List.of(articulo)
                 )
@@ -74,8 +74,8 @@ public class RutinaCuidadoTest {
     void noDebeCrearRutinaConArticuloNoPublicado() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
 
@@ -85,7 +85,7 @@ public class RutinaCuidadoTest {
         assertThrows(
                 ArticuloNoPublicadoException.class,
                 () -> RutinaCuidado.crear(
-                        1L,
+                        "r-1",
                         "Rutina facial",
                         List.of(articulo1, articulo2)
                 )
@@ -95,8 +95,8 @@ public class RutinaCuidadoTest {
     void noDebeCrearRutinaConArticuloSinDisponibilidad() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 0);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 0);
 
         articulo1.publicar();
         articulo2.publicar();
@@ -105,7 +105,7 @@ public class RutinaCuidadoTest {
         assertThrows(
                 ArticuloSinDisponibilidadException.class,
                 () -> RutinaCuidado.crear(
-                        1L,
+                        "r-1",
                         "Rutina facial",
                         List.of(articulo1, articulo2)
                 )
@@ -115,15 +115,15 @@ public class RutinaCuidadoTest {
     void debePermitirArticulosDeDiferentesMarcas() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();
 
         // Act
         RutinaCuidado rutina = RutinaCuidado.crear(
-                1L,
+                "r-1",
                 "Rutina completa",
                 List.of(articulo1, articulo2)
         );
@@ -135,21 +135,21 @@ public class RutinaCuidadoTest {
     void unMismoArticuloPuedePertenecerADiferentesRutinas() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();
 
         // Act
         RutinaCuidado rutina1 = RutinaCuidado.crear(
-                1L,
+                "r-1",
                 "Rutina facial",
                 List.of(articulo1, articulo2)
         );
 
         RutinaCuidado rutina2 = RutinaCuidado.crear(
-                2L,
+                "r-2",
                 "Rutina hidratante",
                 List.of(articulo1, articulo2)
         );

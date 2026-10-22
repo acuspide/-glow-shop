@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PedidoRepository {
-    Optional<Pedido> obtenerPorId(long id);
+    Optional<Pedido> obtenerPorId(String id);
 
     void guardar(Pedido pedido);
 

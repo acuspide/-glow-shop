@@ -7,19 +7,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/inventario")
 public class AlertarStockBajoController {
     private final AlertarStockBajoUseCase alertarStockBajoUseCase;
     private final ConsultarInventarioCompletoMapper inventarioMapper;
-
-    public AlertarStockBajoController(
-            AlertarStockBajoUseCase alertarStockBajoUseCase,
-            ConsultarInventarioCompletoMapper inventarioMapper) {
-        this.alertarStockBajoUseCase = alertarStockBajoUseCase;
-        this.inventarioMapper = inventarioMapper;
-    }
 
     @GetMapping("/stock-bajo")
     public ResponseEntity<ConsultarInventarioCompletoResponse> alertarStockBajo() {

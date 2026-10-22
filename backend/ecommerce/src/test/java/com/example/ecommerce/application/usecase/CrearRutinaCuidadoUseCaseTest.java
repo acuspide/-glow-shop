@@ -21,18 +21,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class CrearRutinaCuidadoUseCaseTest {
-    private Articulo crearArticulo(long id, int cantidad) {
+    private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
                 new Precio(new BigDecimal("25000")),
-                Categoria.crear(1L, "Cuidado capilar"),
-                Marca.crear(1L, "Marca prueba"),
+                Categoria.crear("cat-1", "Cuidado capilar"),
+                Marca.crear("m-1", "Marca prueba"),
                 Tono.MEDIO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                Tienda.crear(1L, "Tienda prueba")
+                Tienda.crear("t-1", "Tienda prueba")
         );
     }
 
@@ -51,8 +51,8 @@ public class CrearRutinaCuidadoUseCaseTest {
                         articuloRepository
                 );
 
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();
@@ -61,18 +61,18 @@ public class CrearRutinaCuidadoUseCaseTest {
         articuloRepository.guardar(articulo2);
 
         RutinaCuidado rutinaCreada = useCase.ejecutar(
-                1L,
+                "r-1",
                 "Rutina de cuidado diario",
-                List.of(1L, 2L)
+                List.of("a-1", "a-2")
         );
 
         assertNotNull(rutinaCreada);
-        assertEquals(1L, rutinaCreada.getId());
+        assertEquals("r-1", rutinaCreada.getId());
         assertEquals("Rutina de cuidado diario", rutinaCreada.getNombre());
         assertEquals(2, rutinaCreada.getArticulos().size());
 
         Optional<RutinaCuidado> rutina =
-                rutinaRepository.obtenerPorId(1L);
+                rutinaRepository.obtenerPorId("r-1");
 
         assertTrue(rutina.isPresent());
     }

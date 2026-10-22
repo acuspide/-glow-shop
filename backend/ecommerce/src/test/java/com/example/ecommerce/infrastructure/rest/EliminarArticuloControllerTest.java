@@ -24,27 +24,27 @@ public class EliminarArticuloControllerTest {
 
     @Test
     void debeEliminarArticuloYRetornar204() throws Exception {
-        mockMvc.perform(delete("/api/articulos/{id}", 1L))
+        mockMvc.perform(delete("/api/articulos/{id}", "a-1"))
                 .andExpect(status().isNoContent());
 
-        verify(eliminarArticuloUseCase).ejecutar(1L);
+        verify(eliminarArticuloUseCase).ejecutar("a-1");
     }
 
     @Test
     void debeRetornar404CuandoArticuloNoExiste() throws Exception {
-        doThrow(new ArticuloNoEncontradoException(99L))
-                .when(eliminarArticuloUseCase).ejecutar(99L);
+        doThrow(new ArticuloNoEncontradoException("a-99"))
+                .when(eliminarArticuloUseCase).ejecutar("a-99");
 
-        mockMvc.perform(delete("/api/articulos/{id}", 99L))
+        mockMvc.perform(delete("/api/articulos/{id}", "a-99"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void debeRetornar400CuandoArticuloTienePedidosActivos() throws Exception {
-        doThrow(new ArticuloConPedidosActivosException(1L))
-                .when(eliminarArticuloUseCase).ejecutar(1L);
+        doThrow(new ArticuloConPedidosActivosException("a-1"))
+                .when(eliminarArticuloUseCase).ejecutar("a-1");
 
-        mockMvc.perform(delete("/api/articulos/{id}", 1L))
+        mockMvc.perform(delete("/api/articulos/{id}", "a-1"))
                 .andExpect(status().isBadRequest());
     }
 }

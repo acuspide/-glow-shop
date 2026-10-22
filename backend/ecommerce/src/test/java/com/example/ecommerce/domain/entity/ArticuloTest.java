@@ -21,29 +21,29 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo1 = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         Articulo articulo2 = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Base"),
                 new Precio(new BigDecimal("50000")),
-                Categoria.crear(2L, "Rostro"),
-                Marca.crear(2L, "MAC"),
+                Categoria.crear("cat-2", "Rostro"),
+                Marca.crear("m-2", "MAC"),
                 Tono.OSCURO,
                 List.of(TipoPiel.SECA),
                 Inventario.crear(20),
                 new FechaVencimiento(LocalDate.of(2028, 5, 20)),
-                Tienda.crear(2L, "Otra Tienda")
+                Tienda.crear("t-2", "Otra Tienda")
         );
 
         // Act
@@ -57,16 +57,16 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                2L,
+                "a-2",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2025, 1, 1)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         // Act y Assert
@@ -82,16 +82,16 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                3L,
+                "a-3",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 null,
-                Marca.crear(1L, "Maybelline"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         // Act y Assert
@@ -107,16 +107,16 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                4L,
+                "a-4",
                 new NombreArticulo("Labial"),
                 null,
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         // Act y Assert
@@ -132,16 +132,16 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                6L,
+                "a-6",
                 new NombreArticulo("Base"),
                 new Precio(new BigDecimal("50000")),
-                Categoria.crear(2L, "Rostro"),
-                Marca.crear(2L, "MAC"),
+                Categoria.crear("cat-2", "Rostro"),
+                Marca.crear("m-2", "MAC"),
                 Tono.CLARO,
                 List.of(TipoPiel.SECA),
                 Inventario.crear(20),
                 new FechaVencimiento(LocalDate.of(2028, 5, 20)),
-                Tienda.crear(2L, "Tienda Beauty")
+                Tienda.crear("t-2", "Tienda Beauty")
         );
 
         // Act
@@ -155,16 +155,16 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                5L,
+                "a-5",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         // Act
@@ -176,16 +176,16 @@ public class ArticuloTest {
 
     private Articulo crearArticulo(int stock) {
         return  Articulo.crear(
-                10L,
+                "a-10",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(stock),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
     }
 

@@ -6,20 +6,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/articulos")
 public class EliminarArticuloController {
     private final EliminarArticuloUseCase eliminarArticuloUseCase;
 
-    public EliminarArticuloController(
-            EliminarArticuloUseCase eliminarArticuloUseCase
-    ) {
-        this.eliminarArticuloUseCase = eliminarArticuloUseCase;
-    }
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable String id) {
         eliminarArticuloUseCase.ejecutar(id);
 
         return ResponseEntity.noContent().build();

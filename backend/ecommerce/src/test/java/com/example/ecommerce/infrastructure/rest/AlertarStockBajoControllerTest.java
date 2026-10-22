@@ -41,7 +41,7 @@ public class AlertarStockBajoControllerTest {
                                 List.of(
                                         new ConsultarInventarioCompletoResponse
                                                 .ArticuloInventarioResponse(
-                                                1L,
+                                                "a-1",
                                                 "Shampoo",
                                                 3
                                         )
@@ -53,7 +53,7 @@ public class AlertarStockBajoControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articulos").isArray())
                 .andExpect(jsonPath("$.articulos.length()").value(1))
-                .andExpect(jsonPath("$.articulos[0].articuloId").value(1))
+                .andExpect(jsonPath("$.articulos[0].articuloId").value("a-1"))
                 .andExpect(jsonPath("$.articulos[0].nombre").value("Shampoo"))
                 .andExpect(jsonPath("$.articulos[0].cantidadDisponible").value(3));
 

@@ -12,17 +12,22 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class Carrito {
-    private final long id;
-    private final long clienteId;
+    private final String id;
+    private final String clienteId;
     private final List<ItemCarrito> items;
 
-    private Carrito(long id, long clienteId) {
+    private Carrito(String id, String clienteId, List<ItemCarrito> items) {
         this.id = id;
         this.clienteId = clienteId;
-        this.items = new ArrayList<>();
+        this.items = new ArrayList<>(items);
     }
-    public static Carrito crear(long id, long clienteId) {
-        return new Carrito(id, clienteId);
+
+    public static Carrito crear(String id, String clienteId) {
+        return new Carrito(id, clienteId, List.of());
+    }
+
+    public static Carrito reconstruir(String id, String clienteId, List<ItemCarrito> items) {
+        return new Carrito(id, clienteId, items);
     }
     public void agregarArticulo(Articulo articulo, int cantidad) {
         if (cantidad <= 0) {
@@ -38,7 +43,7 @@ public class Carrito {
         items.add(new ItemCarrito(articulo.getId(), cantidadTotal, articulo.getPrecio()));
     }
 
-    public void quitarArticulo(long articuloId) {
+    public void quitarArticulo(String articuloId) {
         ItemCarrito item = buscarItem(articuloId)
                 .orElseThrow(ArticuloNoEncontradoEnCarritoException::new);
         items.remove(item);
@@ -58,17 +63,17 @@ public class Carrito {
         return items.isEmpty();
     }
 
-    private Optional<ItemCarrito> buscarItem(long articuloId) {
+    private Optional<ItemCarrito> buscarItem(String articuloId) {
         return items.stream()
-                .filter(item -> item.getArticuloId() == articuloId)
+                .filter(item -> item.getArticuloId().equals(articuloId))
                 .findFirst();
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public long getClienteId() {
+    public String getClienteId() {
         return clienteId;
     }
 
@@ -80,7 +85,7 @@ public class Carrito {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Carrito otro)) return false;
-        return id == otro.id;
+        return id.equals(otro.id);
     }
 
     @Override

@@ -25,16 +25,16 @@ public class MostrarDetalleArticuloUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
         articulo.publicar();
 
@@ -44,11 +44,11 @@ public class MostrarDetalleArticuloUseCaseTest {
                 new MostrarDetalleArticuloUseCase(repository);
 
         // Act
-        Articulo resultado = useCase.ejecutar(1L);
+        Articulo resultado = useCase.ejecutar("a-1");
 
         // Assert
         assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
+        assertEquals("a-1", resultado.getId());
         assertEquals(articulo, resultado);
         assertEquals("Labial", resultado.getNombre().valor());
     }
@@ -66,7 +66,7 @@ public class MostrarDetalleArticuloUseCaseTest {
         // Act y Assert
         assertThrows(
                 ArticuloNoEncontradoException.class,
-                () -> useCase.ejecutar(999L)
+                () -> useCase.ejecutar("a-999")
         );
     }
 
@@ -78,16 +78,16 @@ public class MostrarDetalleArticuloUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         // No llamamos a articulo.publicar()
@@ -99,7 +99,7 @@ public class MostrarDetalleArticuloUseCaseTest {
         // Act y Assert
         assertThrows(
                 ArticuloNoPublicadoParaVentaException.class,
-                () -> useCase.ejecutar(1L)
+                () -> useCase.ejecutar("a-1")
         );
     }
 
@@ -111,16 +111,16 @@ public class MostrarDetalleArticuloUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                3L,
+                "a-3",
                 new NombreArticulo("Labial agotado"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(0),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         articulo.publicar();
@@ -132,7 +132,7 @@ public class MostrarDetalleArticuloUseCaseTest {
         // Act y Assert
         assertThrows(
                 ArticuloAgotadoException.class,
-                () -> useCase.ejecutar(3L)
+                () -> useCase.ejecutar("a-3")
         );
     }
 

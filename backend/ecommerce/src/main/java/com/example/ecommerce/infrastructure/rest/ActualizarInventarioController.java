@@ -8,22 +8,18 @@ import com.example.ecommerce.infrastructure.rest.mapper.ActualizarInventarioMapp
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/articulos")
 public class ActualizarInventarioController {
     private final ActualizarInventarioUseCase actualizarInventarioUseCase;
     private final ActualizarInventarioMapper mapper;
 
-    public ActualizarInventarioController(
-            ActualizarInventarioUseCase actualizarInventarioUseCase,
-            ActualizarInventarioMapper mapper) {
-        this.actualizarInventarioUseCase = actualizarInventarioUseCase;
-        this.mapper = mapper;
-}
     @PostMapping("/{id}/inventario/aumentar")
     public ResponseEntity<ActualizarInventarioResponse> aumentar(
-            @PathVariable long id,
+            @PathVariable String id,
             @Valid @RequestBody ActualizarInventarioRequest request) {
 
         Articulo articulo = actualizarInventarioUseCase.aumentar(
@@ -38,7 +34,7 @@ public class ActualizarInventarioController {
 
     @PostMapping("/{id}/inventario/disminuir")
     public ResponseEntity<ActualizarInventarioResponse> disminuir(
-            @PathVariable long id,
+            @PathVariable String id,
             @Valid @RequestBody ActualizarInventarioRequest request) {
 
         Articulo articulo = actualizarInventarioUseCase.disminuir(

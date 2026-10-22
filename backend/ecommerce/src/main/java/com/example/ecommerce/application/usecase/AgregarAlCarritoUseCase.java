@@ -5,24 +5,23 @@ import com.example.ecommerce.domain.entity.Carrito;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.CarritoRepository;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class AgregarAlCarritoUseCase {
 
     private final CarritoRepository carritoRepository;
     private final ArticuloRepository articuloRepository;
 
-    public AgregarAlCarritoUseCase(CarritoRepository carritoRepository, ArticuloRepository articuloRepository) {
-        this.carritoRepository = carritoRepository;
-        this.articuloRepository = articuloRepository;
-    }
-
-    public Carrito ejecutar(long clienteId, long articuloId, int cantidad) {
+    @Transactional
+    public Carrito ejecutar(String nuevoCarritoId, String clienteId, String articuloId, int cantidad) {
 
         Articulo articulo = articuloRepository.obtenerPorId(articuloId).orElseThrow();
 
         Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId)
-                .orElseGet(() -> Carrito.crear(carritoRepository.siguienteId(), clienteId));
+                .orElseGet(() -> Carrito.crear(nuevoCarritoId, clienteId));
 
         carrito.agregarArticulo(articulo, cantidad);
 

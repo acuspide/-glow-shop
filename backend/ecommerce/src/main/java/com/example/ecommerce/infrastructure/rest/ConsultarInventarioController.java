@@ -6,19 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/inventario")
 public class ConsultarInventarioController {
     private final ConsultarInventarioCompletoUseCase consultarInventarioCompletoUseCase;
     private final ConsultarInventarioCompletoMapper consultarInventarioCompletoMapper;
-
-    public ConsultarInventarioController(
-            ConsultarInventarioCompletoUseCase consultarInventarioCompletoUseCase,
-            ConsultarInventarioCompletoMapper consultarInventarioCompletoMapper) {
-        this.consultarInventarioCompletoUseCase = consultarInventarioCompletoUseCase;
-        this.consultarInventarioCompletoMapper = consultarInventarioCompletoMapper;
-    }
 
     @GetMapping
     public ResponseEntity<ConsultarInventarioCompletoResponse> consultarInventario() {

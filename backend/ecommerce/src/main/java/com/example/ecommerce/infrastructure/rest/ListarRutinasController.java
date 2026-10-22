@@ -6,19 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/rutinas")
 public class ListarRutinasController {
     private final ListarRutinasUseCase listarRutinasUseCase;
     private final ListarRutinasMapper listarRutinasMapper;
-
-    public ListarRutinasController(
-            ListarRutinasUseCase listarRutinasUseCase,
-            ListarRutinasMapper listarRutinasMapper) {
-        this.listarRutinasUseCase = listarRutinasUseCase;
-        this.listarRutinasMapper = listarRutinasMapper;
-    }
 
     @GetMapping
     public ResponseEntity<ListarRutinasResponse> listarRutinas() {
