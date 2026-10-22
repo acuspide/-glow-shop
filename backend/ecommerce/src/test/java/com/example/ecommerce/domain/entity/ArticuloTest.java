@@ -21,7 +21,7 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo1 = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Labios"),
@@ -34,7 +34,7 @@ public class ArticuloTest {
         );
 
         Articulo articulo2 = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Base"),
                 new Precio(new BigDecimal("50000")),
                 Categoria.crear(2L, "Rostro"),
@@ -57,7 +57,7 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                2L,
+                "a-2",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Labios"),
@@ -82,7 +82,7 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                3L,
+                "a-3",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 null,
@@ -107,7 +107,7 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                4L,
+                "a-4",
                 new NombreArticulo("Labial"),
                 null,
                 Categoria.crear(1L, "Labios"),
@@ -132,7 +132,7 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                6L,
+                "a-6",
                 new NombreArticulo("Base"),
                 new Precio(new BigDecimal("50000")),
                 Categoria.crear(2L, "Rostro"),
@@ -155,7 +155,7 @@ public class ArticuloTest {
 
         // Arrange
         Articulo articulo = Articulo.crear(
-                5L,
+                "a-5",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Labios"),
@@ -176,7 +176,7 @@ public class ArticuloTest {
 
     private Articulo crearArticulo(int stock) {
         return  Articulo.crear(
-                10L,
+                "a-10",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Labios"),

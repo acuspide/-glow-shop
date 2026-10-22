@@ -10,7 +10,7 @@ import java.util.List;
  * Las calificaciones quedan ordenadas de la más reciente a la más antigua
  * y no incluye las eliminadas (ni se muestran ni cuentan en el promedio).
  */
-public record ResumenCalificaciones(long articuloId, List<Calificacion> calificaciones) {
+public record ResumenCalificaciones(String articuloId, List<Calificacion> calificaciones) {
 
     public ResumenCalificaciones {
         calificaciones = calificaciones.stream()

@@ -17,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RutinaCuidadoTest {
-    private Articulo crearArticulo(long id, int cantidad) {
+    private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
@@ -35,8 +35,8 @@ public class RutinaCuidadoTest {
     void debeCrearRutinaConDosArticulosPublicadosYDisponibles() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();
@@ -57,7 +57,7 @@ public class RutinaCuidadoTest {
     void noDebeCrearRutinaConMenosDeDosArticulos() {
 
         // Arrange
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         articulo.publicar();
 
         // Act + Assert
@@ -74,8 +74,8 @@ public class RutinaCuidadoTest {
     void noDebeCrearRutinaConArticuloNoPublicado() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
 
@@ -95,8 +95,8 @@ public class RutinaCuidadoTest {
     void noDebeCrearRutinaConArticuloSinDisponibilidad() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 0);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 0);
 
         articulo1.publicar();
         articulo2.publicar();
@@ -115,8 +115,8 @@ public class RutinaCuidadoTest {
     void debePermitirArticulosDeDiferentesMarcas() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();
@@ -135,8 +135,8 @@ public class RutinaCuidadoTest {
     void unMismoArticuloPuedePertenecerADiferentesRutinas() {
 
         // Arrange
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();

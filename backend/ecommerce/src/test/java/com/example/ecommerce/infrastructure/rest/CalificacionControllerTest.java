@@ -78,27 +78,27 @@ class CalificacionControllerTest {
         // Arrange
         Usuario ana = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
         LocalDateTime fecha = LocalDateTime.of(2026, 10, 20, 10, 0);
-        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Me encantó", fecha);
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Me encantó", fecha);
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
-        when(calificarArticuloUseCase.ejecutar(anyString(), eq("u-1"), eq(10L), eq(5), eq("Me encantó"))).thenReturn(calificacion);
-        when(mapper.toResponse(calificacion)).thenReturn(new CalificacionResponse("c-1", 10L, "u-1", 5, "Me encantó", fecha));
+        when(calificarArticuloUseCase.ejecutar(anyString(), eq("u-1"), eq("a-10"), eq(5), eq("Me encantó"))).thenReturn(calificacion);
+        when(mapper.toResponse(calificacion)).thenReturn(new CalificacionResponse("c-1", "a-10", "u-1", 5, "Me encantó", fecha));
 
         // Act y Assert
-        mockMvc.perform(post("/api/articulos/10/calificaciones")
+        mockMvc.perform(post("/api/articulos/a-10/calificaciones")
                         .header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CALIFICACION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.puntuacion").value(5))
-                .andExpect(jsonPath("$.articuloId").value(10));
+                .andExpect(jsonPath("$.articuloId").value("a-10"));
     }
 
     @Test
     void unaPuntuacionFueraDeRangoDebeResponder400() throws Exception {
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
 
-        mockMvc.perform(post("/api/articulos/10/calificaciones")
+        mockMvc.perform(post("/api/articulos/a-10/calificaciones")
                         .header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"puntuacion\": 6, \"comentario\": \"Me encantó\"}"))
@@ -110,10 +110,10 @@ class CalificacionControllerTest {
     @Test
     void calificarUnArticuloNoRecibidoDebeResponder400() throws Exception {
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
-        when(calificarArticuloUseCase.ejecutar(anyString(), any(), eq(10L), eq(5), any()))
+        when(calificarArticuloUseCase.ejecutar(anyString(), any(), eq("a-10"), eq(5), any()))
                 .thenThrow(new ArticuloNoRecibidoException());
 
-        mockMvc.perform(post("/api/articulos/10/calificaciones")
+        mockMvc.perform(post("/api/articulos/a-10/calificaciones")
                         .header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CALIFICACION_JSON))
@@ -123,10 +123,10 @@ class CalificacionControllerTest {
     @Test
     void siQuienCalificaNoEsClienteDebeResponder403() throws Exception {
         when(tokenService.extraerUsuarioId("token-vera")).thenReturn("u-2");
-        when(calificarArticuloUseCase.ejecutar(anyString(), eq("u-2"), eq(10L), eq(5), any()))
+        when(calificarArticuloUseCase.ejecutar(anyString(), eq("u-2"), eq("a-10"), eq(5), any()))
                 .thenThrow(new AccionSoloParaClienteException());
 
-        mockMvc.perform(post("/api/articulos/10/calificaciones")
+        mockMvc.perform(post("/api/articulos/a-10/calificaciones")
                         .header("Authorization", "Bearer token-vera")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CALIFICACION_JSON))
@@ -135,7 +135,7 @@ class CalificacionControllerTest {
 
     @Test
     void sinTokenDebeResponder401() throws Exception {
-        mockMvc.perform(post("/api/articulos/10/calificaciones")
+        mockMvc.perform(post("/api/articulos/a-10/calificaciones")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CALIFICACION_JSON))
                 .andExpect(status().isUnauthorized());
@@ -145,14 +145,14 @@ class CalificacionControllerTest {
     void consultarCalificacionesEsPublicoYDevuelveElPromedio() throws Exception {
         // Arrange
         LocalDateTime fecha = LocalDateTime.of(2026, 10, 20, 10, 0);
-        ResumenCalificaciones resumen = new ResumenCalificaciones(10L, List.of());
-        when(consultarCalificacionesUseCase.ejecutar(10L)).thenReturn(resumen);
-        when(mapper.toResumenResponse(resumen)).thenReturn(new CalificacionesArticuloResponse(10L, 4.5, 2,
-                List.of(new CalificacionResponse("c-1", 10L, "u-1", 5, "Excelente", fecha),
-                        new CalificacionResponse("c-2", 10L, "u-2", 4, "Muy bueno", fecha))));
+        ResumenCalificaciones resumen = new ResumenCalificaciones("a-10", List.of());
+        when(consultarCalificacionesUseCase.ejecutar("a-10")).thenReturn(resumen);
+        when(mapper.toResumenResponse(resumen)).thenReturn(new CalificacionesArticuloResponse("a-10", 4.5, 2,
+                List.of(new CalificacionResponse("c-1", "a-10", "u-1", 5, "Excelente", fecha),
+                        new CalificacionResponse("c-2", "a-10", "u-2", 4, "Muy bueno", fecha))));
 
         // Act y Assert: sin encabezado Authorization
-        mockMvc.perform(get("/api/articulos/10/calificaciones"))
+        mockMvc.perform(get("/api/articulos/a-10/calificaciones"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.promedio").value(4.5))
                 .andExpect(jsonPath("$.total").value(2))
@@ -161,10 +161,10 @@ class CalificacionControllerTest {
 
     @Test
     void consultarCalificacionesDeUnArticuloQueNoExisteDebeResponder404() throws Exception {
-        when(consultarCalificacionesUseCase.ejecutar(99L))
-                .thenThrow(new com.example.ecommerce.domain.exception.ArticuloNoEncontradoException(99L));
+        when(consultarCalificacionesUseCase.ejecutar("a-99"))
+                .thenThrow(new com.example.ecommerce.domain.exception.ArticuloNoEncontradoException("a-99"));
 
-        mockMvc.perform(get("/api/articulos/99/calificaciones"))
+        mockMvc.perform(get("/api/articulos/a-99/calificaciones"))
                 .andExpect(status().isNotFound());
     }
 
@@ -172,10 +172,10 @@ class CalificacionControllerTest {
     void actualizarCalificacionDebeResponder200ConLosDatosNuevos() throws Exception {
         // Arrange
         LocalDateTime fecha = LocalDateTime.of(2026, 10, 20, 10, 0);
-        Calificacion calificacion = Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(3), "Regular", fecha, false);
+        Calificacion calificacion = Calificacion.reconstruir("c-1", "a-10", "u-1", new Puntuacion(3), "Regular", fecha, false);
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
         when(actualizarCalificacionUseCase.ejecutar("c-1", "u-1", 3, "Regular")).thenReturn(calificacion);
-        when(mapper.toResponse(calificacion)).thenReturn(new CalificacionResponse("c-1", 10L, "u-1", 3, "Regular", fecha));
+        when(mapper.toResponse(calificacion)).thenReturn(new CalificacionResponse("c-1", "a-10", "u-1", 3, "Regular", fecha));
 
         // Act y Assert
         mockMvc.perform(put("/api/calificaciones/c-1")

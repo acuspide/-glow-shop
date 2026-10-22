@@ -29,7 +29,7 @@ public class ActualizarCalificacionUseCaseTest {
     void prepararDatos() {
         usuarios.guardar(Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
         usuarios.guardar(Usuario.registrarCliente("u-2", "Bruno", new Email("bruno@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
-        calificaciones.guardar(Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(5), "Excelente", LocalDateTime.now(), false));
+        calificaciones.guardar(Calificacion.reconstruir("c-1", "a-10", "u-1", new Puntuacion(5), "Excelente", LocalDateTime.now(), false));
     }
 
     @Test

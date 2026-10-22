@@ -13,7 +13,7 @@ public class MostrarDetalleArticuloUseCase {
     private final ArticuloRepository repository;
 
     @Transactional(readOnly = true)
-    public Articulo ejecutar(long id) {
+    public Articulo ejecutar(String id) {
         Articulo articulo = repository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));
 

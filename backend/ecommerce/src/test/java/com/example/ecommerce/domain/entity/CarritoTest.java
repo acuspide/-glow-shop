@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CarritoTest {
 
-    private Articulo crearArticulo(long id, String precio, int stock) {
+    private Articulo crearArticulo(String id, String precio, int stock) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
@@ -33,7 +33,7 @@ public class CarritoTest {
         );
     }
 
-    private Articulo crearArticuloPublicado(long id, String precio, int stock) {
+    private Articulo crearArticuloPublicado(String id, String precio, int stock) {
         Articulo articulo = crearArticulo(id, precio, stock);
         articulo.publicar();
         return articulo;
@@ -55,7 +55,7 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
 
         // Act
         carrito.agregarArticulo(labial, 2);
@@ -70,7 +70,7 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
 
         // Act
         carrito.agregarArticulo(labial, 2);
@@ -86,7 +86,7 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
         carrito.agregarArticulo(labial, 3);
 
         // Act y Assert
@@ -101,7 +101,7 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {
@@ -114,7 +114,7 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        Articulo labialSinPublicar = crearArticulo(1L, "10000", 5);
+        Articulo labialSinPublicar = crearArticulo("a-1", "10000", 5);
 
         // Act y Assert
         assertThrows(ArticuloNoPublicadoParaVentaException.class, () -> {
@@ -128,7 +128,7 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        Articulo labialAgotado = crearArticuloPublicado(1L, "10000", 0);
+        Articulo labialAgotado = crearArticuloPublicado("a-1", "10000", 0);
 
         // Act y Assert
         assertThrows(ArticuloAgotadoException.class, () -> {
@@ -141,7 +141,7 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        Articulo labial = crearArticuloPublicado(1L, "10000", 5);
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
 
         // Act
         carrito.agregarArticulo(labial, 2);
@@ -154,15 +154,15 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "10000", 5), 2);
-        carrito.agregarArticulo(crearArticuloPublicado(2L, "30000", 5), 1);
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "10000", 5), 2);
+        carrito.agregarArticulo(crearArticuloPublicado("a-2", "30000", 5), 1);
 
         // Act
-        carrito.quitarArticulo(1L);
+        carrito.quitarArticulo("a-1");
 
         // Assert
         assertEquals(1, carrito.getItems().size());
-        assertEquals(2L, carrito.getItems().get(0).getArticuloId());
+        assertEquals("a-2", carrito.getItems().get(0).getArticuloId());
         assertEquals(new BigDecimal("30000"), carrito.calcularTotal());
     }
     @Test
@@ -173,7 +173,7 @@ public class CarritoTest {
 
         // Act y Assert
         assertThrows(ArticuloNoEncontradoEnCarritoException.class, () -> {
-            carrito.quitarArticulo(99L);
+            carrito.quitarArticulo("a-99");
         });
     }
     @Test
@@ -181,7 +181,7 @@ public class CarritoTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "10000", 5), 2);
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "10000", 5), 2);
 
         // Act
         carrito.vaciar();

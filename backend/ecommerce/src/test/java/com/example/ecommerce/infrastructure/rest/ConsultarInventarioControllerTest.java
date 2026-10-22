@@ -38,10 +38,10 @@ public class ConsultarInventarioControllerTest {
         var response = new ConsultarInventarioCompletoResponse(
                 List.of(
                         new ConsultarInventarioCompletoResponse.ArticuloInventarioResponse(
-                                1L, "Labial rojo", 10
+                                "a-1", "Labial rojo", 10
                         ),
                         new ConsultarInventarioCompletoResponse.ArticuloInventarioResponse(
-                                2L, "Crema hidratante", 0
+                                "a-2", "Crema hidratante", 0
                         )
                 )
         );

@@ -11,10 +11,10 @@ import java.util.Optional;
 @Repository
 public class ArticuloRepositoryEnMemoria implements ArticuloRepository {
 
-    private final Map<Long, Articulo> articulos = new HashMap<>();
+    private final Map<String, Articulo> articulos = new HashMap<>();
 
     @Override
-    public Optional<Articulo> obtenerPorId(long id) {
+    public Optional<Articulo> obtenerPorId(String id) {
         return Optional.ofNullable(articulos.get(id));
     }
 

@@ -14,7 +14,7 @@ public class AgregarArticuloARutinaUseCase {
     private final ArticuloRepository articuloRepository;
 
     @Transactional
-    public RutinaCuidado ejecutar(long rutinaId, long articuloId) {
+    public RutinaCuidado ejecutar(long rutinaId, String articuloId) {
 
         RutinaCuidado rutina = rutinaRepository
                 .obtenerPorId(rutinaId)

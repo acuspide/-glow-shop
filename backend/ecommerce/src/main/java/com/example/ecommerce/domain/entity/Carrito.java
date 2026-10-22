@@ -38,7 +38,7 @@ public class Carrito {
         items.add(new ItemCarrito(articulo.getId(), cantidadTotal, articulo.getPrecio()));
     }
 
-    public void quitarArticulo(long articuloId) {
+    public void quitarArticulo(String articuloId) {
         ItemCarrito item = buscarItem(articuloId)
                 .orElseThrow(ArticuloNoEncontradoEnCarritoException::new);
         items.remove(item);
@@ -58,9 +58,9 @@ public class Carrito {
         return items.isEmpty();
     }
 
-    private Optional<ItemCarrito> buscarItem(long articuloId) {
+    private Optional<ItemCarrito> buscarItem(String articuloId) {
         return items.stream()
-                .filter(item -> item.getArticuloId() == articuloId)
+                .filter(item -> item.getArticuloId().equals(articuloId))
                 .findFirst();
     }
 

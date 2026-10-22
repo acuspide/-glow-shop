@@ -20,11 +20,11 @@ public class CrearRutinaCuidadoUseCase {
     public RutinaCuidado ejecutar(
             long id,
             String nombre,
-            List<Long> articulosIds) {
+            List<String> articulosIds) {
 
         List<Articulo> articulos = new ArrayList<>();
 
-        for (Long articuloId : articulosIds) {
+        for (String articuloId : articulosIds) {
             Articulo articulo = articuloRepository
                     .obtenerPorId(articuloId)
                     .orElseThrow();

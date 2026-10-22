@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Articulo {
-    private final long id;
+    private final String id;
     private NombreArticulo nombre;
     private Precio precio;
     private Categoria categoria;
@@ -23,7 +23,7 @@ public class Articulo {
     private boolean publicado;
 
     private Articulo(
-            long id,
+            String id,
             NombreArticulo nombre,
             Precio precio,
             Categoria categoria,
@@ -49,7 +49,7 @@ public class Articulo {
 
     }
     public static Articulo crear(
-            long id,
+            String id,
             NombreArticulo nombre,
             Precio precio,
             Categoria categoria,
@@ -87,7 +87,7 @@ public class Articulo {
     }
 
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -294,7 +294,7 @@ public class Articulo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Articulo otro)) return false;
-        return id == otro.id;
+        return id.equals(otro.id);
     }
 
     @Override

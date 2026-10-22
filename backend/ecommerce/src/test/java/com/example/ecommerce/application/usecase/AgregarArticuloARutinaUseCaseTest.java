@@ -40,10 +40,10 @@ public class AgregarArticuloARutinaUseCaseTest {
 
         when(rutinaRepository.obtenerPorId(1L))
                 .thenReturn(Optional.of(rutina));
-        when(articuloRepository.obtenerPorId(3L))
+        when(articuloRepository.obtenerPorId("a-3"))
                 .thenReturn(Optional.of(articuloNuevo));
 
-        RutinaCuidado resultado = useCase.ejecutar(1L, 3L);
+        RutinaCuidado resultado = useCase.ejecutar(1L, "a-3");
 
         assertEquals(1L, resultado.getId());
         assertEquals("Rutina facial", resultado.getNombre());
@@ -60,7 +60,7 @@ public class AgregarArticuloARutinaUseCaseTest {
 
         assertThrows(
                 java.util.NoSuchElementException.class,
-                () -> useCase.ejecutar(1L, 3L)
+                () -> useCase.ejecutar(1L, "a-3")
         );
 
         verifyNoInteractions(articuloRepository);
@@ -77,12 +77,12 @@ public class AgregarArticuloARutinaUseCaseTest {
 
         when(rutinaRepository.obtenerPorId(1L))
                 .thenReturn(Optional.of(rutina));
-        when(articuloRepository.obtenerPorId(3L))
+        when(articuloRepository.obtenerPorId("a-3"))
                 .thenReturn(Optional.empty());
 
         assertThrows(
                 java.util.NoSuchElementException.class,
-                () -> useCase.ejecutar(1L, 3L)
+                () -> useCase.ejecutar(1L, "a-3")
         );
 
         verify(rutinaRepository, never()).guardar(any());

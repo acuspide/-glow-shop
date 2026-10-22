@@ -33,6 +33,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -74,7 +75,7 @@ public class PublicarArticuloControllerTest {
 
         MostrarDetalleArticuloResponse response =
                 new MostrarDetalleArticuloResponse(
-                        1L,
+                        "a-1",
                         "Labial",
                         new BigDecimal("20000"),
                         1L,
@@ -90,15 +91,15 @@ public class PublicarArticuloControllerTest {
                         true
                 );
 
-        when(mostrarDetalleArticuloUseCase.ejecutar(1L))
+        when(mostrarDetalleArticuloUseCase.ejecutar("a-1"))
                 .thenReturn(articulo);
 
         when(mostrarDetalleArticuloMapper.toResponse(articulo))
                 .thenReturn(response);
 
-        mockMvc.perform(get("/api/articulos/1"))
+        mockMvc.perform(get("/api/articulos/a-1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value("a-1"))
                 .andExpect(jsonPath("$.nombre").value("Labial"))
                 .andExpect(jsonPath("$.precio").value(20000))
                 .andExpect(jsonPath("$.marcaNombre").value("Maybelline"))
@@ -108,12 +109,12 @@ public class PublicarArticuloControllerTest {
     @Test
     void debeRetornar404CuandoElArticuloNoExiste() throws Exception {
 
-        when(mostrarDetalleArticuloUseCase.ejecutar(999L))
+        when(mostrarDetalleArticuloUseCase.ejecutar("a-999"))
                 .thenThrow(
-                        new com.example.ecommerce.domain.exception.ArticuloNoEncontradoException(999L)
+                        new com.example.ecommerce.domain.exception.ArticuloNoEncontradoException("a-999")
                 );
 
-        mockMvc.perform(get("/api/articulos/999"))
+        mockMvc.perform(get("/api/articulos/a-999"))
                 .andExpect(status().isNotFound());
     }
 
@@ -125,7 +126,7 @@ public class PublicarArticuloControllerTest {
 
         PublicarArticuloResponse response =
                 new PublicarArticuloResponse(
-                        1L,
+                        "a-1",
                         "Labial",
                         new BigDecimal("20000"),
                         1L,
@@ -141,7 +142,7 @@ public class PublicarArticuloControllerTest {
                         true
                 );
 
-        when(publicarArticuloMapper.toEntity(any(PublicarArticuloRequest.class)))
+        when(publicarArticuloMapper.toEntity(anyString(), any(PublicarArticuloRequest.class)))
                 .thenReturn(articulo);
 
         when(publicarArticuloUseCase.ejecutar(articulo))
@@ -150,13 +151,12 @@ public class PublicarArticuloControllerTest {
         when(publicarArticuloMapper.toResponse(articulo))
                 .thenReturn(response);
 
-        when(articulo.getId()).thenReturn(1L);
+        when(articulo.getId()).thenReturn("a-1");
 
         mockMvc.perform(post("/api/articulos")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                             {
-                                "id": 1,
                                 "nombre": "Labial",
                                 "precio": 20000,
                                 "categoriaId": 1,
@@ -172,7 +172,7 @@ public class PublicarArticuloControllerTest {
                             }
                             """))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.id").value("a-1"))
                 .andExpect(jsonPath("$.nombre").value("Labial"))
                 .andExpect(jsonPath("$.precio").value(20000))
                 .andExpect(jsonPath("$.publicado").value(true));
@@ -183,7 +183,7 @@ public class PublicarArticuloControllerTest {
     void debeRetornar400CuandoNoSePuedePublicarArticuloVencido() throws Exception {
         Articulo articulo = mock(Articulo.class);
 
-        when(publicarArticuloMapper.toEntity(any(PublicarArticuloRequest.class)))
+        when(publicarArticuloMapper.toEntity(anyString(), any(PublicarArticuloRequest.class)))
                 .thenReturn(articulo);
 
         when(publicarArticuloUseCase.ejecutar(articulo))
@@ -193,7 +193,6 @@ public class PublicarArticuloControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                 {
-                  "id": 1,
                   "nombre": "Labial",
                   "precio": 20000,
                   "categoriaId": 1,
@@ -215,7 +214,7 @@ public class PublicarArticuloControllerTest {
 
         verify(publicarArticuloUseCase).ejecutar(articulo);
         verify(publicarArticuloUseCase, never()).ejecutar(
-                any(Long.class),
+                any(String.class),
                 any(),
                 any(),
                 any(),
@@ -232,7 +231,7 @@ public class PublicarArticuloControllerTest {
     void debeListarArticulosCorrectamente() throws Exception {
 
         ListarArticulosResponse articulo = new ListarArticulosResponse(
-                1L,
+                "a-1",
                 "Labial",
                 new BigDecimal("20000"),
                 1L,
@@ -270,17 +269,17 @@ public class PublicarArticuloControllerTest {
         Articulo articulo = mock(Articulo.class);
 
         ConsultarInventarioResponse response =
-                new ConsultarInventarioResponse(1L, "Labial", 10);
+                new ConsultarInventarioResponse("a-1", "Labial", 10);
 
-        when(consultarInventarioUseCase.ejecutar(1L))
+        when(consultarInventarioUseCase.ejecutar("a-1"))
                 .thenReturn(articulo);
 
         when(consultarInventarioMapper.toResponse(articulo))
                 .thenReturn(response);
 
-        mockMvc.perform(get("/api/articulos/1/inventario"))
+        mockMvc.perform(get("/api/articulos/a-1/inventario"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.articuloId").value(1))
+                .andExpect(jsonPath("$.articuloId").value("a-1"))
                 .andExpect(jsonPath("$.nombre").value("Labial"))
                 .andExpect(jsonPath("$.cantidadDisponible").value(10));
     }
@@ -289,10 +288,10 @@ public class PublicarArticuloControllerTest {
     void debeRetornar404CuandoNoExisteInventarioDelArticulo()
             throws Exception {
 
-        when(consultarInventarioUseCase.ejecutar(999L))
-                .thenThrow(new ArticuloNoEncontradoException(999L));
+        when(consultarInventarioUseCase.ejecutar("a-999"))
+                .thenThrow(new ArticuloNoEncontradoException("a-999"));
 
-        mockMvc.perform(get("/api/articulos/999/inventario"))
+        mockMvc.perform(get("/api/articulos/a-999/inventario"))
                 .andExpect(status().isNotFound());
     }
 

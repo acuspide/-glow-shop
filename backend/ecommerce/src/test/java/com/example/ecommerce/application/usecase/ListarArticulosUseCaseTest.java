@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ListarArticulosUseCaseTest {
     private Articulo crearArticulo(
-            long id,
+            String id,
             String nombre,
             int cantidad
     ) {
@@ -40,8 +40,8 @@ public class ListarArticulosUseCaseTest {
         ArticuloRepository repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo labial = crearArticulo(1L, "Labial", 10);
-        Articulo crema = crearArticulo(2L, "Crema facial", 5);
+        Articulo labial = crearArticulo("a-1", "Labial", 10);
+        Articulo crema = crearArticulo("a-2", "Crema facial", 5);
 
         labial.publicar();
         crema.publicar();
@@ -68,8 +68,8 @@ public class ListarArticulosUseCaseTest {
         ArticuloRepository repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo publicado = crearArticulo(1L, "Labial", 10);
-        Articulo sinPublicar = crearArticulo(2L, "Crema facial", 5);
+        Articulo publicado = crearArticulo("a-1", "Labial", 10);
+        Articulo sinPublicar = crearArticulo("a-2", "Crema facial", 5);
 
         publicado.publicar();
 
@@ -113,8 +113,8 @@ public class ListarArticulosUseCaseTest {
         ArticuloRepository repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo disponible = crearArticulo(1L, "Labial", 10);
-        Articulo agotado = crearArticulo(2L, "Crema agotada", 0);
+        Articulo disponible = crearArticulo("a-1", "Labial", 10);
+        Articulo agotado = crearArticulo("a-2", "Crema agotada", 0);
 
         disponible.publicar();
         agotado.publicar();
@@ -141,10 +141,10 @@ public class ListarArticulosUseCaseTest {
         ArticuloRepository repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo disponible = crearArticulo(1L, "Labial", 10);
+        Articulo disponible = crearArticulo("a-1", "Labial", 10);
 
         Articulo vencido = Articulo.crear(
-                2L,
+                "a-2",
                 new NombreArticulo("Crema vencida"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Rostro"),

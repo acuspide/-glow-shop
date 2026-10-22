@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ListarArticulosResponse(
-        long id,
+        String id,
         String nombre,
         BigDecimal precio,
         long categoriaId,

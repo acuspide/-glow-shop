@@ -16,11 +16,11 @@ public class VerificadorDeArticuloSinPedidosActivos {
         this.pedidoRepository = pedidoRepository;
     }
 
-    public void verificarQuePuedeEliminarse(long articuloId) {
+    public void verificarQuePuedeEliminarse(String articuloId) {
         boolean tienePedidosActivos = pedidoRepository.listarTodos().stream()
                 .filter(pedido -> !pedido.getEstado().esFinal())
                 .anyMatch(pedido -> pedido.getDetalles().stream()
-                        .anyMatch(detalle -> detalle.getArticuloId() == articuloId));
+                        .anyMatch(detalle -> detalle.getArticuloId().equals(articuloId)));
 
         if (tienePedidosActivos) {
             throw new ArticuloConPedidosActivosException(articuloId);

@@ -18,7 +18,7 @@ public class DetallePedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> {
-            new DetallePedido(1L, 0, precio);
+            new DetallePedido("a-1", 0, precio);
         });
     }
 
@@ -27,7 +27,7 @@ public class DetallePedidoTest {
 
         // Arrange
         Precio precio = new Precio(new BigDecimal("10000"));
-        DetallePedido detalle = new DetallePedido(1L, 3, precio);
+        DetallePedido detalle = new DetallePedido("a-1", 3, precio);
 
         // Act
         BigDecimal subtotal = detalle.subtotal();
@@ -41,7 +41,7 @@ public class DetallePedidoTest {
 
         // Arrange
         Precio precioAlMomentoDeLaCompra = new Precio(new BigDecimal("10000"));
-        DetallePedido detalle = new DetallePedido(1L, 1, precioAlMomentoDeLaCompra);
+        DetallePedido detalle = new DetallePedido("a-1", 1, precioAlMomentoDeLaCompra);
 
         // Act
         // El precio del articulo original podria cambiar despues en otra

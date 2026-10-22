@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class CrearRutinaCuidadoUseCaseTest {
-    private Articulo crearArticulo(long id, int cantidad) {
+    private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
@@ -51,8 +51,8 @@ public class CrearRutinaCuidadoUseCaseTest {
                         articuloRepository
                 );
 
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();
@@ -63,7 +63,7 @@ public class CrearRutinaCuidadoUseCaseTest {
         RutinaCuidado rutinaCreada = useCase.ejecutar(
                 1L,
                 "Rutina de cuidado diario",
-                List.of(1L, 2L)
+                List.of("a-1", "a-2")
         );
 
         assertNotNull(rutinaCreada);

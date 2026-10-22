@@ -10,7 +10,7 @@ import java.util.List;
 public class RutinaCuidadoMapper {
     public RutinaCuidadoResponse toResponse(RutinaCuidado rutina) {
 
-        List<Long> articulosIds = rutina.getArticulos()
+        List<String> articulosIds = rutina.getArticulos()
                 .stream()
                 .map(articulo -> articulo.getId())
                 .toList();

@@ -16,12 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PedidoTest {
 
-    private DetallePedido detalle(long articuloId, int cantidad, String precio) {
+    private DetallePedido detalle(String articuloId, int cantidad, String precio) {
         return new DetallePedido(articuloId, cantidad, new Precio(new BigDecimal(precio)));
     }
 
     private Pedido crearPedido() {
-        return Pedido.crear("p-1", "u-100", List.of(detalle(1L, 2, "10000")));
+        return Pedido.crear("p-1", "u-100", List.of(detalle("a-1", 2, "10000")));
     }
 
     private Cupon cuponVigente(String id, int porcentaje) {
@@ -53,7 +53,7 @@ public class PedidoTest {
     void unPedidoDebeCrearseConTodosSusDetalles() {
 
         // Arrange
-        List<DetallePedido> detalles = List.of(detalle(1L, 2, "10000"), detalle(2L, 1, "5000"));
+        List<DetallePedido> detalles = List.of(detalle("a-1", 2, "10000"), detalle("a-2", 1, "5000"));
 
         // Act
         Pedido pedido = Pedido.crear("p-1", "u-100", detalles);
@@ -92,7 +92,7 @@ public class PedidoTest {
     void elPrecioDeUnDetalleYaAgregadoNoCambiaSiCambiaElPrecioDelArticulo() {
 
         // Arrange
-        Pedido pedido = Pedido.crear("p-1", "u-100", List.of(detalle(1L, 1, "10000")));
+        Pedido pedido = Pedido.crear("p-1", "u-100", List.of(detalle("a-1", 1, "10000")));
 
         // Act
         // Simulamos que el precio del artículo cambia después de la compra
@@ -122,7 +122,7 @@ public class PedidoTest {
 
         // Arrange
         Pedido pedido = crearPedido();
-        pedido.agregarDetalle(detalle(2L, 1, "10000"));
+        pedido.agregarDetalle(detalle("a-2", 1, "10000"));
 
         // Act
         BigDecimal total = pedido.calcularTotal();
@@ -171,7 +171,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.agregarDetalle(detalle(2L, 1, "5000")));
+                () -> pedido.agregarDetalle(detalle("a-2", 1, "5000")));
     }
 
     @Test
@@ -183,7 +183,7 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class,
-                () -> pedido.agregarDetalle(detalle(2L, 1, "5000")));
+                () -> pedido.agregarDetalle(detalle("a-2", 1, "5000")));
     }
 
     @Test

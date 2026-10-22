@@ -25,7 +25,7 @@ public class MostrarDetalleArticuloUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Labios"),
@@ -44,11 +44,11 @@ public class MostrarDetalleArticuloUseCaseTest {
                 new MostrarDetalleArticuloUseCase(repository);
 
         // Act
-        Articulo resultado = useCase.ejecutar(1L);
+        Articulo resultado = useCase.ejecutar("a-1");
 
         // Assert
         assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
+        assertEquals("a-1", resultado.getId());
         assertEquals(articulo, resultado);
         assertEquals("Labial", resultado.getNombre().valor());
     }
@@ -66,7 +66,7 @@ public class MostrarDetalleArticuloUseCaseTest {
         // Act y Assert
         assertThrows(
                 ArticuloNoEncontradoException.class,
-                () -> useCase.ejecutar(999L)
+                () -> useCase.ejecutar("a-999")
         );
     }
 
@@ -78,7 +78,7 @@ public class MostrarDetalleArticuloUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                1L,
+                "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Labios"),
@@ -99,7 +99,7 @@ public class MostrarDetalleArticuloUseCaseTest {
         // Act y Assert
         assertThrows(
                 ArticuloNoPublicadoParaVentaException.class,
-                () -> useCase.ejecutar(1L)
+                () -> useCase.ejecutar("a-1")
         );
     }
 
@@ -111,7 +111,7 @@ public class MostrarDetalleArticuloUseCaseTest {
                 new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                3L,
+                "a-3",
                 new NombreArticulo("Labial agotado"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Labios"),
@@ -132,7 +132,7 @@ public class MostrarDetalleArticuloUseCaseTest {
         // Act y Assert
         assertThrows(
                 ArticuloAgotadoException.class,
-                () -> useCase.ejecutar(3L)
+                () -> useCase.ejecutar("a-3")
         );
     }
 

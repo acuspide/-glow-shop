@@ -38,10 +38,10 @@ public class ActualizarRutinaCuidadoUseCaseTest {
         when(rutinaRepository.obtenerPorId(rutinaId))
                 .thenReturn(Optional.of(mock(RutinaCuidado.class)));
 
-        when(articuloRepository.obtenerPorId(10L))
+        when(articuloRepository.obtenerPorId("a-10"))
                 .thenReturn(Optional.of(articulo1));
 
-        when(articuloRepository.obtenerPorId(20L))
+        when(articuloRepository.obtenerPorId("a-20"))
                 .thenReturn(Optional.of(articulo2));
 
         when(articulo1.isPublicado()).thenReturn(true);
@@ -53,7 +53,7 @@ public class ActualizarRutinaCuidadoUseCaseTest {
         RutinaCuidado resultado = useCase.ejecutar(
                 rutinaId,
                 "Rutina actualizada",
-                List.of(10L, 20L)
+                List.of("a-10", "a-20")
         );
 
         assertEquals(rutinaId, resultado.getId());
@@ -73,7 +73,7 @@ public class ActualizarRutinaCuidadoUseCaseTest {
                 () -> useCase.ejecutar(
                         99L,
                         "Rutina actualizada",
-                        List.of(10L, 20L)
+                        List.of("a-10", "a-20")
                 )
         );
 

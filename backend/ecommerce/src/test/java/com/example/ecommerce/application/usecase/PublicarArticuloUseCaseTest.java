@@ -25,7 +25,7 @@ public class PublicarArticuloUseCaseTest {
 
         // Act
         Articulo articulo = useCase.ejecutar(
-                1L,
+                "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
                 Categoria.crear(1L, "Labios"),

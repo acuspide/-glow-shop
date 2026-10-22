@@ -27,13 +27,13 @@ public class ConsultarCalificacionesArticuloUseCaseTest {
     @Test
     void debeDevolverSoloLasCalificacionesDelArticuloConSuPromedio() {
         Articulo articulo = mock(Articulo.class);
-        when(articulos.obtenerPorId(10L)).thenReturn(Optional.of(articulo));
+        when(articulos.obtenerPorId("a-10")).thenReturn(Optional.of(articulo));
         LocalDateTime ahora = LocalDateTime.now();
-        calificaciones.guardar(Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(5), "Excelente", ahora, false));
-        calificaciones.guardar(Calificacion.reconstruir("c-2", 10L, "u-2", new Puntuacion(2), "Regular", ahora, false));
-        calificaciones.guardar(Calificacion.reconstruir("c-3", 11L, "u-1", new Puntuacion(1), "De otro artículo", ahora, false));
+        calificaciones.guardar(Calificacion.reconstruir("c-1", "a-10", "u-1", new Puntuacion(5), "Excelente", ahora, false));
+        calificaciones.guardar(Calificacion.reconstruir("c-2", "a-10", "u-2", new Puntuacion(2), "Regular", ahora, false));
+        calificaciones.guardar(Calificacion.reconstruir("c-3", "a-11", "u-1", new Puntuacion(1), "De otro artículo", ahora, false));
 
-        ResumenCalificaciones resumen = useCase.ejecutar(10L);
+        ResumenCalificaciones resumen = useCase.ejecutar("a-10");
 
         assertEquals(2, resumen.total());
         assertEquals(3.5, resumen.promedio());
@@ -41,8 +41,8 @@ public class ConsultarCalificacionesArticuloUseCaseTest {
 
     @Test
     void unArticuloQueNoExisteResponde404() {
-        when(articulos.obtenerPorId(99L)).thenReturn(Optional.empty());
+        when(articulos.obtenerPorId("a-99")).thenReturn(Optional.empty());
 
-        assertThrows(ArticuloNoEncontradoException.class, () -> useCase.ejecutar(99L));
+        assertThrows(ArticuloNoEncontradoException.class, () -> useCase.ejecutar("a-99"));
     }
 }

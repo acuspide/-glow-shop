@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class VerCarritoUseCaseTest {
 
-    private Articulo crearArticuloPublicado(long id, String precio) {
+    private Articulo crearArticuloPublicado(String id, String precio) {
         Articulo articulo = Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
@@ -41,8 +41,8 @@ public class VerCarritoUseCaseTest {
         VerCarritoUseCase useCase = new VerCarritoUseCase(carritoRepository);
 
         Carrito carritoDeAna = Carrito.crear("c-1", "u-100");
-        carritoDeAna.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
-        carritoDeAna.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
+        carritoDeAna.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
+        carritoDeAna.agregarArticulo(crearArticuloPublicado("a-2", "50000"), 1);
         carritoRepository.guardar(carritoDeAna);
 
         // Act

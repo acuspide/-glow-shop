@@ -23,7 +23,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ActualizarArticuloUseCaseTest {
-    private Articulo crearArticulo(long id, int cantidad) {
+    private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
@@ -44,12 +44,12 @@ public class ActualizarArticuloUseCaseTest {
         ActualizarArticuloUseCase useCase =
                 new ActualizarArticuloUseCase(repository);
 
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         articulo.publicar();
         repository.guardar(articulo);
 
         Articulo actualizado = useCase.ejecutar(
-                1L,
+                "a-1",
                 new NombreArticulo("Crema hidratante"),
                 new Precio(new BigDecimal("45000")),
                 Categoria.crear(2L, "Cuidado facial"),
@@ -80,7 +80,7 @@ public class ActualizarArticuloUseCaseTest {
 
         assertSame(
                 actualizado,
-                repository.obtenerPorId(1L).orElseThrow()
+                repository.obtenerPorId("a-1").orElseThrow()
         );
     }
 
@@ -93,7 +93,7 @@ public class ActualizarArticuloUseCaseTest {
         assertThrows(
                 ArticuloNoEncontradoException.class,
                 () -> useCase.ejecutar(
-                        99L,
+                        "a-99",
                         new NombreArticulo("Crema hidratante"),
                         new Precio(new BigDecimal("45000")),
                         Categoria.crear(2L, "Cuidado facial"),
@@ -111,13 +111,13 @@ public class ActualizarArticuloUseCaseTest {
         ActualizarArticuloUseCase useCase =
                 new ActualizarArticuloUseCase(repository);
 
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         repository.guardar(articulo);
 
         assertThrows(
                 ArticuloVencidoException.class,
                 () -> useCase.ejecutar(
-                        1L,
+                        "a-1",
                         new NombreArticulo("Crema hidratante"),
                         new Precio(new BigDecimal("45000")),
                         Categoria.crear(2L, "Cuidado facial"),

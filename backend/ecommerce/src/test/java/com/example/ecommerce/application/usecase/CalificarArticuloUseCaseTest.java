@@ -31,7 +31,7 @@ public class CalificarArticuloUseCaseTest {
     private final UsuarioRepository usuarios = new UsuarioRepositoryEnMemoria();
     private final ArticuloRepository articulos = mock(ArticuloRepository.class);
     // Ana (u-1) recibió el artículo 10.
-    private final HistorialDeCompras historial = (clienteId, articuloId) -> clienteId.equals("u-1") && articuloId == 10L;
+    private final HistorialDeCompras historial = (clienteId, articuloId) -> clienteId.equals("u-1") && articuloId.equals("a-10");
 
     private final CalificarArticuloUseCase useCase = new CalificarArticuloUseCase(
             calificaciones, usuarios, articulos, new VerificadorDeCalificacion(historial, calificaciones));
@@ -39,40 +39,40 @@ public class CalificarArticuloUseCaseTest {
     @BeforeEach
     void prepararDatos() {
         usuarios.guardar(Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
-        when(articulos.obtenerPorId(10L)).thenReturn(Optional.of(mock(Articulo.class)));
-        when(articulos.obtenerPorId(99L)).thenReturn(Optional.empty());
+        when(articulos.obtenerPorId("a-10")).thenReturn(Optional.of(mock(Articulo.class)));
+        when(articulos.obtenerPorId("a-99")).thenReturn(Optional.empty());
     }
 
     @Test
     void elClienteQueRecibioElArticuloPuedeCalificarlo() {
-        Calificacion calificacion = useCase.ejecutar("c-1", "u-1", 10L, 5, "Me encantó");
+        Calificacion calificacion = useCase.ejecutar("c-1", "u-1", "a-10", 5, "Me encantó");
 
         assertEquals(5, calificacion.getPuntuacion().valor());
-        assertTrue(calificaciones.existePorClienteYArticulo("u-1", 10L));
+        assertTrue(calificaciones.existePorClienteYArticulo("u-1", "a-10"));
     }
 
     @Test
     void noSePuedeCalificarUnArticuloNoRecibido() {
-        when(articulos.obtenerPorId(11L)).thenReturn(Optional.of(mock(Articulo.class)));
+        when(articulos.obtenerPorId("a-11")).thenReturn(Optional.of(mock(Articulo.class)));
 
-        assertThrows(ArticuloNoRecibidoException.class, () -> useCase.ejecutar("c-1", "u-1", 11L, 5, "Bueno"));
-        assertFalse(calificaciones.existePorClienteYArticulo("u-1", 11L));
+        assertThrows(ArticuloNoRecibidoException.class, () -> useCase.ejecutar("c-1", "u-1", "a-11", 5, "Bueno"));
+        assertFalse(calificaciones.existePorClienteYArticulo("u-1", "a-11"));
     }
 
     @Test
     void noSePuedeCalificarDosVeces() {
-        useCase.ejecutar("c-1", "u-1", 10L, 5, "Me encantó");
+        useCase.ejecutar("c-1", "u-1", "a-10", 5, "Me encantó");
 
-        assertThrows(CalificacionDuplicadaException.class, () -> useCase.ejecutar("c-2", "u-1", 10L, 1, "Cambié de opinión"));
+        assertThrows(CalificacionDuplicadaException.class, () -> useCase.ejecutar("c-2", "u-1", "a-10", 1, "Cambié de opinión"));
     }
 
     @Test
     void unArticuloQueNoExisteResponde404() {
-        assertThrows(ArticuloNoEncontradoException.class, () -> useCase.ejecutar("c-1", "u-1", 99L, 5, "Bueno"));
+        assertThrows(ArticuloNoEncontradoException.class, () -> useCase.ejecutar("c-1", "u-1", "a-99", 5, "Bueno"));
     }
 
     @Test
     void unUsuarioQueNoExisteNoPuedeCalificar() {
-        assertThrows(AccionSoloParaClienteException.class, () -> useCase.ejecutar("c-1", "no-existe", 10L, 5, "Bueno"));
+        assertThrows(AccionSoloParaClienteException.class, () -> useCase.ejecutar("c-1", "no-existe", "a-10", 5, "Bueno"));
     }
 }

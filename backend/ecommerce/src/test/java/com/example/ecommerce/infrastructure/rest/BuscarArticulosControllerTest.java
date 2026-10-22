@@ -43,7 +43,7 @@ public class BuscarArticulosControllerTest {
 
         MostrarDetalleArticuloResponse response =
                 new MostrarDetalleArticuloResponse(
-                        1L,
+                        "a-1",
                         "Labial rojo",
                         new BigDecimal("35000"),
                         1L,

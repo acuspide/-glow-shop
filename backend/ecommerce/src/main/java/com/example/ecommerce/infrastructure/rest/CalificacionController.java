@@ -41,7 +41,7 @@ public class CalificacionController {
 
     // CU-91: público. Promedio y comentarios de un artículo, del más reciente al más antiguo.
     @GetMapping("/articulos/{articuloId}/calificaciones")
-    public ResponseEntity<CalificacionesArticuloResponse> consultar(@PathVariable long articuloId) {
+    public ResponseEntity<CalificacionesArticuloResponse> consultar(@PathVariable String articuloId) {
         return ResponseEntity.ok(mapper.toResumenResponse(consultarCalificacionesUseCase.ejecutar(articuloId)));
     }
 
@@ -49,7 +49,7 @@ public class CalificacionController {
     @PostMapping("/articulos/{articuloId}/calificaciones")
     public ResponseEntity<CalificacionResponse> calificar(
             @RequestHeader(value = "Authorization", required = false) String autorizacion,
-            @PathVariable long articuloId,
+            @PathVariable String articuloId,
             @Valid @RequestBody CalificarArticuloRequest request) {
 
         String clienteId = tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));

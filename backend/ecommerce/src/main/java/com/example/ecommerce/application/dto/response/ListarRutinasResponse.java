@@ -10,7 +10,7 @@ public record ListarRutinasResponse( List<RutinaResponse> rutinas
     }
 
     public record ArticuloResponse(
-            long articuloId,
+            String articuloId,
             String nombre,
             int cantidadDisponible
     ) {

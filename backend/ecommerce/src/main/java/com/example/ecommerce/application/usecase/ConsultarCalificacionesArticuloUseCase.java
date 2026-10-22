@@ -19,7 +19,7 @@ public class ConsultarCalificacionesArticuloUseCase {
     private final ArticuloRepository articuloRepository;
 
     @Transactional(readOnly = true)
-    public ResumenCalificaciones ejecutar(long articuloId) {
+    public ResumenCalificaciones ejecutar(String articuloId) {
         articuloRepository.obtenerPorId(articuloId)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(articuloId)); // -> 404
 

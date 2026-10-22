@@ -16,7 +16,7 @@ public class PublicarArticuloUseCase {
 
     @Transactional
     public Articulo ejecutar(
-            long id,
+            String id,
             NombreArticulo nombre,
             Precio precio,
             Categoria categoria,

@@ -69,7 +69,7 @@ public class CarritoController {
     @DeleteMapping("/items/{articuloId}")
     public ResponseEntity<Void> quitarArticulo(
             @RequestHeader(value = "Authorization", required = false) String autorizacion,
-            @PathVariable long articuloId) {
+            @PathVariable String articuloId) {
 
         quitarArticuloDelCarritoUseCase.ejecutar(clienteDelToken(autorizacion), articuloId);
 

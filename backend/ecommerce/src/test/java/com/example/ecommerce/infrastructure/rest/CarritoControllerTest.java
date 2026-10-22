@@ -28,7 +28,6 @@ import com.example.ecommerce.application.usecase.QuitarArticuloDelCarritoUseCase
 import com.example.ecommerce.domain.exception.ArticuloNoEncontradoEnCarritoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -72,13 +71,13 @@ class CarritoControllerTest {
         // Arrange
         String requestJson = """
                 {
-                    "articuloId": 1,
+                    "articuloId": "a-1",
                     "cantidad": 2
                 }
                 """;
 
         Carrito carritoSimulado = Carrito.crear("c-1", "u-100");
-        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyLong(), anyInt()))
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyString(), anyInt()))
                 .thenReturn(carritoSimulado);
         when(mapper.toResponse(any()))
                 .thenReturn(new CarritoResponse("c-1", "u-100", List.of(), new BigDecimal("40000")));
@@ -98,7 +97,7 @@ class CarritoControllerTest {
         // Arrange
         String requestJson = """
                 {
-                    "articuloId": 1,
+                    "articuloId": "a-1",
                     "cantidad": 0
                 }
                 """;
@@ -116,12 +115,12 @@ class CarritoControllerTest {
         // Arrange
         String requestJson = """
                 {
-                    "articuloId": 1,
+                    "articuloId": "a-1",
                     "cantidad": 1
                 }
                 """;
 
-        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyLong(), anyInt()))
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyString(), anyInt()))
                 .thenThrow(new ArticuloAgotadoException());
 
         // Act y Assert
@@ -137,12 +136,12 @@ class CarritoControllerTest {
         // Arrange
         String requestJson = """
                 {
-                    "articuloId": 99,
+                    "articuloId": "a-99",
                     "cantidad": 1
                 }
                 """;
 
-        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyLong(), anyInt()))
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyString(), anyInt()))
                 .thenThrow(new NoSuchElementException());
 
         // Act y Assert
@@ -183,10 +182,10 @@ class CarritoControllerTest {
     void deberiaQuitarElArticuloYRetornar204() throws Exception {
 
         // Act y Assert
-        mockMvc.perform(delete("/api/carrito/items/1").header("Authorization", "Bearer token-ana"))
+        mockMvc.perform(delete("/api/carrito/items/a-1").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isNoContent());
 
-        verify(quitarArticuloDelCarritoUseCase).ejecutar("u-100", 1L);
+        verify(quitarArticuloDelCarritoUseCase).ejecutar("u-100", "a-1");
     }
 
     @Test
@@ -194,10 +193,10 @@ class CarritoControllerTest {
 
         // Arrange
         doThrow(new NoSuchElementException())
-                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyString(), anyLong());
+                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyString(), anyString());
 
         // Act y Assert
-        mockMvc.perform(delete("/api/carrito/items/1").header("Authorization", "Bearer token-ana"))
+        mockMvc.perform(delete("/api/carrito/items/a-1").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isNotFound());
     }
 
@@ -206,10 +205,10 @@ class CarritoControllerTest {
 
         // Arrange
         doThrow(new ArticuloNoEncontradoEnCarritoException())
-                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyString(), anyLong());
+                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyString(), anyString());
 
         // Act y Assert
-        mockMvc.perform(delete("/api/carrito/items/99").header("Authorization", "Bearer token-ana"))
+        mockMvc.perform(delete("/api/carrito/items/a-99").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isBadRequest());
     }
 

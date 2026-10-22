@@ -13,7 +13,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ObtenerRutinaCuidadoUseCaseTest {
-    private Articulo crearArticulo(long id, int cantidad) {
+    private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
@@ -34,8 +34,8 @@ public class ObtenerRutinaCuidadoUseCaseTest {
         RutinaCuidadoRepository repository =
                 new RutinaCuidadoRepositoryEnMemoria();
 
-        Articulo articulo1 = crearArticulo(1L, 10);
-        Articulo articulo2 = crearArticulo(2L, 5);
+        Articulo articulo1 = crearArticulo("a-1", 10);
+        Articulo articulo2 = crearArticulo("a-2", 5);
 
         articulo1.publicar();
         articulo2.publicar();

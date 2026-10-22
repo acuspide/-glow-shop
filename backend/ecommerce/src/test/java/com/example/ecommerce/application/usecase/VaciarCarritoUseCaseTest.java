@@ -28,7 +28,7 @@ class VaciarCarritoUseCaseTest {
     @InjectMocks
     private VaciarCarritoUseCase useCase;
 
-    private Articulo crearArticuloPublicado(long id, String precio) {
+    private Articulo crearArticuloPublicado(String id, String precio) {
         Articulo articulo = Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
@@ -50,8 +50,8 @@ class VaciarCarritoUseCaseTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
-        carrito.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
+        carrito.agregarArticulo(crearArticuloPublicado("a-2", "50000"), 1);
         when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 
         // Act

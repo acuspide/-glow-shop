@@ -15,7 +15,7 @@ public class EliminarArticuloController {
     private final EliminarArticuloUseCase eliminarArticuloUseCase;
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable String id) {
         eliminarArticuloUseCase.ejecutar(id);
 
         return ResponseEntity.noContent().build();

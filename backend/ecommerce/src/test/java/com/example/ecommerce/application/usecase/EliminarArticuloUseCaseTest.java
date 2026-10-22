@@ -27,7 +27,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EliminarArticuloUseCaseTest {
-    private Articulo crearArticulo(long id, int cantidad) {
+    private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Shampoo"),
@@ -50,14 +50,14 @@ public class EliminarArticuloUseCaseTest {
         EliminarArticuloUseCase useCase =
                 new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
 
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         articulo.publicar();
         repository.guardar(articulo);
 
-        Articulo eliminado = useCase.ejecutar(1L);
+        Articulo eliminado = useCase.ejecutar("a-1");
 
         assertSame(articulo, eliminado);
-        assertSame(articulo, repository.obtenerPorId(1L).orElseThrow());
+        assertSame(articulo, repository.obtenerPorId("a-1").orElseThrow());
 
         assertEquals("Shampoo", eliminado.getNombre().valor());
         assertEquals(10, eliminado.getCantidadDisponible());
@@ -84,7 +84,7 @@ public class EliminarArticuloUseCaseTest {
 
         assertThrows(
                 ArticuloNoEncontradoException.class,
-                () -> useCase.ejecutar(99L)
+                () -> useCase.ejecutar("a-99")
         );
     }
 
@@ -96,16 +96,16 @@ public class EliminarArticuloUseCaseTest {
         EliminarArticuloUseCase useCase =
                 new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
 
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         repository.guardar(articulo);
 
-        useCase.ejecutar(1L);
+        useCase.ejecutar("a-1");
 
         assertThrows(
                 ArticuloEliminadoException.class,
-                () -> useCase.ejecutar(1L)
+                () -> useCase.ejecutar("a-1")
         );
 
-        assertSame(articulo, repository.obtenerPorId(1L).orElseThrow());
+        assertSame(articulo, repository.obtenerPorId("a-1").orElseThrow());
     }
 }

@@ -42,12 +42,12 @@ public class ListarRutinasControllerTest {
                                                 "Rutina de cuidado diario",
                                                 List.of(
                                                         new ListarRutinasResponse.ArticuloResponse(
-                                                                1L,
+                                                                "a-1",
                                                                 "Shampoo",
                                                                 10
                                                         ),
                                                         new ListarRutinasResponse.ArticuloResponse(
-                                                                2L,
+                                                                "a-2",
                                                                 "Crema hidratante",
                                                                 5
                                                         )

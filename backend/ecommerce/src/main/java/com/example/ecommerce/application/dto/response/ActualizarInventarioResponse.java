@@ -1,7 +1,7 @@
 package com.example.ecommerce.application.dto.response;
 
 public record ActualizarInventarioResponse(
-        long id,
+        String id,
         int cantidadDisponible,
         boolean publicado
 ) {

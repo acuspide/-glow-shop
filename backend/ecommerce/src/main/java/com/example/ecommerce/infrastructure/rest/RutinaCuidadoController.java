@@ -81,7 +81,7 @@ public class RutinaCuidadoController {
     @PostMapping("/{id}/articulos/{articuloId}")
     public ResponseEntity<RutinaCuidadoResponse> agregarArticulo(
             @PathVariable long id,
-            @PathVariable long articuloId) {
+            @PathVariable String articuloId) {
 
         RutinaCuidado rutina = agregarArticuloARutinaUseCase
                 .ejecutar(id, articuloId);

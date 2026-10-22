@@ -25,16 +25,16 @@ public class CalificacionRepositoryEnMemoria implements CalificacionRepository {
     }
 
     @Override
-    public boolean existePorClienteYArticulo(String clienteId, long articuloId) {
+    public boolean existePorClienteYArticulo(String clienteId, String articuloId) {
         return calificaciones.values().stream()
                 .filter(c -> !c.isEliminada()) // si la eliminó, puede volver a calificar
-                .anyMatch(c -> c.getClienteId().equals(clienteId) && c.getArticuloId() == articuloId);
+                .anyMatch(c -> c.getClienteId().equals(clienteId) && c.getArticuloId().equals(articuloId));
     }
 
     @Override
-    public List<Calificacion> listarPorArticulo(long articuloId) {
+    public List<Calificacion> listarPorArticulo(String articuloId) {
         return calificaciones.values().stream()
-                .filter(c -> c.getArticuloId() == articuloId)
+                .filter(c -> c.getArticuloId().equals(articuloId))
                 .toList();
     }
 }

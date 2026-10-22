@@ -29,7 +29,7 @@ class QuitarArticuloDelCarritoUseCaseTest {
     @InjectMocks
     private QuitarArticuloDelCarritoUseCase useCase;
 
-    private Articulo crearArticuloPublicado(long id, String precio) {
+    private Articulo crearArticuloPublicado(String id, String precio) {
         Articulo articulo = Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
@@ -51,16 +51,16 @@ class QuitarArticuloDelCarritoUseCaseTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
-        carrito.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
+        carrito.agregarArticulo(crearArticuloPublicado("a-2", "50000"), 1);
         when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 
         // Act
-        useCase.ejecutar("u-100", 1L);
+        useCase.ejecutar("u-100", "a-1");
 
         // Assert
         assertEquals(1, carrito.getItems().size());
-        assertEquals(2L, carrito.getItems().get(0).getArticuloId());
+        assertEquals("a-2", carrito.getItems().get(0).getArticuloId());
         verify(carritoRepository).guardar(carrito);
     }
 
@@ -72,7 +72,7 @@ class QuitarArticuloDelCarritoUseCaseTest {
 
         // Act y Assert
         assertThrows(NoSuchElementException.class, () -> {
-            useCase.ejecutar("u-100", 1L);
+            useCase.ejecutar("u-100", "a-1");
         });
 
         verify(carritoRepository, never()).guardar(any());
@@ -83,12 +83,12 @@ class QuitarArticuloDelCarritoUseCaseTest {
 
         // Arrange
         Carrito carrito = Carrito.crear("c-1", "u-100");
-        carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
+        carrito.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
         when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 
         // Act y Assert
         assertThrows(ArticuloNoEncontradoEnCarritoException.class, () -> {
-            useCase.ejecutar("u-100", 99L);
+            useCase.ejecutar("u-100", "a-99");
         });
 
         assertEquals(1, carrito.getItems().size());

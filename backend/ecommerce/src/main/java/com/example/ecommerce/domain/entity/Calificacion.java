@@ -25,14 +25,14 @@ public class Calificacion {
     public static final int MAXIMO_CARACTERES_COMENTARIO = 500;
 
     private final String id;
-    private final long articuloId;
+    private final String articuloId;
     private final String clienteId;
     private Puntuacion puntuacion;
     private String comentario;
     private final LocalDateTime fecha;
     private boolean eliminada;
 
-    private Calificacion(String id, long articuloId, String clienteId, Puntuacion puntuacion,
+    private Calificacion(String id, String articuloId, String clienteId, Puntuacion puntuacion,
                          String comentario, LocalDateTime fecha, boolean eliminada) {
         this.id = id;
         this.articuloId = articuloId;
@@ -44,7 +44,7 @@ public class Calificacion {
     }
 
     // Único punto de entrada para crear una calificación: valida ANTES de existir.
-    public static Calificacion calificar(String id, long articuloId, Usuario cliente,
+    public static Calificacion calificar(String id, String articuloId, Usuario cliente,
                                          Puntuacion puntuacion, String comentario, LocalDateTime fecha) {
         cliente.verificarQueEsClienteActivo();
         validarComentario(comentario);
@@ -52,7 +52,7 @@ public class Calificacion {
     }
 
     /** Solo para el adaptador de persistencia. */
-    public static Calificacion reconstruir(String id, long articuloId, String clienteId, Puntuacion puntuacion,
+    public static Calificacion reconstruir(String id, String articuloId, String clienteId, Puntuacion puntuacion,
                                            String comentario, LocalDateTime fecha, boolean eliminada) {
         return new Calificacion(id, articuloId, clienteId, puntuacion, comentario, fecha, eliminada);
     }
@@ -94,7 +94,7 @@ public class Calificacion {
     }
 
     public String getId() { return id; }
-    public long getArticuloId() { return articuloId; }
+    public String getArticuloId() { return articuloId; }
     public String getClienteId() { return clienteId; }
     public Puntuacion getPuntuacion() { return puntuacion; }
     public String getComentario() { return comentario; }

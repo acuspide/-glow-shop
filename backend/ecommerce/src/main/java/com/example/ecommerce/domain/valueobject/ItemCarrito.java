@@ -7,11 +7,11 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class ItemCarrito {
-    private final long articuloId;
+    private final String articuloId;
     private final int cantidad;
     private final Precio precioUnitario;
 
-    public ItemCarrito(long articuloId, int cantidad, Precio precioUnitario) {
+    public ItemCarrito(String articuloId, int cantidad, Precio precioUnitario) {
         validarCantidad(cantidad);
         validarPrecio(precioUnitario);
         this.articuloId = articuloId;
@@ -35,7 +35,7 @@ public class ItemCarrito {
         return precioUnitario.valor().multiply(BigDecimal.valueOf(cantidad));
     }
 
-    public long getArticuloId() {
+    public String getArticuloId() {
         return articuloId;
     }
 
@@ -51,7 +51,7 @@ public class ItemCarrito {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ItemCarrito otro)) return false;
-        return articuloId == otro.articuloId;
+        return articuloId.equals(otro.articuloId);
     }
 
     @Override

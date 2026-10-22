@@ -13,10 +13,6 @@ import com.example.ecommerce.domain.valueobject.Tono;
 import com.example.ecommerce.domain.valueobject.TipoPiel;
 
 public record PublicarArticuloRequest(
-        @NotNull(message = "El identificador del artículo es obligatorio")
-        @Positive(message = "El identificador debe ser mayor que cero")
-        Long id,
-
         @NotBlank(message = "El nombre del artículo es obligatorio")
         String nombre,
 

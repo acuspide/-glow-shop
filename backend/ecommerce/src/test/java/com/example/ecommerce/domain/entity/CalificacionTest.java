@@ -21,9 +21,9 @@ public class CalificacionTest {
 
     @Test
     void calificarCreaLaCalificacionConLosIdsDelArticuloYDelCliente() {
-        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "  Excelente sérum  ", ahora);
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "  Excelente sérum  ", ahora);
 
-        assertEquals(10L, calificacion.getArticuloId());
+        assertEquals("a-10", calificacion.getArticuloId());
         assertEquals("u-1", calificacion.getClienteId());
         assertEquals(5, calificacion.getPuntuacion().valor());
         assertEquals("Excelente sérum", calificacion.getComentario());
@@ -32,7 +32,7 @@ public class CalificacionTest {
     @Test
     void elComentarioEsObligatorio() {
         assertThrows(ComentarioInvalidoException.class,
-                () -> Calificacion.calificar("c-1", 10L, ana, new Puntuacion(4), "  ", ahora));
+                () -> Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(4), "  ", ahora));
     }
 
     @Test
@@ -40,7 +40,7 @@ public class CalificacionTest {
         String largo = "a".repeat(501);
 
         assertThrows(ComentarioInvalidoException.class,
-                () -> Calificacion.calificar("c-1", 10L, ana, new Puntuacion(4), largo, ahora));
+                () -> Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(4), largo, ahora));
     }
 
     @Test
@@ -49,12 +49,12 @@ public class CalificacionTest {
                 DatosPrueba.TELEFONO, DatosPrueba.FECHA);
 
         assertThrows(AccionSoloParaClienteException.class,
-                () -> Calificacion.calificar("c-1", 10L, vera, new Puntuacion(4), "Bueno", ahora));
+                () -> Calificacion.calificar("c-1", "a-10", vera, new Puntuacion(4), "Bueno", ahora));
     }
 
     @Test
     void elAutorPuedeActualizarSuCalificacionYSeConservaLaFecha() {
-        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
 
         calificacion.actualizarPor(ana, new Puntuacion(3), "  Después de un mes, regular  ");
 
@@ -65,7 +65,7 @@ public class CalificacionTest {
 
     @Test
     void otroClienteNoPuedeActualizarLaCalificacion() {
-        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
         Usuario bruno = Usuario.registrarCliente("u-2", "Bruno", new Email("bruno@correo.com"), "hash",
                 DatosPrueba.TELEFONO, DatosPrueba.FECHA);
 
@@ -76,7 +76,7 @@ public class CalificacionTest {
 
     @Test
     void alActualizarElComentarioSigueSiendoObligatorio() {
-        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
 
         assertThrows(ComentarioInvalidoException.class, () -> calificacion.actualizarPor(ana, new Puntuacion(4), " "));
         assertEquals("Excelente", calificacion.getComentario());
@@ -84,7 +84,7 @@ public class CalificacionTest {
 
     @Test
     void elAutorPuedeEliminarSuCalificacion() {
-        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
 
         calificacion.eliminarPor(ana);
 
@@ -93,7 +93,7 @@ public class CalificacionTest {
 
     @Test
     void otroClienteNoPuedeEliminarLaCalificacion() {
-        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
         Usuario bruno = Usuario.registrarCliente("u-2", "Bruno", new Email("bruno@correo.com"), "hash",
                 DatosPrueba.TELEFONO, DatosPrueba.FECHA);
 
@@ -103,7 +103,7 @@ public class CalificacionTest {
 
     @Test
     void unaCalificacionEliminadaNoSePuedeEliminarNiEditar() {
-        Calificacion calificacion = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
+        Calificacion calificacion = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
         calificacion.eliminarPor(ana);
 
         assertThrows(CalificacionEliminadaException.class, () -> calificacion.eliminarPor(ana));
@@ -113,8 +113,8 @@ public class CalificacionTest {
 
     @Test
     void dosCalificacionesConElMismoIdSonLaMisma() {
-        Calificacion a = Calificacion.calificar("c-1", 10L, ana, new Puntuacion(5), "Excelente", ahora);
-        Calificacion b = Calificacion.reconstruir("c-1", 10L, "u-1", new Puntuacion(1), "Otro texto", ahora, false);
+        Calificacion a = Calificacion.calificar("c-1", "a-10", ana, new Puntuacion(5), "Excelente", ahora);
+        Calificacion b = Calificacion.reconstruir("c-1", "a-10", "u-1", new Puntuacion(1), "Otro texto", ahora, false);
 
         assertEquals(a, b);
     }

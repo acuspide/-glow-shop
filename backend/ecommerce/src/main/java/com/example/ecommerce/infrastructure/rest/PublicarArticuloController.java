@@ -13,6 +13,7 @@ import com.example.ecommerce.application.usecase.ConsultarInventarioUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.ConsultarInventarioMapper;
 
 import java.util.List;
+import java.util.UUID;
 import com.example.ecommerce.infrastructure.rest.mapper.PublicarArticuloMapper;
 import com.example.ecommerce.application.dto.response.MostrarDetalleArticuloResponse;
 import com.example.ecommerce.application.usecase.MostrarDetalleArticuloUseCase;
@@ -53,7 +54,7 @@ public class PublicarArticuloController {
     public ResponseEntity<PublicarArticuloResponse> publicar(
             @Valid @RequestBody PublicarArticuloRequest request) {
 
-        Articulo articulo = mapper.toEntity(request);
+        Articulo articulo = mapper.toEntity(UUID.randomUUID().toString(), request);
 
         Articulo articuloPublicado =
                 publicarArticuloUseCase.ejecutar(articulo);
@@ -71,7 +72,7 @@ public class PublicarArticuloController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<MostrarDetalleArticuloResponse> mostrarDetalle(
-            @PathVariable long id) {
+            @PathVariable String id) {
 
         Articulo articulo = mostrarDetalleArticuloUseCase.ejecutar(id);
 
@@ -83,7 +84,7 @@ public class PublicarArticuloController {
 
     @GetMapping("/{id}/inventario")
     public ResponseEntity<ConsultarInventarioResponse> consultarInventario(
-            @PathVariable long id) {
+            @PathVariable String id) {
 
         Articulo articulo = consultarInventarioUseCase.ejecutar(id);
 

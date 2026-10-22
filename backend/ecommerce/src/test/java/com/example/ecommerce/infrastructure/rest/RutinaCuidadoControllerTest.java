@@ -51,7 +51,7 @@ public class RutinaCuidadoControllerTest {
         when(actualizarRutinaCuidadoUseCase.ejecutar(
                 1L,
                 "Rutina actualizada",
-                List.of(10L, 20L)
+                List.of("a-10", "a-20")
         )).thenReturn(rutina);
 
         when(mapper.toResponse(rutina)).thenReturn(response);
@@ -61,7 +61,7 @@ public class RutinaCuidadoControllerTest {
                         .content("""
                                 {
                                   "nombre": "Rutina actualizada",
-                                  "articulosIds": [10, 20]
+                                  "articulosIds": ["a-10", "a-20"]
                                 }
                                 """))
                 .andExpect(status().isOk());
@@ -69,7 +69,7 @@ public class RutinaCuidadoControllerTest {
         verify(actualizarRutinaCuidadoUseCase).ejecutar(
                 1L,
                 "Rutina actualizada",
-                List.of(10L, 20L)
+                List.of("a-10", "a-20")
         );
 
         verify(mapper).toResponse(rutina);
@@ -82,7 +82,7 @@ public class RutinaCuidadoControllerTest {
                         .content("""
                                 {
                                   "nombre": "",
-                                  "articulosIds": [10, 20]
+                                  "articulosIds": ["a-10", "a-20"]
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
@@ -97,7 +97,7 @@ public class RutinaCuidadoControllerTest {
                         .content("""
                                 {
                                   "nombre": "Rutina actualizada",
-                                  "articulosIds": [10]
+                                  "articulosIds": ["a-10"]
                                 }
                                 """))
                 .andExpect(status().isBadRequest());
@@ -111,15 +111,15 @@ public class RutinaCuidadoControllerTest {
 
         RutinaCuidadoResponse response = mock(RutinaCuidadoResponse.class);
 
-        when(agregarArticuloARutinaUseCase.ejecutar(1L, 3L))
+        when(agregarArticuloARutinaUseCase.ejecutar(1L, "a-3"))
                 .thenReturn(rutina);
 
         when(mapper.toResponse(rutina)).thenReturn(response);
 
-        mockMvc.perform(post("/api/rutinas/1/articulos/3"))
+        mockMvc.perform(post("/api/rutinas/1/articulos/a-3"))
                 .andExpect(status().isOk());
 
-        verify(agregarArticuloARutinaUseCase).ejecutar(1L, 3L);
+        verify(agregarArticuloARutinaUseCase).ejecutar(1L, "a-3");
 
         verify(mapper).toResponse(rutina);
     }

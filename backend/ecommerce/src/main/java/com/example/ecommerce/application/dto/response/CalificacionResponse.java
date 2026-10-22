@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record CalificacionResponse(
         String id,
-        long articuloId,
+        String articuloId,
         String clienteId,
         int puntuacion,
         String comentario,

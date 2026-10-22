@@ -20,7 +20,7 @@ public class VerificadorDeArticuloSinPedidosActivosTest {
             new VerificadorDeArticuloSinPedidosActivos(pedidoRepository);
 
     // Se simula el pedido para no depender de cómo se construye (es del módulo de pedidos).
-    private Pedido pedido(EstadoPedido estado, long articuloId) {
+    private Pedido pedido(EstadoPedido estado, String articuloId) {
         Pedido pedido = mock(Pedido.class);
         DetallePedido detalle = mock(DetallePedido.class);
         when(detalle.getArticuloId()).thenReturn(articuloId);
@@ -33,31 +33,31 @@ public class VerificadorDeArticuloSinPedidosActivosTest {
     void unArticuloSinPedidosPuedeEliminarse() {
         when(pedidoRepository.listarTodos()).thenReturn(List.of());
 
-        assertDoesNotThrow(() -> verificador.verificarQuePuedeEliminarse(10L));
+        assertDoesNotThrow(() -> verificador.verificarQuePuedeEliminarse("a-10"));
     }
 
     @Test
     void unArticuloEnUnPedidoActivoNoPuedeEliminarse() {
-        Pedido confirmado = pedido(EstadoPedido.CONFIRMADO, 10L);
+        Pedido confirmado = pedido(EstadoPedido.CONFIRMADO, "a-10");
         when(pedidoRepository.listarTodos()).thenReturn(List.of(confirmado));
 
-        assertThrows(ArticuloConPedidosActivosException.class, () -> verificador.verificarQuePuedeEliminarse(10L));
+        assertThrows(ArticuloConPedidosActivosException.class, () -> verificador.verificarQuePuedeEliminarse("a-10"));
     }
 
     @Test
     void losPedidosEntregadosOCanceladosNoImpidenEliminar() {
-        Pedido entregado = pedido(EstadoPedido.ENTREGADO, 10L);
-        Pedido cancelado = pedido(EstadoPedido.CANCELADO, 10L);
+        Pedido entregado = pedido(EstadoPedido.ENTREGADO, "a-10");
+        Pedido cancelado = pedido(EstadoPedido.CANCELADO, "a-10");
         when(pedidoRepository.listarTodos()).thenReturn(List.of(entregado, cancelado));
 
-        assertDoesNotThrow(() -> verificador.verificarQuePuedeEliminarse(10L));
+        assertDoesNotThrow(() -> verificador.verificarQuePuedeEliminarse("a-10"));
     }
 
     @Test
     void unPedidoActivoDeOtroArticuloNoImpideEliminar() {
-        Pedido deOtroArticulo = pedido(EstadoPedido.CONFIRMADO, 11L);
+        Pedido deOtroArticulo = pedido(EstadoPedido.CONFIRMADO, "a-11");
         when(pedidoRepository.listarTodos()).thenReturn(List.of(deOtroArticulo));
 
-        assertDoesNotThrow(() -> verificador.verificarQuePuedeEliminarse(10L));
+        assertDoesNotThrow(() -> verificador.verificarQuePuedeEliminarse("a-10"));
     }
 }

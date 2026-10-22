@@ -28,7 +28,7 @@ public class CalificarArticuloUseCase {
     private final VerificadorDeCalificacion verificadorDeCalificacion;
 
     @Transactional
-    public Calificacion ejecutar(String id, String clienteId, long articuloId, int estrellas, String comentario) {
+    public Calificacion ejecutar(String id, String clienteId, String articuloId, int estrellas, String comentario) {
         Usuario cliente = usuarioRepository.obtenerPorId(clienteId)
                 .orElseThrow(AccionSoloParaClienteException::new);
         articuloRepository.obtenerPorId(articuloId)

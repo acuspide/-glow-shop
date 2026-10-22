@@ -15,7 +15,7 @@ public class EliminarArticuloUseCase {
     private final VerificadorDeArticuloSinPedidosActivos verificadorSinPedidosActivos;
 
     @Transactional
-    public Articulo ejecutar(long id) {
+    public Articulo ejecutar(String id) {
         Articulo articulo = articuloRepository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));
 

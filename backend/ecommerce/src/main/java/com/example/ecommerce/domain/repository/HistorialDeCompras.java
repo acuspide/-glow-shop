@@ -6,5 +6,5 @@ package com.example.ecommerce.domain.repository;
 public interface HistorialDeCompras {
 
     /** true si el cliente tiene un pedido ENTREGADO que incluye el artículo. */
-    boolean clienteRecibioArticulo(String clienteId, long articuloId);
+    boolean clienteRecibioArticulo(String clienteId, String articuloId);
 }

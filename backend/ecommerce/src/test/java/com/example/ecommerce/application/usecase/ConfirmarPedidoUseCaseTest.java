@@ -24,7 +24,7 @@ public class ConfirmarPedidoUseCaseTest {
         PedidoRepository repository = new PedidoRepositoryEnMemoria();
         ConfirmarPedidoUseCase useCase = new ConfirmarPedidoUseCase(repository);
         Precio precio = new Precio(new BigDecimal("20000"));
-        List<DetallePedido> detalles = List.of(new DetallePedido(1L, 2, precio));
+        List<DetallePedido> detalles = List.of(new DetallePedido("a-1", 2, precio));
 
         // Act
         Pedido pedido = useCase.ejecutar("p-1", "u-100", detalles);

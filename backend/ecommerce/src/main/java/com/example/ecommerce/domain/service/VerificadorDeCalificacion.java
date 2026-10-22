@@ -21,7 +21,7 @@ public class VerificadorDeCalificacion {
         this.calificacionRepository = calificacionRepository;
     }
 
-    public void verificarQuePuedeCalificar(String clienteId, long articuloId) {
+    public void verificarQuePuedeCalificar(String clienteId, String articuloId) {
         if (!historialDeCompras.clienteRecibioArticulo(clienteId, articuloId)) {
             throw new ArticuloNoRecibidoException();
         }

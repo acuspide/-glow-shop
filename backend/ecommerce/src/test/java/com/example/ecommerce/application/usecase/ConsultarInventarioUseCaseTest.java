@@ -22,18 +22,18 @@ public class ConsultarInventarioUseCaseTest {
         ArticuloRepositoryEnMemoria repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo articulo = crearArticulo(1L, 10);
+        Articulo articulo = crearArticulo("a-1", 10);
         repository.guardar(articulo);
 
         ConsultarInventarioUseCase useCase =
                 new ConsultarInventarioUseCase(repository);
 
         // Act
-        Articulo resultado = useCase.ejecutar(1L);
+        Articulo resultado = useCase.ejecutar("a-1");
 
         // Assert
         assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
+        assertEquals("a-1", resultado.getId());
         assertEquals("Labial", resultado.getNombre().valor());
         assertEquals(10, resultado.getCantidadDisponible());
     }
@@ -45,17 +45,17 @@ public class ConsultarInventarioUseCaseTest {
         ArticuloRepositoryEnMemoria repository =
                 new ArticuloRepositoryEnMemoria();
 
-        Articulo articulo = crearArticulo(2L, 0);
+        Articulo articulo = crearArticulo("a-2", 0);
         repository.guardar(articulo);
 
         ConsultarInventarioUseCase useCase =
                 new ConsultarInventarioUseCase(repository);
 
         // Act
-        Articulo resultado = useCase.ejecutar(2L);
+        Articulo resultado = useCase.ejecutar("a-2");
 
         // Assert
-        assertEquals(2L, resultado.getId());
+        assertEquals("a-2", resultado.getId());
         assertEquals("Labial", resultado.getNombre().valor());
         assertEquals(0, resultado.getCantidadDisponible());
     }
@@ -73,11 +73,11 @@ public class ConsultarInventarioUseCaseTest {
         // Act y Assert
         assertThrows(
                 ArticuloNoEncontradoException.class,
-                () -> useCase.ejecutar(999L)
+                () -> useCase.ejecutar("a-999")
         );
     }
 
-    private Articulo crearArticulo(long id, int cantidadDisponible) {
+    private Articulo crearArticulo(String id, int cantidadDisponible) {
         return Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),

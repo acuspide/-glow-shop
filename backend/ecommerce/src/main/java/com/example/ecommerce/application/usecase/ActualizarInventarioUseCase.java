@@ -14,7 +14,7 @@ public class ActualizarInventarioUseCase {
     private final ArticuloRepository repository;
 
     @Transactional
-    public Articulo aumentar(long id, int cantidad) {
+    public Articulo aumentar(String id, int cantidad) {
 
         Articulo articulo = repository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));
@@ -27,7 +27,7 @@ public class ActualizarInventarioUseCase {
     }
 
     @Transactional
-    public Articulo disminuir(long id, int cantidad) {
+    public Articulo disminuir(String id, int cantidad) {
 
         Articulo articulo = repository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));

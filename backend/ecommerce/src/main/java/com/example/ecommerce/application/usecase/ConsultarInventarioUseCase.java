@@ -13,7 +13,7 @@ public class ConsultarInventarioUseCase {
     private final ArticuloRepository repository;
 
     @Transactional(readOnly = true)
-    public Articulo ejecutar(long id) {
+    public Articulo ejecutar(String id) {
         return repository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));
     }

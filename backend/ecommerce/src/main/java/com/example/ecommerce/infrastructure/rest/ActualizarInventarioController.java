@@ -19,7 +19,7 @@ public class ActualizarInventarioController {
 
     @PostMapping("/{id}/inventario/aumentar")
     public ResponseEntity<ActualizarInventarioResponse> aumentar(
-            @PathVariable long id,
+            @PathVariable String id,
             @Valid @RequestBody ActualizarInventarioRequest request) {
 
         Articulo articulo = actualizarInventarioUseCase.aumentar(
@@ -34,7 +34,7 @@ public class ActualizarInventarioController {
 
     @PostMapping("/{id}/inventario/disminuir")
     public ResponseEntity<ActualizarInventarioResponse> disminuir(
-            @PathVariable long id,
+            @PathVariable String id,
             @Valid @RequestBody ActualizarInventarioRequest request) {
 
         Articulo articulo = actualizarInventarioUseCase.disminuir(

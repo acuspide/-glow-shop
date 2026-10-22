@@ -14,7 +14,7 @@ public class QuitarArticuloDelCarritoUseCase {
     private final CarritoRepository carritoRepository;
 
     @Transactional
-    public void ejecutar(String clienteId, long articuloId) {
+    public void ejecutar(String clienteId, String articuloId) {
         Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId).orElseThrow();
         carrito.quitarArticulo(articuloId);
         carritoRepository.guardar(carrito);

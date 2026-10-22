@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class BuscarArticulosUseCaseTest {
     private Articulo crearArticulo(
-            long id,
+            String id,
             String nombre,
             String categoria,
             long categoriaId,
@@ -46,19 +46,19 @@ public class BuscarArticulosUseCaseTest {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
 
         Articulo labial = crearArticulo(
-                1L, "Labial rojo", "Labios", 1L,
+                "a-1", "Labial rojo", "Labios", 1L,
                 "Maybelline", 1L, "Tienda Beauty", 1L,
                 "35000", Tono.CLARO, TipoPiel.NORMAL, 10
         );
 
         Articulo crema = crearArticulo(
-                2L, "Crema facial", "Rostro", 2L,
+                "a-2", "Crema facial", "Rostro", 2L,
                 "Nivea", 2L, "Tienda Beauty", 1L,
                 "45000", Tono.MEDIO, TipoPiel.SECA, 5
         );
 
         Articulo base = crearArticulo(
-                3L, "Base líquida", "Rostro", 2L,
+                "a-3", "Base líquida", "Rostro", 2L,
                 "Maybelline", 1L, "Tienda Glam", 2L,
                 "50000", Tono.OSCURO, TipoPiel.GRASA, 8
         );
@@ -106,7 +106,7 @@ public class BuscarArticulosUseCaseTest {
         List<Articulo> resultado = useCase.ejecutar(criterios);
 
         assertEquals(1, resultado.size());
-        assertEquals(1L, resultado.get(0).getId());
+        assertEquals("a-1", resultado.get(0).getId());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class BuscarArticulosUseCaseTest {
         List<Articulo> resultado = useCase.ejecutar(criterios);
 
         assertEquals(1, resultado.size());
-        assertEquals(3L, resultado.get(0).getId());
+        assertEquals("a-3", resultado.get(0).getId());
     }
 
     @Test
@@ -180,14 +180,14 @@ public class BuscarArticulosUseCaseTest {
         List<Articulo> resultado = useCase.ejecutar(criterios);
 
         assertEquals(1, resultado.size());
-        assertEquals(2L, resultado.get(0).getId());
+        assertEquals("a-2", resultado.get(0).getId());
     }
     @Test
     void noDebeDevolverArticulosSinPublicar() {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = crearArticulo(
-                4L, "Labial sin publicar", "Labios", 1L,
+                "a-4", "Labial sin publicar", "Labios", 1L,
                 "Maybelline", 1L, "Tienda Beauty", 1L,
                 "30000", Tono.CLARO, TipoPiel.NORMAL, 10
         );
@@ -214,7 +214,7 @@ public class BuscarArticulosUseCaseTest {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = crearArticulo(
-                5L, "Crema agotada", "Rostro", 2L,
+                "a-5", "Crema agotada", "Rostro", 2L,
                 "Nivea", 2L, "Tienda Beauty", 1L,
                 "45000", Tono.MEDIO, TipoPiel.SECA, 0
         );
@@ -242,7 +242,7 @@ public class BuscarArticulosUseCaseTest {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = Articulo.crear(
-                6L,
+                "a-6",
                 new NombreArticulo("Base vencida"),
                 new Precio(new BigDecimal("50000")),
                 Categoria.crear(2L, "Rostro"),
