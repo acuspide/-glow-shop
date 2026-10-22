@@ -149,19 +149,33 @@ public class CarritoTest {
         // Assert
         assertEquals(5, labial.getCantidadDisponible());
     }
-
     @Test
-    void noDebePermitirEliminarUnArticuloQueNoEstaEnElCarrito() {
+    void quitarUnArticuloDebeSacarloDelCarritoYActualizarElTotal() {
+
+        // Arrange
+        Carrito carrito = Carrito.crear(1L, 100L);
+        carrito.agregarArticulo(crearArticuloPublicado(1L, "10000", 5), 2);
+        carrito.agregarArticulo(crearArticuloPublicado(2L, "30000", 5), 1);
+
+        // Act
+        carrito.quitarArticulo(1L);
+
+        // Assert
+        assertEquals(1, carrito.getItems().size());
+        assertEquals(2L, carrito.getItems().get(0).getArticuloId());
+        assertEquals(new BigDecimal("30000"), carrito.calcularTotal());
+    }
+    @Test
+    void noDebePermitirQuitarUnArticuloQueNoEstaEnElCarrito() {
 
         // Arrange
         Carrito carrito = Carrito.crear(1L, 100L);
 
         // Act y Assert
         assertThrows(ArticuloNoEncontradoEnCarritoException.class, () -> {
-            carrito.eliminarItem(99L);
+            carrito.quitarArticulo(99L);
         });
     }
-
     @Test
     void vaciarElCarritoDebeDejarloSinItems() {
 
