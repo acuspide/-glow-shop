@@ -13,19 +13,19 @@ public class Cupon {
 
     private static final BigDecimal CIEN = BigDecimal.valueOf(100);
 
-    private final long id;
+    private final String id;
     private final String codigo;
     private final int porcentaje;
     private final LocalDate fechaExpiracion;
 
-    private Cupon(long id, String codigo, int porcentaje, LocalDate fechaExpiracion) {
+    private Cupon(String id, String codigo, int porcentaje, LocalDate fechaExpiracion) {
         this.id = id;
         this.codigo = codigo;
         this.porcentaje = porcentaje;
         this.fechaExpiracion = fechaExpiracion;
     }
 
-    public static Cupon crear(long id, String codigo, int porcentaje, LocalDate fechaExpiracion) {
+    public static Cupon crear(String id, String codigo, int porcentaje, LocalDate fechaExpiracion) {
         validarCodigo(codigo);
         validarPorcentaje(porcentaje);
         validarFechaExpiracion(fechaExpiracion);
@@ -61,7 +61,7 @@ public class Cupon {
         return new Precio(descuento);
     }
 
-    public long getId() { return id; }
+    public String getId() { return id; }
     public String getCodigo() { return codigo; }
     public int getPorcentaje() { return porcentaje; }
     public LocalDate getFechaExpiracion() { return fechaExpiracion; }
@@ -70,7 +70,7 @@ public class Cupon {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Cupon otro)) return false;
-        return id == otro.id;
+        return id.equals(otro.id);
     }
 
     @Override

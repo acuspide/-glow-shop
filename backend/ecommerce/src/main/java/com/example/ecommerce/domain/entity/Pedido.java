@@ -19,17 +19,17 @@ import java.util.List;
 import java.util.Objects;
 
 public class Pedido {
-    private final long id;
+    private final String id;
     private final String clienteId;
     private final List<DetallePedido> detalles;
     private EstadoPedido estado;
-    private Long cuponId;
+    private String cuponId;
     private Precio descuento;
     private Precio impuestos;
     private Precio costoEnvio;
-    private Long pagoConfirmadoId;
+    private String pagoConfirmadoId;
 
-    private Pedido(long id, String clienteId) {
+    private Pedido(String id, String clienteId) {
         this.id = id;
         this.clienteId = clienteId;
         this.detalles = new ArrayList<>();
@@ -39,7 +39,7 @@ public class Pedido {
         this.costoEnvio = new Precio(BigDecimal.ZERO);
     }
 
-    public static Pedido crear(long id, String clienteId, List<DetallePedido> detalles) {
+    public static Pedido crear(String id, String clienteId, List<DetallePedido> detalles) {
         if (detalles == null || detalles.isEmpty()) {
             throw new PedidoSinDetallesException();
         }
@@ -101,7 +101,7 @@ public class Pedido {
         }
         if (pago == null
                 || !pago.estaAprobado()
-                || pago.getPedidoId() != id
+                || !pago.getPedidoId().equals(id)
                 || pago.getMonto().valor().compareTo(calcularTotal()) != 0) {
             throw new PagoInvalidoException();
         }
@@ -152,7 +152,7 @@ public class Pedido {
                 .add(costoEnvio.valor());
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -168,7 +168,7 @@ public class Pedido {
         return List.copyOf(detalles);
     }
 
-    public Long getCuponId() {
+    public String getCuponId() {
         return cuponId;
     }
 
@@ -183,7 +183,7 @@ public class Pedido {
     public Precio getCostoEnvio() {
         return costoEnvio;
     }
-    public Long getPagoConfirmadoId() {
+    public String getPagoConfirmadoId() {
         return pagoConfirmadoId;
     }
 
@@ -191,7 +191,7 @@ public class Pedido {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Pedido otro)) return false;
-        return id == otro.id;
+        return id.equals(otro.id);
     }
 
     @Override

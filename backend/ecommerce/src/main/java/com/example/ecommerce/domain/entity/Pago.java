@@ -8,19 +8,19 @@ import com.example.ecommerce.domain.valueobject.Precio;
 import java.util.Objects;
 
 public class Pago {
-    private final long id;
-    private final long pedidoId;
+    private final String id;
+    private final String pedidoId;
     private final Precio monto;
     private EstadoPago estado;
 
-    private Pago(long id, long pedidoId, Precio monto) {
+    private Pago(String id, String pedidoId, Precio monto) {
         this.id = id;
         this.pedidoId = pedidoId;
         this.monto = monto;
         this.estado = EstadoPago.PENDIENTE;
     }
 
-    public static Pago crear(long id, long pedidoId, Precio monto) {
+    public static Pago crear(String id, String pedidoId, Precio monto) {
         validarMonto(monto);
         return new Pago(id, pedidoId, monto);
     }
@@ -56,8 +56,8 @@ public class Pago {
         return estado == EstadoPago.APROBADO;
     }
 
-    public long getId() { return id; }
-    public long getPedidoId() { return pedidoId; }
+    public String getId() { return id; }
+    public String getPedidoId() { return pedidoId; }
     public Precio getMonto() { return monto; }
     public EstadoPago getEstado() { return estado; }
 
@@ -65,7 +65,7 @@ public class Pago {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Pago otro)) return false;
-        return id == otro.id;
+        return id.equals(otro.id);
     }
 
     @Override
