@@ -1,12 +1,11 @@
 package com.example.ecommerce.infrastructure.rest;
 
-import com.example.ecommerce.application.dto.response.CarritoResponse;
-import com.example.ecommerce.application.usecase.AgregarAlCarritoUseCase;
-import com.example.ecommerce.domain.entity.Carrito;
-import com.example.ecommerce.domain.exception.ArticuloAgotadoException;
-import com.example.ecommerce.infrastructure.rest.mapper.CarritoMapper;
-
 import com.example.ecommerce.application.TokenService;
+import com.example.ecommerce.application.dto.response.CarritoResponse;
+import com.example.ecommerce.application.usecase.*;
+import com.example.ecommerce.domain.entity.Carrito;
+import com.example.ecommerce.domain.exception.*;
+import com.example.ecommerce.infrastructure.rest.mapper.CarritoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,27 +18,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import com.example.ecommerce.application.usecase.VaciarCarritoUseCase;
-
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import com.example.ecommerce.application.usecase.QuitarArticuloDelCarritoUseCase;
-import com.example.ecommerce.domain.exception.ArticuloNoEncontradoEnCarritoException;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import com.example.ecommerce.application.usecase.ModificarCantidadEnCarritoUseCase;
-import com.example.ecommerce.domain.exception.CantidadSuperaStockException;
-import static org.mockito.Mockito.never;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import com.example.ecommerce.application.usecase.VerCarritoUseCase;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(CarritoController.class)
 class CarritoControllerTest {
@@ -65,6 +48,10 @@ class CarritoControllerTest {
 
     @MockitoBean
     private ModificarCantidadEnCarritoUseCase modificarCantidadEnCarritoUseCase;
+
+    @MockitoBean
+    private ValidarDisponibilidadDelCarritoUseCase validarDisponibilidadDelCarritoUseCase;
+
     @BeforeEach
     void sesionDeAna() {
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-100");
@@ -183,6 +170,7 @@ class CarritoControllerTest {
         mockMvc.perform(get("/api/carrito").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isNotFound());
     }
+
     @Test
     void deberiaQuitarElArticuloYRetornar204() throws Exception {
 
@@ -216,6 +204,7 @@ class CarritoControllerTest {
         mockMvc.perform(delete("/api/carrito/items/a-99").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     void deberiaModificarLaCantidadYRetornar204() throws Exception {
 
@@ -313,6 +302,51 @@ class CarritoControllerTest {
 
         // Act y Assert
         mockMvc.perform(delete("/api/carrito/items").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isNotFound());
+    }
+    @Test
+    void deberiaRetornar204CuandoElCarritoPuedePagarse() throws Exception {
+
+        // Act y Assert
+        mockMvc.perform(get("/api/carrito/disponibilidad").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isNoContent());
+
+        verify(validarDisponibilidadDelCarritoUseCase).ejecutar("u-100");
+    }
+
+    @Test
+    void deberiaRetornar400CuandoElPrecioDeUnArticuloCambio() throws Exception {
+
+        // Arrange
+        doThrow(new PrecioDelArticuloCambioException("a-1"))
+                .when(validarDisponibilidadDelCarritoUseCase).ejecutar(anyString());
+
+        // Act y Assert
+        mockMvc.perform(get("/api/carrito/disponibilidad").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deberiaRetornar400CuandoElCarritoEstaVacio() throws Exception {
+
+        // Arrange
+        doThrow(new CarritoVacioException())
+                .when(validarDisponibilidadDelCarritoUseCase).ejecutar(anyString());
+
+        // Act y Assert
+        mockMvc.perform(get("/api/carrito/disponibilidad").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deberiaRetornar404AlValidarCuandoElClienteNoTieneCarrito() throws Exception {
+
+        // Arrange
+        doThrow(new NoSuchElementException())
+                .when(validarDisponibilidadDelCarritoUseCase).ejecutar(anyString());
+
+        // Act y Assert
+        mockMvc.perform(get("/api/carrito/disponibilidad").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isNotFound());
     }
     @Test

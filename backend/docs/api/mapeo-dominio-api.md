@@ -25,6 +25,7 @@
 | Vaciar carrito | DELETE | /api/carrito/items |
 | Quitar artículo del carrito | DELETE | /api/carrito/items/{articuloId} |
 | Modificar cantidad en el carrito | PUT | /api/carrito/items/{articuloId} |
+| Validar disponibilidad del carrito | GET | /api/carrito/disponibilidad |
 El carrito es siempre el del cliente con sesión iniciada: se identifica con `Authorization: Bearer <token>` (sin token → 401).
 
 # Mapeo Dominio -> API - Usuario

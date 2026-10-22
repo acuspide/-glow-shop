@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.ecommerce.application.dto.request.ModificarCantidadEnCarritoRequest;
 import com.example.ecommerce.application.usecase.ModificarCantidadEnCarritoUseCase;
 import java.util.UUID;
+import com.example.ecommerce.application.usecase.ValidarDisponibilidadDelCarritoUseCase;
 
 /**
  * Carrito del cliente con sesión iniciada. El cliente se identifica con el token
@@ -33,6 +34,7 @@ public class CarritoController {
     private final VaciarCarritoUseCase vaciarCarritoUseCase;
     private final QuitarArticuloDelCarritoUseCase quitarArticuloDelCarritoUseCase;
     private final ModificarCantidadEnCarritoUseCase modificarCantidadEnCarritoUseCase;
+    private final ValidarDisponibilidadDelCarritoUseCase validarDisponibilidadDelCarritoUseCase;
     private final TokenService tokenService;
 
     @PostMapping("/items")
@@ -58,7 +60,14 @@ public class CarritoController {
 
         return ResponseEntity.ok(mapper.toResponse(carrito));
     }
+    @GetMapping("/disponibilidad")
+    public ResponseEntity<Void> validarDisponibilidad(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion) {
 
+        validarDisponibilidadDelCarritoUseCase.ejecutar(clienteDelToken(autorizacion));
+
+        return ResponseEntity.noContent().build();
+    }
     @DeleteMapping("/items")
     public ResponseEntity<Void> vaciarCarrito(
             @RequestHeader(value = "Authorization", required = false) String autorizacion) {
