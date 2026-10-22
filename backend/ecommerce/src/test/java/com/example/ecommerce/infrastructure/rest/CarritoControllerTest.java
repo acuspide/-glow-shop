@@ -81,7 +81,7 @@ class CarritoControllerTest {
         when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyLong(), anyInt()))
                 .thenReturn(carritoSimulado);
         when(mapper.toResponse(any()))
-                .thenReturn(new CarritoResponse(1L, "u-100", List.of(), new BigDecimal("40000")));
+                .thenReturn(new CarritoResponse("c-1", "u-100", List.of(), new BigDecimal("40000")));
 
         // Act y Assert
         mockMvc.perform(post("/api/carrito/items").header("Authorization", "Bearer token-ana")
@@ -159,7 +159,7 @@ class CarritoControllerTest {
         when(verCarritoUseCase.ejecutar(anyString()))
                 .thenReturn(Carrito.crear("c-1", "u-100"));
         when(mapper.toResponse(any()))
-                .thenReturn(new CarritoResponse(1L, "u-100", List.of(), new BigDecimal("90000")));
+                .thenReturn(new CarritoResponse("c-1", "u-100", List.of(), new BigDecimal("90000")));
 
         // Act y Assert
         mockMvc.perform(get("/api/carrito").header("Authorization", "Bearer token-ana"))
