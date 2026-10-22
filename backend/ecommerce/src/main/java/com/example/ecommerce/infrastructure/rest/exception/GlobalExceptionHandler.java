@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
+import com.example.ecommerce.domain.exception.PedidoAjenoException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
     }
+
     @ExceptionHandler(ReglaDominioException.class)
     public ResponseEntity<Map<String, Object>> manejarReglaDominio(
             ReglaDominioException ex) {
@@ -87,6 +89,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CalificacionAjenaException.class)
     public ResponseEntity<Map<String, Object>> manejarCalificacionAjena(CalificacionAjenaException ex) {
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
+    @ExceptionHandler(PedidoAjenoException.class)
+    public ResponseEntity<Map<String, Object>> manejarPedidoAjeno(PedidoAjenoException ex) {
         return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
     }
 

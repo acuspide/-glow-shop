@@ -46,6 +46,14 @@ Regla de negocio (RN03): clientes y vendedores se registran solos; solo un admin
 | autenticarUsuario | POST | /api/auth/login | 200 OK | Hecho |
 | administrador.crearUsuarioConRol (vendedor o administrador) | POST | /api/admin/usuarios | 201 Created + Location | Hecho (requiere JWT de administrador) |
 
+# Mapeo Dominio -> API - Pago
+
+| Operacion del dominio | Método HTTP | Endpoint |
+|---|---|---|
+| Procesar pago de pedido | POST | /api/pedidos/{pedidoId}/pagos |
+
+El monto se toma del total del pedido. Un pago rechazado por la pasarela (por ejemplo, por fondos insuficientes) también responde 201: el pago queda registrado con su estado y su motivo.
+
 ## Errores
 
 | Situación | Excepción de dominio | Código HTTP |

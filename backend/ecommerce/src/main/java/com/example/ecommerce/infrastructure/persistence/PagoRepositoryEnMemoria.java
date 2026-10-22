@@ -1,4 +1,25 @@
 package com.example.ecommerce.infrastructure.persistence;
 
-public class PagoRepositoryEnMemoria {
+import com.example.ecommerce.domain.entity.Pago;
+import com.example.ecommerce.domain.repository.PagoRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+@Repository
+public class PagoRepositoryEnMemoria implements PagoRepository {
+
+    private final Map<String, Pago> pagos = new HashMap<>();
+
+    @Override
+    public Optional<Pago> obtenerPorId(String id) {
+        return Optional.ofNullable(pagos.get(id));
+    }
+
+    @Override
+    public void guardar(Pago pago) {
+        pagos.put(pago.getId(), pago);
+    }
 }
