@@ -31,6 +31,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.example.ecommerce.application.usecase.ConsultarEstadoDePagoUseCase;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(PagoController.class)
 class PagoControllerTest {
@@ -46,6 +48,9 @@ class PagoControllerTest {
 
     @MockitoBean
     private TokenService tokenService;
+
+    @MockitoBean
+    private ConsultarEstadoDePagoUseCase consultarEstadoDePagoUseCase;
 
     private static final String CON_NEQUI = """
             {
@@ -166,5 +171,54 @@ class PagoControllerTest {
                 .andExpect(status().isUnauthorized());
 
         verify(procesarPagoDePedidoUseCase, never()).ejecutar(anyString(), anyString(), anyString(), any());
+    }
+    @Test
+    void deberiaMostrarElEstadoDelPagoConSuMotivo() throws Exception {
+
+        // Arrange
+        when(consultarEstadoDePagoUseCase.ejecutar("pa-1", "u-100")).thenReturn(pagoSimulado());
+        when(mapper.toResponse(any()))
+                .thenReturn(new PagoResponse("pa-1", "p-1", new BigDecimal("1500000"), "NEQUI",
+                        "RECHAZADO", "tx-2", "Fondos insuficientes"));
+
+        // Act y Assert
+        mockMvc.perform(get("/api/pagos/pa-1").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isOk())                         // HTTP 200
+                .andExpect(jsonPath("$.estado").value("RECHAZADO"))
+                .andExpect(jsonPath("$.motivoRechazo").value("Fondos insuficientes"));
+    }
+
+    @Test
+    void deberiaRetornar403AlConsultarElPagoDeOtraClienta() throws Exception {
+
+        // Arrange
+        when(consultarEstadoDePagoUseCase.ejecutar(anyString(), anyString()))
+                .thenThrow(new PedidoAjenoException());
+
+        // Act y Assert
+        mockMvc.perform(get("/api/pagos/pa-1").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deberiaRetornar404CuandoElPagoNoExiste() throws Exception {
+
+        // Arrange
+        when(consultarEstadoDePagoUseCase.ejecutar(anyString(), anyString()))
+                .thenThrow(new NoSuchElementException());
+
+        // Act y Assert
+        mockMvc.perform(get("/api/pagos/pa-99").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void consultarSinTokenDebeResponder401() throws Exception {
+
+        // Act y Assert
+        mockMvc.perform(get("/api/pagos/pa-1"))
+                .andExpect(status().isUnauthorized());
+
+        verify(consultarEstadoDePagoUseCase, never()).ejecutar(anyString(), anyString());
     }
 }

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import com.example.ecommerce.application.usecase.ConsultarEstadoDePagoUseCase;
 import java.net.URI;
 import java.util.UUID;
 
@@ -25,6 +25,7 @@ import java.util.UUID;
 public class PagoController {
 
     private final ProcesarPagoDePedidoUseCase procesarPagoDePedidoUseCase;
+    private final ConsultarEstadoDePagoUseCase consultarEstadoDePagoUseCase;
     private final PagoMapper mapper;
     private final TokenService tokenService;
 
@@ -49,7 +50,15 @@ public class PagoController {
 
         return ResponseEntity.created(location).body(mapper.toResponse(pago)); // 201
     }
+    @GetMapping("/pagos/{id}")
+    public ResponseEntity<PagoResponse> consultarEstado(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @PathVariable String id) {
 
+        Pago pago = consultarEstadoDePagoUseCase.ejecutar(id, clienteDelToken(autorizacion));
+
+        return ResponseEntity.ok(mapper.toResponse(pago)); // 200
+    }
     private String clienteDelToken(String autorizacion) {
         return tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
     }

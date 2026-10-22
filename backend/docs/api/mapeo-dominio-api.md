@@ -51,6 +51,7 @@ Regla de negocio (RN03): clientes y vendedores se registran solos; solo un admin
 | Operacion del dominio | Método HTTP | Endpoint |
 |---|---|---|
 | Procesar pago de pedido | POST | /api/pedidos/{pedidoId}/pagos |
+| Consultar estado de pago | GET | /api/pagos/{id} |
 
 El monto se toma del total del pedido. Un pago rechazado por la pasarela (por ejemplo, por fondos insuficientes) también responde 201: el pago queda registrado con su estado y su motivo.
 
