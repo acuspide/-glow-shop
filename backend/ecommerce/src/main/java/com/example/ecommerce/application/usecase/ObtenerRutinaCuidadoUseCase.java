@@ -13,7 +13,7 @@ public class ObtenerRutinaCuidadoUseCase {
     private final RutinaCuidadoRepository repository;
 
     @Transactional(readOnly = true)
-    public RutinaCuidado ejecutar(long id) {
+    public RutinaCuidado ejecutar(String id) {
         return repository.obtenerPorId(id)
                 .orElseThrow();
     }

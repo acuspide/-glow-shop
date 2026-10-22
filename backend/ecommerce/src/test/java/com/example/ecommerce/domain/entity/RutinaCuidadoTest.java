@@ -43,13 +43,13 @@ public class RutinaCuidadoTest {
 
         // Act
         RutinaCuidado rutina = RutinaCuidado.crear(
-                1L,
+                "r-1",
                 "Rutina de cuidado diario",
                 List.of(articulo1, articulo2)
         );
 
         // Assert
-        assertEquals(1L, rutina.getId());
+        assertEquals("r-1", rutina.getId());
         assertEquals("Rutina de cuidado diario", rutina.getNombre());
         assertEquals(2, rutina.getArticulos().size());
     }
@@ -64,7 +64,7 @@ public class RutinaCuidadoTest {
         assertThrows(
                 RutinaSinMinimoDeArticulosException.class,
                 () -> RutinaCuidado.crear(
-                        1L,
+                        "r-1",
                         "Rutina facial",
                         List.of(articulo)
                 )
@@ -85,7 +85,7 @@ public class RutinaCuidadoTest {
         assertThrows(
                 ArticuloNoPublicadoException.class,
                 () -> RutinaCuidado.crear(
-                        1L,
+                        "r-1",
                         "Rutina facial",
                         List.of(articulo1, articulo2)
                 )
@@ -105,7 +105,7 @@ public class RutinaCuidadoTest {
         assertThrows(
                 ArticuloSinDisponibilidadException.class,
                 () -> RutinaCuidado.crear(
-                        1L,
+                        "r-1",
                         "Rutina facial",
                         List.of(articulo1, articulo2)
                 )
@@ -123,7 +123,7 @@ public class RutinaCuidadoTest {
 
         // Act
         RutinaCuidado rutina = RutinaCuidado.crear(
-                1L,
+                "r-1",
                 "Rutina completa",
                 List.of(articulo1, articulo2)
         );
@@ -143,13 +143,13 @@ public class RutinaCuidadoTest {
 
         // Act
         RutinaCuidado rutina1 = RutinaCuidado.crear(
-                1L,
+                "r-1",
                 "Rutina facial",
                 List.of(articulo1, articulo2)
         );
 
         RutinaCuidado rutina2 = RutinaCuidado.crear(
-                2L,
+                "r-2",
                 "Rutina hidratante",
                 List.of(articulo1, articulo2)
         );

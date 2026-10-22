@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class RutinaCuidado {
-    private final long id;
+    private final String id;
     private final String nombre;
     private final List<Articulo> articulos;
 
-    private RutinaCuidado(long id, String nombre, List<Articulo> articulos) {
+    private RutinaCuidado(String id, String nombre, List<Articulo> articulos) {
         validarArticulos(articulos);
 
         this.id = id;
@@ -21,7 +21,7 @@ public class RutinaCuidado {
     }
 
     public static RutinaCuidado crear(
-            long id,
+            String id,
             String nombre,
             List<Articulo> articulos
     ) {
@@ -56,7 +56,7 @@ public class RutinaCuidado {
         );
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -72,7 +72,7 @@ public class RutinaCuidado {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof RutinaCuidado otra)) return false;
-        return id == otra.id;
+        return id.equals(otra.id);
     }
 
     @Override

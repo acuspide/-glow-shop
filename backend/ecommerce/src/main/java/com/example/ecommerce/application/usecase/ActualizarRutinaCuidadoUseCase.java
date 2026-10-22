@@ -18,7 +18,7 @@ public class ActualizarRutinaCuidadoUseCase {
 
     @Transactional
     public RutinaCuidado ejecutar(
-            long id,
+            String id,
             String nombre,
             List<String> articulosIds) {
 

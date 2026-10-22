@@ -3,7 +3,7 @@ import java.util.List;
 public record ListarRutinasResponse( List<RutinaResponse> rutinas
 ) {
     public record RutinaResponse(
-            long id,
+            String id,
             String nombre,
             List<ArticuloResponse> articulos
     ) {

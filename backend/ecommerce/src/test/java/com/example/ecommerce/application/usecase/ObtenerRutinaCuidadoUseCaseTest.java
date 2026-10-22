@@ -41,7 +41,7 @@ public class ObtenerRutinaCuidadoUseCaseTest {
         articulo2.publicar();
 
         RutinaCuidado rutina = RutinaCuidado.crear(
-                1L,
+                "r-1",
                 "Rutina de cuidado diario",
                 List.of(articulo1, articulo2)
         );
@@ -51,10 +51,10 @@ public class ObtenerRutinaCuidadoUseCaseTest {
         ObtenerRutinaCuidadoUseCase useCase =
                 new ObtenerRutinaCuidadoUseCase(repository);
 
-        RutinaCuidado resultado = useCase.ejecutar(1L);
+        RutinaCuidado resultado = useCase.ejecutar("r-1");
 
         assertNotNull(resultado);
-        assertEquals(1L, resultado.getId());
+        assertEquals("r-1", resultado.getId());
         assertEquals("Rutina de cuidado diario", resultado.getNombre());
         assertEquals(2, resultado.getArticulos().size());
     }

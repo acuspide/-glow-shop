@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class RutinaCuidadoController {
             @Valid @RequestBody CrearRutinaCuidadoRequest request) {
 
         RutinaCuidado rutina = crearRutinaCuidadoUseCase.ejecutar(
-                1L,
+                UUID.randomUUID().toString(),
                 request.nombre(),
                 request.articulosIds()
         );
@@ -51,7 +52,7 @@ public class RutinaCuidadoController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<RutinaCuidadoResponse> obtener(
-            @PathVariable long id) {
+            @PathVariable String id) {
 
         RutinaCuidado rutina =
                 obtenerRutinaCuidadoUseCase.ejecutar(id);
@@ -64,7 +65,7 @@ public class RutinaCuidadoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<RutinaCuidadoResponse> actualizar(
-            @PathVariable long id,
+            @PathVariable String id,
             @Valid @RequestBody ActualizarRutinaCuidadoRequest request) {
 
         RutinaCuidado rutina = actualizarRutinaCuidadoUseCase.ejecutar(
@@ -80,7 +81,7 @@ public class RutinaCuidadoController {
 
     @PostMapping("/{id}/articulos/{articuloId}")
     public ResponseEntity<RutinaCuidadoResponse> agregarArticulo(
-            @PathVariable long id,
+            @PathVariable String id,
             @PathVariable String articuloId) {
 
         RutinaCuidado rutina = agregarArticuloARutinaUseCase

@@ -38,7 +38,7 @@ public class ListarRutinasControllerTest {
                         new ListarRutinasResponse(
                                 List.of(
                                         new ListarRutinasResponse.RutinaResponse(
-                                                1L,
+                                                "r-1",
                                                 "Rutina de cuidado diario",
                                                 List.of(
                                                         new ListarRutinasResponse.ArticuloResponse(
@@ -60,7 +60,7 @@ public class ListarRutinasControllerTest {
         mockMvc.perform(get("/rutinas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rutinas.length()").value(1))
-                .andExpect(jsonPath("$.rutinas[0].id").value(1))
+                .andExpect(jsonPath("$.rutinas[0].id").value("r-1"))
                 .andExpect(jsonPath("$.rutinas[0].nombre")
                         .value("Rutina de cuidado diario"))
                 .andExpect(jsonPath("$.rutinas[0].articulos.length()").value(2));

@@ -61,18 +61,18 @@ public class CrearRutinaCuidadoUseCaseTest {
         articuloRepository.guardar(articulo2);
 
         RutinaCuidado rutinaCreada = useCase.ejecutar(
-                1L,
+                "r-1",
                 "Rutina de cuidado diario",
                 List.of("a-1", "a-2")
         );
 
         assertNotNull(rutinaCreada);
-        assertEquals(1L, rutinaCreada.getId());
+        assertEquals("r-1", rutinaCreada.getId());
         assertEquals("Rutina de cuidado diario", rutinaCreada.getNombre());
         assertEquals(2, rutinaCreada.getArticulos().size());
 
         Optional<RutinaCuidado> rutina =
-                rutinaRepository.obtenerPorId(1L);
+                rutinaRepository.obtenerPorId("r-1");
 
         assertTrue(rutina.isPresent());
     }

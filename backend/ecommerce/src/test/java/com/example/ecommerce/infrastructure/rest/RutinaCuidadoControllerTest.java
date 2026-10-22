@@ -49,14 +49,14 @@ public class RutinaCuidadoControllerTest {
         RutinaCuidadoResponse response = mock(RutinaCuidadoResponse.class);
 
         when(actualizarRutinaCuidadoUseCase.ejecutar(
-                1L,
+                "r-1",
                 "Rutina actualizada",
                 List.of("a-10", "a-20")
         )).thenReturn(rutina);
 
         when(mapper.toResponse(rutina)).thenReturn(response);
 
-        mockMvc.perform(put("/api/rutinas/1")
+        mockMvc.perform(put("/api/rutinas/r-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -67,7 +67,7 @@ public class RutinaCuidadoControllerTest {
                 .andExpect(status().isOk());
 
         verify(actualizarRutinaCuidadoUseCase).ejecutar(
-                1L,
+                "r-1",
                 "Rutina actualizada",
                 List.of("a-10", "a-20")
         );
@@ -77,7 +77,7 @@ public class RutinaCuidadoControllerTest {
 
     @Test
     void debeRechazarActualizacionConNombreVacio() throws Exception {
-        mockMvc.perform(put("/api/rutinas/1")
+        mockMvc.perform(put("/api/rutinas/r-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -92,7 +92,7 @@ public class RutinaCuidadoControllerTest {
 
     @Test
     void debeRechazarActualizacionConMenosDeDosArticulos() throws Exception {
-        mockMvc.perform(put("/api/rutinas/1")
+        mockMvc.perform(put("/api/rutinas/r-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -111,15 +111,15 @@ public class RutinaCuidadoControllerTest {
 
         RutinaCuidadoResponse response = mock(RutinaCuidadoResponse.class);
 
-        when(agregarArticuloARutinaUseCase.ejecutar(1L, "a-3"))
+        when(agregarArticuloARutinaUseCase.ejecutar("r-1", "a-3"))
                 .thenReturn(rutina);
 
         when(mapper.toResponse(rutina)).thenReturn(response);
 
-        mockMvc.perform(post("/api/rutinas/1/articulos/a-3"))
+        mockMvc.perform(post("/api/rutinas/r-1/articulos/a-3"))
                 .andExpect(status().isOk());
 
-        verify(agregarArticuloARutinaUseCase).ejecutar(1L, "a-3");
+        verify(agregarArticuloARutinaUseCase).ejecutar("r-1", "a-3");
 
         verify(mapper).toResponse(rutina);
     }
