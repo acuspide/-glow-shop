@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
 
@@ -27,18 +29,6 @@ public class AuthController {
     private final SolicitarRecuperacionContrasenaUseCase solicitarRecuperacionUseCase;
     private final RestablecerContrasenaUseCase restablecerContrasenaUseCase;
     private final UsuarioMapper mapper;
-
-    public AuthController(IniciarSesionUseCase iniciarSesionUseCase,
-                          CerrarSesionUseCase cerrarSesionUseCase,
-                          SolicitarRecuperacionContrasenaUseCase solicitarRecuperacionUseCase,
-                          RestablecerContrasenaUseCase restablecerContrasenaUseCase,
-                          UsuarioMapper mapper) {
-        this.iniciarSesionUseCase = iniciarSesionUseCase;
-        this.cerrarSesionUseCase = cerrarSesionUseCase;
-        this.solicitarRecuperacionUseCase = solicitarRecuperacionUseCase;
-        this.restablecerContrasenaUseCase = restablecerContrasenaUseCase;
-        this.mapper = mapper;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
