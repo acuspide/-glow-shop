@@ -46,15 +46,15 @@ public class BuscarArticulosControllerTest {
                         "a-1",
                         "Labial rojo",
                         new BigDecimal("35000"),
-                        1L,
+                        "cat-1",
                         "Labios",
-                        1L,
+                        "m-1",
                         "Maybelline",
                         "CLARO",
                         List.of("NORMAL"),
                         10,
                         LocalDate.of(2028, 12, 31),
-                        1L,
+                        "t-1",
                         "Tienda Beauty",
                         true
                 );

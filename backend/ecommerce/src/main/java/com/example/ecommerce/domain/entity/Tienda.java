@@ -4,15 +4,15 @@ import com.example.ecommerce.domain.exception.TiendaRequeridaException;
 
 public class Tienda {
 
-    private long id;
+    private String id;
     private String nombre;
 
-    private Tienda(long id, String nombre) {
+    private Tienda(String id, String nombre) {
         validarNombre(nombre);
         this.id = id;
         this.nombre = nombre;
     }
-    public static Tienda crear(long id, String nombre) {
+    public static Tienda crear(String id, String nombre) {
         return new Tienda(id, nombre);
     }
 
@@ -22,7 +22,7 @@ public class Tienda {
         }
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 

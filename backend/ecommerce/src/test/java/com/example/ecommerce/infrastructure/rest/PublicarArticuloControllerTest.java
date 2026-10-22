@@ -78,15 +78,15 @@ public class PublicarArticuloControllerTest {
                         "a-1",
                         "Labial",
                         new BigDecimal("20000"),
-                        1L,
+                        "cat-1",
                         "Labios",
-                        1L,
+                        "m-1",
                         "Maybelline",
                         "CLARO",
                         List.of("NORMAL"),
                         10,
                         LocalDate.of(2027, 12, 31),
-                        1L,
+                        "t-1",
                         "Tienda Beauty",
                         true
                 );
@@ -129,15 +129,15 @@ public class PublicarArticuloControllerTest {
                         "a-1",
                         "Labial",
                         new BigDecimal("20000"),
-                        1L,
+                        "cat-1",
                         "Labios",
-                        1L,
+                        "m-1",
                         "Maybelline",
                         "CLARO",
                         List.of("NORMAL"),
                         10,
                         LocalDate.of(2027, 12, 31),
-                        1L,
+                        "t-1",
                         "Tienda Beauty",
                         true
                 );
@@ -159,15 +159,15 @@ public class PublicarArticuloControllerTest {
                             {
                                 "nombre": "Labial",
                                 "precio": 20000,
-                                "categoriaId": 1,
+                                "categoriaId": "cat-1",
                                 "categoriaNombre": "Labios",
-                                "marcaId": 1,
+                                "marcaId": "m-1",
                                 "marcaNombre": "Maybelline",
                                 "tono": "CLARO",
                                 "tiposPiel": ["NORMAL"],
                                 "cantidadDisponible": 10,
                                 "fechaVencimiento": "2027-12-31",
-                                "tiendaId": 1,
+                                "tiendaId": "t-1",
                                 "tiendaNombre": "Tienda Beauty"
                             }
                             """))
@@ -195,15 +195,15 @@ public class PublicarArticuloControllerTest {
                 {
                   "nombre": "Labial",
                   "precio": 20000,
-                  "categoriaId": 1,
+                  "categoriaId": "cat-1",
                   "categoriaNombre": "Labios",
-                  "marcaId": 1,
+                  "marcaId": "m-1",
                   "marcaNombre": "Maybelline",
                   "tono": "CLARO",
                   "tiposPiel": ["NORMAL"],
                   "cantidadDisponible": 10,
                   "fechaVencimiento": "2020-12-31",
-                  "tiendaId": 1,
+                  "tiendaId": "t-1",
                   "tiendaNombre": "Tienda Beauty"
                 }
                 """))
@@ -234,15 +234,15 @@ public class PublicarArticuloControllerTest {
                 "a-1",
                 "Labial",
                 new BigDecimal("20000"),
-                1L,
+                "cat-1",
                 "Labios",
-                1L,
+                "m-1",
                 "Maybelline",
                 "CLARO",
                 List.of("NORMAL"),
                 10,
                 LocalDate.of(2027, 12, 31),
-                1L,
+                "t-1",
                 "Tienda Beauty"
         );
 

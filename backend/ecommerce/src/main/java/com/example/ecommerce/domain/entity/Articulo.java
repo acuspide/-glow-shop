@@ -263,16 +263,16 @@ public class Articulo {
 
 
 
-    public boolean perteneceACategoria(Long categoriaId) {
-        return categoria.getId() == categoriaId;
+    public boolean perteneceACategoria(String categoriaId) {
+        return categoria.getId().equals(categoriaId);
     }
 
-    public boolean esDeMarca(Long marcaId) {
-        return marca.getId() == marcaId;
+    public boolean esDeMarca(String marcaId) {
+        return marca.getId().equals(marcaId);
     }
 
-    public boolean perteneceATienda(Long tiendaId) {
-        return tienda.getId() == tiendaId;
+    public boolean perteneceATienda(String tiendaId) {
+        return tienda.getId().equals(tiendaId);
     }
 
     public boolean tienePrecioMinimo(BigDecimal precioMinimo) {

@@ -28,13 +28,13 @@ public class PublicarArticuloUseCaseTest {
                 "a-1",
                 new NombreArticulo("Labial"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         // Assert

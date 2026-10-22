@@ -23,13 +23,13 @@ public class ListarArticulosUseCaseTest {
                 id,
                 new NombreArticulo(nombre),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Labios"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
     }
 
@@ -147,13 +147,13 @@ public class ListarArticulosUseCaseTest {
                 "a-2",
                 new NombreArticulo("Crema vencida"),
                 new Precio(new BigDecimal("20000")),
-                Categoria.crear(1L, "Rostro"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-1", "Rostro"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(5),
                 new FechaVencimiento(LocalDate.of(2025, 12, 31)),
-                Tienda.crear(1L, "Tienda Beauty")
+                Tienda.crear("t-1", "Tienda Beauty")
         );
 
         disponible.publicar();

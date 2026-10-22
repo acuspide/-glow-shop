@@ -18,11 +18,11 @@ public class BuscarArticulosUseCaseTest {
             String id,
             String nombre,
             String categoria,
-            long categoriaId,
+            String categoriaId,
             String marca,
-            long marcaId,
+            String marcaId,
             String tienda,
-            long tiendaId,
+            String tiendaId,
             String precio,
             Tono tono,
             TipoPiel tipoPiel,
@@ -46,20 +46,20 @@ public class BuscarArticulosUseCaseTest {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
 
         Articulo labial = crearArticulo(
-                "a-1", "Labial rojo", "Labios", 1L,
-                "Maybelline", 1L, "Tienda Beauty", 1L,
+                "a-1", "Labial rojo", "Labios", "cat-1",
+                "Maybelline", "m-1", "Tienda Beauty", "t-1",
                 "35000", Tono.CLARO, TipoPiel.NORMAL, 10
         );
 
         Articulo crema = crearArticulo(
-                "a-2", "Crema facial", "Rostro", 2L,
-                "Nivea", 2L, "Tienda Beauty", 1L,
+                "a-2", "Crema facial", "Rostro", "cat-2",
+                "Nivea", "m-2", "Tienda Beauty", "t-1",
                 "45000", Tono.MEDIO, TipoPiel.SECA, 5
         );
 
         Articulo base = crearArticulo(
-                "a-3", "Base líquida", "Rostro", 2L,
-                "Maybelline", 1L, "Tienda Glam", 2L,
+                "a-3", "Base líquida", "Rostro", "cat-2",
+                "Maybelline", "m-1", "Tienda Glam", "t-2",
                 "50000", Tono.OSCURO, TipoPiel.GRASA, 8
         );
 
@@ -117,7 +117,7 @@ public class BuscarArticulosUseCaseTest {
 
         CriteriosBusquedaArticulo criterios =
                 new CriteriosBusquedaArticulo(
-                        null, 2L, null, null,
+                        null, "cat-2", null, null,
                         null, null, null, null
                 );
 
@@ -125,7 +125,7 @@ public class BuscarArticulosUseCaseTest {
 
         assertEquals(2, resultado.size());
         assertTrue(resultado.stream()
-                .allMatch(a -> a.getCategoria().getId() == 2L));
+                .allMatch(a -> a.getCategoria().getId().equals("cat-2")));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class BuscarArticulosUseCaseTest {
 
         CriteriosBusquedaArticulo criterios =
                 new CriteriosBusquedaArticulo(
-                        null, 2L, 1L, null,
+                        null, "cat-2", "m-1", null,
                         null, null, null, null
                 );
 
@@ -187,8 +187,8 @@ public class BuscarArticulosUseCaseTest {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = crearArticulo(
-                "a-4", "Labial sin publicar", "Labios", 1L,
-                "Maybelline", 1L, "Tienda Beauty", 1L,
+                "a-4", "Labial sin publicar", "Labios", "cat-1",
+                "Maybelline", "m-1", "Tienda Beauty", "t-1",
                 "30000", Tono.CLARO, TipoPiel.NORMAL, 10
         );
 
@@ -214,8 +214,8 @@ public class BuscarArticulosUseCaseTest {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
 
         Articulo articulo = crearArticulo(
-                "a-5", "Crema agotada", "Rostro", 2L,
-                "Nivea", 2L, "Tienda Beauty", 1L,
+                "a-5", "Crema agotada", "Rostro", "cat-2",
+                "Nivea", "m-2", "Tienda Beauty", "t-1",
                 "45000", Tono.MEDIO, TipoPiel.SECA, 0
         );
 
@@ -245,13 +245,13 @@ public class BuscarArticulosUseCaseTest {
                 "a-6",
                 new NombreArticulo("Base vencida"),
                 new Precio(new BigDecimal("50000")),
-                Categoria.crear(2L, "Rostro"),
-                Marca.crear(1L, "Maybelline"),
+                Categoria.crear("cat-2", "Rostro"),
+                Marca.crear("m-1", "Maybelline"),
                 Tono.OSCURO,
                 List.of(TipoPiel.GRASA),
                 Inventario.crear(8),
                 new FechaVencimiento(LocalDate.of(2025, 12, 31)),
-                Tienda.crear(2L, "Tienda Glam")
+                Tienda.crear("t-2", "Tienda Glam")
         );
 
         // Guardamos el artículo vencido sin intentar publicarlo.

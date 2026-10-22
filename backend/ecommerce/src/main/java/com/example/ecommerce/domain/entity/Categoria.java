@@ -4,15 +4,15 @@ import com.example.ecommerce.domain.exception.CategoriaRequeridaException;
 
 public class Categoria {
 
-    private long id;
+    private String id;
     private String nombre;
 
-    private Categoria(long id, String nombre) {
+    private Categoria(String id, String nombre) {
         validarNombre(nombre);
         this.id = id;
         this.nombre = nombre;
     }
-    public static Categoria crear(long id, String nombre) {
+    public static Categoria crear(String id, String nombre) {
         return new Categoria(id, nombre);
     }
 
@@ -21,7 +21,7 @@ public class Categoria {
             throw new CategoriaRequeridaException();
         }
     }
-    public long getId() {
+    public String getId() {
         return id;
     }
 

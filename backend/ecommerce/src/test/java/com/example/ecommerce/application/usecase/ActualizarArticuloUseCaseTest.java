@@ -28,13 +28,13 @@ public class ActualizarArticuloUseCaseTest {
                 id,
                 new NombreArticulo("Shampoo"),
                 new Precio(new BigDecimal("25000")),
-                Categoria.crear(1L, "Cuidado capilar"),
-                Marca.crear(1L, "Marca prueba"),
+                Categoria.crear("cat-1", "Cuidado capilar"),
+                Marca.crear("m-1", "Marca prueba"),
                 Tono.MEDIO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                Tienda.crear(1L, "Tienda prueba")
+                Tienda.crear("t-1", "Tienda prueba")
         );
     }
 
@@ -52,8 +52,8 @@ public class ActualizarArticuloUseCaseTest {
                 "a-1",
                 new NombreArticulo("Crema hidratante"),
                 new Precio(new BigDecimal("45000")),
-                Categoria.crear(2L, "Cuidado facial"),
-                Marca.crear(2L, "Nueva marca"),
+                Categoria.crear("cat-2", "Cuidado facial"),
+                Marca.crear("m-2", "Nueva marca"),
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 new FechaVencimiento(LocalDate.of(2031, 12, 31))
@@ -66,8 +66,8 @@ public class ActualizarArticuloUseCaseTest {
                         actualizado.getPrecio().valor()
                 )
         );
-        assertEquals(2L, actualizado.getCategoria().getId());
-        assertEquals(2L, actualizado.getMarca().getId());
+        assertEquals("cat-2", actualizado.getCategoria().getId());
+        assertEquals("m-2", actualizado.getMarca().getId());
         assertEquals(Tono.CLARO, actualizado.getTono());
         assertEquals(
                 LocalDate.of(2031, 12, 31),
@@ -76,7 +76,7 @@ public class ActualizarArticuloUseCaseTest {
 
         assertTrue(actualizado.isPublicado());
         assertEquals(10, actualizado.getCantidadDisponible());
-        assertEquals(1L, actualizado.getTienda().getId());
+        assertEquals("t-1", actualizado.getTienda().getId());
 
         assertSame(
                 actualizado,
@@ -96,8 +96,8 @@ public class ActualizarArticuloUseCaseTest {
                         "a-99",
                         new NombreArticulo("Crema hidratante"),
                         new Precio(new BigDecimal("45000")),
-                        Categoria.crear(2L, "Cuidado facial"),
-                        Marca.crear(2L, "Nueva marca"),
+                        Categoria.crear("cat-2", "Cuidado facial"),
+                        Marca.crear("m-2", "Nueva marca"),
                         Tono.CLARO,
                         List.of(TipoPiel.NORMAL),
                         new FechaVencimiento(LocalDate.of(2031, 12, 31))
@@ -120,8 +120,8 @@ public class ActualizarArticuloUseCaseTest {
                         "a-1",
                         new NombreArticulo("Crema hidratante"),
                         new Precio(new BigDecimal("45000")),
-                        Categoria.crear(2L, "Cuidado facial"),
-                        Marca.crear(2L, "Nueva marca"),
+                        Categoria.crear("cat-2", "Cuidado facial"),
+                        Marca.crear("m-2", "Nueva marca"),
                         Tono.CLARO,
                         List.of(TipoPiel.NORMAL),
                         new FechaVencimiento(LocalDate.now().minusDays(1))

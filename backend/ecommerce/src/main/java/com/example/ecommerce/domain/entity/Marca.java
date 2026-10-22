@@ -3,15 +3,15 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.domain.exception.MarcaRequeridaException;
 
 public class Marca {
-    private long id;
+    private String id;
     private String nombre;
 
-    private Marca(long id, String nombre) {
+    private Marca(String id, String nombre) {
         validarNombre(nombre);
         this.id = id;
         this.nombre = nombre;
     }
-    public static Marca crear(long id, String nombre) {
+    public static Marca crear(String id, String nombre) {
         return new Marca(id, nombre);
     }
 
@@ -25,7 +25,7 @@ public class Marca {
         return nombre;
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 }

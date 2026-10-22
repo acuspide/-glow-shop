@@ -32,13 +32,13 @@ public class EliminarArticuloUseCaseTest {
                 id,
                 new NombreArticulo("Shampoo"),
                 new Precio(new BigDecimal("25000")),
-                Categoria.crear(1L, "Cuidado capilar"),
-                Marca.crear(1L, "Marca prueba"),
+                Categoria.crear("cat-1", "Cuidado capilar"),
+                Marca.crear("m-1", "Marca prueba"),
                 Tono.MEDIO,
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                Tienda.crear(1L, "Tienda prueba")
+                Tienda.crear("t-1", "Tienda prueba")
         );
     }
 
@@ -61,7 +61,7 @@ public class EliminarArticuloUseCaseTest {
 
         assertEquals("Shampoo", eliminado.getNombre().valor());
         assertEquals(10, eliminado.getCantidadDisponible());
-        assertEquals(1L, eliminado.getTienda().getId());
+        assertEquals("t-1", eliminado.getTienda().getId());
 
         assertThrows(
                 ArticuloNoPublicadoParaVentaException.class,
