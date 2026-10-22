@@ -5,23 +5,35 @@ import com.example.ecommerce.domain.exception.ArticuloNoPublicadoParaVentaExcept
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.CarritoRepository;
 import com.example.ecommerce.domain.valueobject.*;
-import com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria;
-import com.example.ecommerce.infrastructure.persistence.CarritoRepositoryEnMemoria;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class AgregarAlCarritoUseCaseTest {
+@ExtendWith(MockitoExtension.class)
+class AgregarAlCarritoUseCaseTest {
 
-    private Articulo guardarArticulo(ArticuloRepository articuloRepository, String id, boolean publicado) {
+    @Mock
+    private CarritoRepository carritoRepository;
+
+    @Mock
+    private ArticuloRepository articuloRepository;
+
+    @InjectMocks
+    private AgregarAlCarritoUseCase useCase;
+
+    private Articulo crearArticulo(String id, boolean publicado) {
         Articulo articulo = Articulo.crear(
                 id,
                 new NombreArticulo("Labial"),
@@ -37,90 +49,70 @@ public class AgregarAlCarritoUseCaseTest {
         if (publicado) {
             articulo.publicar();
         }
-        articuloRepository.guardar(articulo);
         return articulo;
     }
 
     @Test
-    void debeCrearUnCarritoNuevoYAgregarElArticulo() {
+    void deberiaCrearUnCarritoNuevoCuandoElClienteNoTieneCarrito() {
 
         // Arrange
-        ArticuloRepository articuloRepository = new ArticuloRepositoryEnMemoria();
-        CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
-        AgregarAlCarritoUseCase useCase = new AgregarAlCarritoUseCase(carritoRepository, articuloRepository);
-        guardarArticulo(articuloRepository, "a-1", true);
+        when(articuloRepository.obtenerPorId("a-1")).thenReturn(Optional.of(crearArticulo("a-1", true)));
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
         // Act
         Carrito carrito = useCase.ejecutar("c-1", "u-100", "a-1", 2);
 
         // Assert
+        assertEquals("c-1", carrito.getId());
         assertEquals("u-100", carrito.getClienteId());
         assertEquals(new BigDecimal("40000"), carrito.calcularTotal());
-        assertTrue(carritoRepository.obtenerPorClienteId("u-100").isPresent());
+        verify(carritoRepository).guardar(carrito);
     }
 
     @Test
-    void elMismoClienteDebeUsarSiempreSuMismoCarrito() {
+    void deberiaUsarElCarritoExistenteDelCliente() {
 
         // Arrange
-        ArticuloRepository articuloRepository = new ArticuloRepositoryEnMemoria();
-        CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
-        AgregarAlCarritoUseCase useCase = new AgregarAlCarritoUseCase(carritoRepository, articuloRepository);
-        guardarArticulo(articuloRepository, "a-1", true);
-        guardarArticulo(articuloRepository, "a-2", true);
+        Carrito carritoExistente = Carrito.crear("c-1", "u-100");
+        carritoExistente.agregarArticulo(crearArticulo("a-1", true), 1);
+        when(articuloRepository.obtenerPorId("a-2")).thenReturn(Optional.of(crearArticulo("a-2", true)));
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carritoExistente));
 
         // Act
-        Carrito primero = useCase.ejecutar("c-1", "u-100", "a-1", 1);
-        Carrito segundo = useCase.ejecutar("c-2", "u-100", "a-2", 1);
+        Carrito carrito = useCase.ejecutar("c-2", "u-100", "a-2", 1);
 
         // Assert
-        assertEquals(primero.getId(), segundo.getId());
-        assertEquals(2, segundo.getItems().size());
+        assertEquals("c-1", carrito.getId());
+        assertEquals(2, carrito.getItems().size());
+        verify(carritoRepository).guardar(carritoExistente);
     }
 
     @Test
-    void clientesDistintosDebenTenerCarritosDistintos() {
+    void deberiaLanzarExcepcionCuandoElArticuloNoExiste() {
 
         // Arrange
-        ArticuloRepository articuloRepository = new ArticuloRepositoryEnMemoria();
-        CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
-        AgregarAlCarritoUseCase useCase = new AgregarAlCarritoUseCase(carritoRepository, articuloRepository);
-        guardarArticulo(articuloRepository, "a-1", true);
-
-        // Act
-        Carrito deAna = useCase.ejecutar("c-1", "u-100", "a-1", 1);
-        Carrito deLuisa = useCase.ejecutar("c-2", "u-200", "a-1", 1);
-
-        // Assert
-        assertNotEquals(deAna.getId(), deLuisa.getId());
-    }
-
-    @Test
-    void noDebePermitirAgregarUnArticuloQueNoExiste() {
-
-        // Arrange
-        ArticuloRepository articuloRepository = new ArticuloRepositoryEnMemoria();
-        CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
-        AgregarAlCarritoUseCase useCase = new AgregarAlCarritoUseCase(carritoRepository, articuloRepository);
+        when(articuloRepository.obtenerPorId("a-99")).thenReturn(Optional.empty());
 
         // Act y Assert
         assertThrows(NoSuchElementException.class, () -> {
             useCase.ejecutar("c-1", "u-100", "a-99", 1);
         });
+
+        verify(carritoRepository, never()).guardar(any());
     }
 
     @Test
-    void noDebePermitirAgregarUnArticuloNoPublicado() {
+    void deberiaLanzarExcepcionCuandoElArticuloNoEstaPublicado() {
 
         // Arrange
-        ArticuloRepository articuloRepository = new ArticuloRepositoryEnMemoria();
-        CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
-        AgregarAlCarritoUseCase useCase = new AgregarAlCarritoUseCase(carritoRepository, articuloRepository);
-        guardarArticulo(articuloRepository, "a-1", false);
+        when(articuloRepository.obtenerPorId("a-1")).thenReturn(Optional.of(crearArticulo("a-1", false)));
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
         // Act y Assert
         assertThrows(ArticuloNoPublicadoParaVentaException.class, () -> {
             useCase.ejecutar("c-1", "u-100", "a-1", 1);
         });
+
+        verify(carritoRepository, never()).guardar(any());
     }
 }
