@@ -77,7 +77,7 @@ public class BuscarArticulosControllerTest {
                         .param("texto", "labial"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].id").value("a-1"))
                 .andExpect(jsonPath("$[0].nombre").value("Labial rojo"))
                 .andExpect(jsonPath("$[0].precio").value(35000));
 

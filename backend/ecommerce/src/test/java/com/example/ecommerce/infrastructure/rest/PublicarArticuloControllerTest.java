@@ -255,7 +255,7 @@ public class PublicarArticuloControllerTest {
         mockMvc.perform(get("/api/articulos"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].id").value("a-1"))
                 .andExpect(jsonPath("$[0].nombre").value("Labial"))
                 .andExpect(jsonPath("$[0].precio").value(20000))
                 .andExpect(jsonPath("$[0].marcaNombre").value("Maybelline"))
