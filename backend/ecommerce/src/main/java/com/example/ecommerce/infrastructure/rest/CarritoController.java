@@ -13,7 +13,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.example.ecommerce.application.dto.request.ModificarCantidadEnCarritoRequest;
+import com.example.ecommerce.application.usecase.ModificarCantidadEnCarritoUseCase;
 import java.util.UUID;
 
 /**
@@ -31,6 +32,7 @@ public class CarritoController {
     private final VerCarritoUseCase verCarritoUseCase;
     private final VaciarCarritoUseCase vaciarCarritoUseCase;
     private final QuitarArticuloDelCarritoUseCase quitarArticuloDelCarritoUseCase;
+    private final ModificarCantidadEnCarritoUseCase modificarCantidadEnCarritoUseCase;
     private final TokenService tokenService;
 
     @PostMapping("/items")
@@ -72,6 +74,20 @@ public class CarritoController {
             @PathVariable String articuloId) {
 
         quitarArticuloDelCarritoUseCase.ejecutar(clienteDelToken(autorizacion), articuloId);
+
+        return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/items/{articuloId}")
+    public ResponseEntity<Void> modificarCantidad(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @PathVariable String articuloId,
+            @Valid @RequestBody ModificarCantidadEnCarritoRequest request) {
+
+        modificarCantidadEnCarritoUseCase.ejecutar(
+                clienteDelToken(autorizacion),
+                articuloId,
+                request.cantidad()
+        );
 
         return ResponseEntity.noContent().build();
     }

@@ -33,7 +33,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.example.ecommerce.application.usecase.ModificarCantidadEnCarritoUseCase;
+import com.example.ecommerce.domain.exception.CantidadSuperaStockException;
+import static org.mockito.Mockito.never;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import com.example.ecommerce.application.usecase.VerCarritoUseCase;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -60,6 +63,8 @@ class CarritoControllerTest {
     @MockitoBean
     private TokenService tokenService;
 
+    @MockitoBean
+    private ModificarCantidadEnCarritoUseCase modificarCantidadEnCarritoUseCase;
     @BeforeEach
     void sesionDeAna() {
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-100");
@@ -211,7 +216,105 @@ class CarritoControllerTest {
         mockMvc.perform(delete("/api/carrito/items/a-99").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isBadRequest());
     }
+    @Test
+    void deberiaModificarLaCantidadYRetornar204() throws Exception {
 
+        // Arrange
+        String requestJson = """
+                {
+                    "cantidad": 5
+                }
+                """;
+
+        // Act y Assert
+        mockMvc.perform(put("/api/carrito/items/a-1").header("Authorization", "Bearer token-ana")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isNoContent());
+
+        verify(modificarCantidadEnCarritoUseCase).ejecutar("u-100", "a-1", 5);
+    }
+
+    @Test
+    void deberiaRetornar400AlModificarACantidadCero() throws Exception {
+
+        // Arrange
+        String requestJson = """
+                {
+                    "cantidad": 0
+                }
+                """;
+
+        // Act y Assert
+        mockMvc.perform(put("/api/carrito/items/a-1").header("Authorization", "Bearer token-ana")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+
+        verify(modificarCantidadEnCarritoUseCase, never()).ejecutar(anyString(), anyString(), anyInt());
+    }
+
+    @Test
+    void deberiaRetornar400CuandoLaNuevaCantidadSuperaElStock() throws Exception {
+
+        // Arrange
+        String requestJson = """
+                {
+                    "cantidad": 11
+                }
+                """;
+
+        doThrow(new CantidadSuperaStockException())
+                .when(modificarCantidadEnCarritoUseCase).ejecutar(anyString(), anyString(), anyInt());
+
+        // Act y Assert
+        mockMvc.perform(put("/api/carrito/items/a-1").header("Authorization", "Bearer token-ana")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void deberiaRetornar404AlModificarCuandoElClienteNoTieneCarrito() throws Exception {
+
+        // Arrange
+        String requestJson = """
+                {
+                    "cantidad": 5
+                }
+                """;
+
+        doThrow(new NoSuchElementException())
+                .when(modificarCantidadEnCarritoUseCase).ejecutar(anyString(), anyString(), anyInt());
+
+        // Act y Assert
+        mockMvc.perform(put("/api/carrito/items/a-1").header("Authorization", "Bearer token-ana")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deberiaVaciarElCarritoYRetornar204() throws Exception {
+
+        // Act y Assert
+        mockMvc.perform(delete("/api/carrito/items").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isNoContent());
+
+        verify(vaciarCarritoUseCase).ejecutar("u-100");
+    }
+
+    @Test
+    void deberiaRetornar404AlVaciarCuandoElClienteNoTieneCarrito() throws Exception {
+
+        // Arrange
+        doThrow(new NoSuchElementException())
+                .when(vaciarCarritoUseCase).ejecutar(anyString());
+
+        // Act y Assert
+        mockMvc.perform(delete("/api/carrito/items").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isNotFound());
+    }
     @Test
     void sinTokenDebeResponder401() throws Exception {
         mockMvc.perform(get("/api/carrito"))
