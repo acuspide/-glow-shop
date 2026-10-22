@@ -16,6 +16,8 @@ import com.example.ecommerce.domain.valueobject.TipoPiel;
 import com.example.ecommerce.domain.valueobject.Tono;
 import com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.persistence.PedidoRepositoryEnMemoria;
+import com.example.ecommerce.domain.exception.ArticuloEliminadoException;
+import com.example.ecommerce.domain.service.VerificadorDeArticuloSinPedidosActivos;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -46,7 +48,7 @@ public class EliminarArticuloUseCaseTest {
         PedidoRepository pedidoRepository = new PedidoRepositoryEnMemoria();
 
         EliminarArticuloUseCase useCase =
-                new EliminarArticuloUseCase(repository, pedidoRepository);
+                new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
 
         Articulo articulo = crearArticulo(1L, 10);
         articulo.publicar();
@@ -78,7 +80,7 @@ public class EliminarArticuloUseCaseTest {
         PedidoRepository pedidoRepository = new PedidoRepositoryEnMemoria();
 
         EliminarArticuloUseCase useCase =
-                new EliminarArticuloUseCase(repository, pedidoRepository);
+                new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
 
         assertThrows(
                 ArticuloNoEncontradoException.class,
@@ -92,7 +94,7 @@ public class EliminarArticuloUseCaseTest {
         PedidoRepository pedidoRepository = new PedidoRepositoryEnMemoria();
 
         EliminarArticuloUseCase useCase =
-                new EliminarArticuloUseCase(repository, pedidoRepository);
+                new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
 
         Articulo articulo = crearArticulo(1L, 10);
         repository.guardar(articulo);
@@ -100,7 +102,7 @@ public class EliminarArticuloUseCaseTest {
         useCase.ejecutar(1L);
 
         assertThrows(
-                IllegalStateException.class,
+                ArticuloEliminadoException.class,
                 () -> useCase.ejecutar(1L)
         );
 

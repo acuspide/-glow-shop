@@ -204,9 +204,7 @@ public class Articulo {
             FechaVencimiento fechaVencimiento
     ) {
         if (eliminado) {
-            throw new IllegalStateException(
-                    "No se puede actualizar un artículo eliminado."
-            );
+            throw new ArticuloEliminadoException();
         }
 
         if (nombre == null) {
@@ -257,9 +255,7 @@ public class Articulo {
 
     public void eliminar() {
         if (eliminado) {
-            throw new IllegalStateException(
-                    "El artículo ya está eliminado."
-            );
+            throw new ArticuloEliminadoException();
         }
 
         eliminado = true;
