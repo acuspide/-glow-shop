@@ -50,7 +50,7 @@ class QuitarArticuloDelCarritoUseCaseTest {
     void deberiaQuitarElArticuloCuandoEstaEnElCarrito() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, "u-100");
+        Carrito carrito = Carrito.crear("c-1", "u-100");
         carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
         carrito.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
         when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
@@ -82,7 +82,7 @@ class QuitarArticuloDelCarritoUseCaseTest {
     void deberiaLanzarExcepcionCuandoElArticuloNoEstaEnElCarrito() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, "u-100");
+        Carrito carrito = Carrito.crear("c-1", "u-100");
         carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
         when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 

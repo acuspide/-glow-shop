@@ -77,8 +77,8 @@ class CarritoControllerTest {
                 }
                 """;
 
-        Carrito carritoSimulado = Carrito.crear(1L, "u-100");
-        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyLong(), anyInt()))
+        Carrito carritoSimulado = Carrito.crear("c-1", "u-100");
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyLong(), anyInt()))
                 .thenReturn(carritoSimulado);
         when(mapper.toResponse(any()))
                 .thenReturn(new CarritoResponse(1L, "u-100", List.of(), new BigDecimal("40000")));
@@ -121,7 +121,7 @@ class CarritoControllerTest {
                 }
                 """;
 
-        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyLong(), anyInt()))
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyLong(), anyInt()))
                 .thenThrow(new ArticuloAgotadoException());
 
         // Act y Assert
@@ -142,7 +142,7 @@ class CarritoControllerTest {
                 }
                 """;
 
-        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyLong(), anyInt()))
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyLong(), anyInt()))
                 .thenThrow(new NoSuchElementException());
 
         // Act y Assert
@@ -157,7 +157,7 @@ class CarritoControllerTest {
 
         // Arrange
         when(verCarritoUseCase.ejecutar(anyString()))
-                .thenReturn(Carrito.crear(1L, "u-100"));
+                .thenReturn(Carrito.crear("c-1", "u-100"));
         when(mapper.toResponse(any()))
                 .thenReturn(new CarritoResponse(1L, "u-100", List.of(), new BigDecimal("90000")));
 

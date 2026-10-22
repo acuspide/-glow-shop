@@ -7,16 +7,14 @@ import org.springframework.stereotype.Repository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class CarritoRepositoryEnMemoria implements CarritoRepository {
 
-    private final Map<Long, Carrito> carritos = new HashMap<>();
-    private final AtomicLong secuencia = new AtomicLong(0);
+    private final Map<String, Carrito> carritos = new HashMap<>();
 
     @Override
-    public Optional<Carrito> obtenerPorId(long id) {
+    public Optional<Carrito> obtenerPorId(String id) {
         return Optional.ofNullable(carritos.get(id));
     }
 
@@ -25,11 +23,6 @@ public class CarritoRepositoryEnMemoria implements CarritoRepository {
         return carritos.values().stream()
                 .filter(carrito -> carrito.getClienteId().equals(clienteId))
                 .findFirst();
-    }
-
-    @Override
-    public long siguienteId() {
-        return secuencia.incrementAndGet();
     }
 
     @Override

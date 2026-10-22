@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public record CarritoResponse(
-        long id,
+        String id,
         String clienteId,
         List<ItemCarritoResponse> items,
         BigDecimal total

@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 /**
  * Carrito del cliente con sesión iniciada. El cliente se identifica con el token
  * ("Authorization: Bearer <token>"), nunca con un id en la URL: así nadie puede
@@ -37,6 +39,7 @@ public class CarritoController {
             @Valid @RequestBody AgregarArticuloAlCarritoRequest request) {
 
         Carrito carrito = agregarAlCarritoUseCase.ejecutar(
+                UUID.randomUUID().toString(),
                 clienteDelToken(autorizacion),
                 request.articuloId(),
                 request.cantidad()

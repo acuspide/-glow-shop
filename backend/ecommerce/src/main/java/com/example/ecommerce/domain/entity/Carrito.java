@@ -12,16 +12,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class Carrito {
-    private final long id;
+    private final String id;
     private final String clienteId;
     private final List<ItemCarrito> items;
 
-    private Carrito(long id, String clienteId) {
+    private Carrito(String id, String clienteId) {
         this.id = id;
         this.clienteId = clienteId;
         this.items = new ArrayList<>();
     }
-    public static Carrito crear(long id, String clienteId) {
+    public static Carrito crear(String id, String clienteId) {
         return new Carrito(id, clienteId);
     }
     public void agregarArticulo(Articulo articulo, int cantidad) {
@@ -64,7 +64,7 @@ public class Carrito {
                 .findFirst();
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
@@ -80,7 +80,7 @@ public class Carrito {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Carrito otro)) return false;
-        return id == otro.id;
+        return id.equals(otro.id);
     }
 
     @Override

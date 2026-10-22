@@ -40,7 +40,7 @@ public class VerCarritoUseCaseTest {
         CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
         VerCarritoUseCase useCase = new VerCarritoUseCase(carritoRepository);
 
-        Carrito carritoDeAna = Carrito.crear(1L, "u-100");
+        Carrito carritoDeAna = Carrito.crear("c-1", "u-100");
         carritoDeAna.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
         carritoDeAna.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
         carritoRepository.guardar(carritoDeAna);
@@ -59,8 +59,8 @@ public class VerCarritoUseCaseTest {
         // Arrange
         CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
         VerCarritoUseCase useCase = new VerCarritoUseCase(carritoRepository);
-        carritoRepository.guardar(Carrito.crear(1L, "u-100"));
-        carritoRepository.guardar(Carrito.crear(2L, "u-200"));
+        carritoRepository.guardar(Carrito.crear("c-1", "u-100"));
+        carritoRepository.guardar(Carrito.crear("c-2", "u-200"));
 
         // Act
         Carrito carrito = useCase.ejecutar("u-200");
