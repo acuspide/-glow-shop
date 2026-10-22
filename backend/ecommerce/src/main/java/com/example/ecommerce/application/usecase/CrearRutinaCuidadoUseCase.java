@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.RutinaCuidado;
@@ -9,18 +11,12 @@ import com.example.ecommerce.domain.repository.RutinaCuidadoRepository;
 import java.util.ArrayList;
 import java.util.List;
 @Service
+@RequiredArgsConstructor
 public class CrearRutinaCuidadoUseCase {
     private final RutinaCuidadoRepository rutinaRepository;
     private final ArticuloRepository articuloRepository;
 
-    public CrearRutinaCuidadoUseCase(
-            RutinaCuidadoRepository rutinaRepository,
-            ArticuloRepository articuloRepository) {
-
-        this.rutinaRepository = rutinaRepository;
-        this.articuloRepository = articuloRepository;
-    }
-
+    @Transactional
     public RutinaCuidado ejecutar(
             long id,
             String nombre,

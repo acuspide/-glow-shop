@@ -7,19 +7,16 @@ import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class EliminarArticuloUseCase {
     private final ArticuloRepository articuloRepository;
     private final PedidoRepository pedidoRepository;
 
-    public EliminarArticuloUseCase(
-            ArticuloRepository articuloRepository,
-            PedidoRepository pedidoRepository) {
-        this.articuloRepository = articuloRepository;
-        this.pedidoRepository = pedidoRepository;
-    }
-
+    @Transactional
     public Articulo ejecutar(long id) {
         Articulo articulo = articuloRepository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));

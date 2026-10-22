@@ -5,16 +5,16 @@ import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.valueobject.*;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class PublicarArticuloUseCase {
 
     private final ArticuloRepository repository;
 
-    public PublicarArticuloUseCase(ArticuloRepository repository) {
-        this.repository = repository;
-    }
-
+    @Transactional
     public Articulo ejecutar(
             long id,
             NombreArticulo nombre,
@@ -46,6 +46,7 @@ public class PublicarArticuloUseCase {
 
         return articulo;
     }
+    @Transactional
     public Articulo ejecutar(Articulo articulo) {
         articulo.publicar();
         repository.guardar(articulo);

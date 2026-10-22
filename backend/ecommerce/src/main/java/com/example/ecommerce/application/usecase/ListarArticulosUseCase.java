@@ -4,17 +4,17 @@ import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ListarArticulosUseCase {
     private final ArticuloRepository repository;
 
-    public ListarArticulosUseCase(ArticuloRepository repository) {
-        this.repository = repository;
-    }
-
+    @Transactional(readOnly = true)
     public List<Articulo> ejecutar() {
         return repository.listarTodos()
                 .stream()

@@ -4,19 +4,16 @@ import com.example.ecommerce.domain.entity.RutinaCuidado;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.RutinaCuidadoRepository;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class AgregarArticuloARutinaUseCase {
     private final RutinaCuidadoRepository rutinaRepository;
     private final ArticuloRepository articuloRepository;
 
-    public AgregarArticuloARutinaUseCase(
-            RutinaCuidadoRepository rutinaRepository,
-            ArticuloRepository articuloRepository) {
-        this.rutinaRepository = rutinaRepository;
-        this.articuloRepository = articuloRepository;
-    }
-
+    @Transactional
     public RutinaCuidado ejecutar(long rutinaId, long articuloId) {
 
         RutinaCuidado rutina = rutinaRepository
