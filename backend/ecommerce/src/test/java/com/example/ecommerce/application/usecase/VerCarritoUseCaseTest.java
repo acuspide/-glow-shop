@@ -40,13 +40,13 @@ public class VerCarritoUseCaseTest {
         CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
         VerCarritoUseCase useCase = new VerCarritoUseCase(carritoRepository);
 
-        Carrito carritoDeAna = Carrito.crear(1L, 100L);
+        Carrito carritoDeAna = Carrito.crear(1L, "u-100");
         carritoDeAna.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
         carritoDeAna.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
         carritoRepository.guardar(carritoDeAna);
 
         // Act
-        Carrito carrito = useCase.ejecutar(100L);
+        Carrito carrito = useCase.ejecutar("u-100");
 
         // Assert
         assertEquals(2, carrito.getItems().size());
@@ -59,14 +59,14 @@ public class VerCarritoUseCaseTest {
         // Arrange
         CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
         VerCarritoUseCase useCase = new VerCarritoUseCase(carritoRepository);
-        carritoRepository.guardar(Carrito.crear(1L, 100L));
-        carritoRepository.guardar(Carrito.crear(2L, 200L));
+        carritoRepository.guardar(Carrito.crear(1L, "u-100"));
+        carritoRepository.guardar(Carrito.crear(2L, "u-200"));
 
         // Act
-        Carrito carrito = useCase.ejecutar(200L);
+        Carrito carrito = useCase.ejecutar("u-200");
 
         // Assert
-        assertEquals(200L, carrito.getClienteId());
+        assertEquals("u-200", carrito.getClienteId());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class VerCarritoUseCaseTest {
 
         // Act y Assert
         assertThrows(NoSuchElementException.class, () -> {
-            useCase.ejecutar(100L);
+            useCase.ejecutar("u-100");
         });
     }
 }

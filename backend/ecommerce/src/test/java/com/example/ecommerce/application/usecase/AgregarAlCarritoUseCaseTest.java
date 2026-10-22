@@ -51,12 +51,12 @@ public class AgregarAlCarritoUseCaseTest {
         guardarArticulo(articuloRepository, 1L, true);
 
         // Act
-        Carrito carrito = useCase.ejecutar(100L, 1L, 2);
+        Carrito carrito = useCase.ejecutar("u-100", 1L, 2);
 
         // Assert
-        assertEquals(100L, carrito.getClienteId());
+        assertEquals("u-100", carrito.getClienteId());
         assertEquals(new BigDecimal("40000"), carrito.calcularTotal());
-        assertTrue(carritoRepository.obtenerPorClienteId(100L).isPresent());
+        assertTrue(carritoRepository.obtenerPorClienteId("u-100").isPresent());
     }
 
     @Test
@@ -70,8 +70,8 @@ public class AgregarAlCarritoUseCaseTest {
         guardarArticulo(articuloRepository, 2L, true);
 
         // Act
-        Carrito primero = useCase.ejecutar(100L, 1L, 1);
-        Carrito segundo = useCase.ejecutar(100L, 2L, 1);
+        Carrito primero = useCase.ejecutar("u-100", 1L, 1);
+        Carrito segundo = useCase.ejecutar("u-100", 2L, 1);
 
         // Assert
         assertEquals(primero.getId(), segundo.getId());
@@ -88,8 +88,8 @@ public class AgregarAlCarritoUseCaseTest {
         guardarArticulo(articuloRepository, 1L, true);
 
         // Act
-        Carrito deAna = useCase.ejecutar(100L, 1L, 1);
-        Carrito deLuisa = useCase.ejecutar(200L, 1L, 1);
+        Carrito deAna = useCase.ejecutar("u-100", 1L, 1);
+        Carrito deLuisa = useCase.ejecutar("u-200", 1L, 1);
 
         // Assert
         assertNotEquals(deAna.getId(), deLuisa.getId());
@@ -105,7 +105,7 @@ public class AgregarAlCarritoUseCaseTest {
 
         // Act y Assert
         assertThrows(NoSuchElementException.class, () -> {
-            useCase.ejecutar(100L, 99L, 1);
+            useCase.ejecutar("u-100", 99L, 1);
         });
     }
 
@@ -120,7 +120,7 @@ public class AgregarAlCarritoUseCaseTest {
 
         // Act y Assert
         assertThrows(ArticuloNoPublicadoParaVentaException.class, () -> {
-            useCase.ejecutar(100L, 1L, 1);
+            useCase.ejecutar("u-100", 1L, 1);
         });
     }
 }

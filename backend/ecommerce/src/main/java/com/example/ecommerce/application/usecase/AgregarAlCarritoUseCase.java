@@ -16,7 +16,7 @@ public class AgregarAlCarritoUseCase {
     private final ArticuloRepository articuloRepository;
 
     @Transactional
-    public Carrito ejecutar(long clienteId, long articuloId, int cantidad) {
+    public Carrito ejecutar(String clienteId, long articuloId, int cantidad) {
 
         Articulo articulo = articuloRepository.obtenerPorId(articuloId).orElseThrow();
 

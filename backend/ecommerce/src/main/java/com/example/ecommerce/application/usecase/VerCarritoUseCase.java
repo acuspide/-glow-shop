@@ -13,7 +13,7 @@ public class VerCarritoUseCase {
     private final CarritoRepository carritoRepository;
 
     @Transactional(readOnly = true)
-    public Carrito ejecutar(long clienteId) {
+    public Carrito ejecutar(String clienteId) {
         return carritoRepository.obtenerPorClienteId(clienteId).orElseThrow();
     }
 }

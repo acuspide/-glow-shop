@@ -6,6 +6,8 @@ import com.example.ecommerce.domain.entity.Carrito;
 import com.example.ecommerce.domain.exception.ArticuloAgotadoException;
 import com.example.ecommerce.infrastructure.rest.mapper.CarritoMapper;
 
+import com.example.ecommerce.application.TokenService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
@@ -27,6 +29,7 @@ import com.example.ecommerce.domain.exception.ArticuloNoEncontradoEnCarritoExcep
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -55,6 +58,14 @@ class CarritoControllerTest {
     @MockitoBean
     private QuitarArticuloDelCarritoUseCase quitarArticuloDelCarritoUseCase;
 
+    @MockitoBean
+    private TokenService tokenService;
+
+    @BeforeEach
+    void sesionDeAna() {
+        when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-100");
+    }
+
     @Test
     void deberiaAgregarArticuloCuandoDatosValidos() throws Exception {
 
@@ -66,18 +77,18 @@ class CarritoControllerTest {
                 }
                 """;
 
-        Carrito carritoSimulado = Carrito.crear(1L, 100L);
-        when(agregarAlCarritoUseCase.ejecutar(anyLong(), anyLong(), anyInt()))
+        Carrito carritoSimulado = Carrito.crear(1L, "u-100");
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyLong(), anyInt()))
                 .thenReturn(carritoSimulado);
         when(mapper.toResponse(any()))
-                .thenReturn(new CarritoResponse(1L, 100L, List.of(), new BigDecimal("40000")));
+                .thenReturn(new CarritoResponse(1L, "u-100", List.of(), new BigDecimal("40000")));
 
         // Act y Assert
-        mockMvc.perform(post("/api/carritos/100/items")
+        mockMvc.perform(post("/api/carrito/items").header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.clienteId").value(100))
+                .andExpect(jsonPath("$.clienteId").value("u-100"))
                 .andExpect(jsonPath("$.total").value(40000));
     }
 
@@ -93,7 +104,7 @@ class CarritoControllerTest {
                 """;
 
         // Act y Assert
-        mockMvc.perform(post("/api/carritos/100/items")
+        mockMvc.perform(post("/api/carrito/items").header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -110,11 +121,11 @@ class CarritoControllerTest {
                 }
                 """;
 
-        when(agregarAlCarritoUseCase.ejecutar(anyLong(), anyLong(), anyInt()))
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyLong(), anyInt()))
                 .thenThrow(new ArticuloAgotadoException());
 
         // Act y Assert
-        mockMvc.perform(post("/api/carritos/100/items")
+        mockMvc.perform(post("/api/carrito/items").header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -131,11 +142,11 @@ class CarritoControllerTest {
                 }
                 """;
 
-        when(agregarAlCarritoUseCase.ejecutar(anyLong(), anyLong(), anyInt()))
+        when(agregarAlCarritoUseCase.ejecutar(anyString(), anyLong(), anyInt()))
                 .thenThrow(new NoSuchElementException());
 
         // Act y Assert
-        mockMvc.perform(post("/api/carritos/100/items")
+        mockMvc.perform(post("/api/carrito/items").header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isNotFound());
@@ -145,15 +156,15 @@ class CarritoControllerTest {
     void deberiaMostrarElCarritoDelCliente() throws Exception {
 
         // Arrange
-        when(verCarritoUseCase.ejecutar(anyLong()))
-                .thenReturn(Carrito.crear(1L, 100L));
+        when(verCarritoUseCase.ejecutar(anyString()))
+                .thenReturn(Carrito.crear(1L, "u-100"));
         when(mapper.toResponse(any()))
-                .thenReturn(new CarritoResponse(1L, 100L, List.of(), new BigDecimal("90000")));
+                .thenReturn(new CarritoResponse(1L, "u-100", List.of(), new BigDecimal("90000")));
 
         // Act y Assert
-        mockMvc.perform(get("/api/carritos/100"))
+        mockMvc.perform(get("/api/carrito").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.clienteId").value(100))
+                .andExpect(jsonPath("$.clienteId").value("u-100"))
                 .andExpect(jsonPath("$.total").value(90000));
     }
 
@@ -161,21 +172,21 @@ class CarritoControllerTest {
     void deberiaRetornar404CuandoElClienteNoTieneCarrito() throws Exception {
 
         // Arrange
-        when(verCarritoUseCase.ejecutar(anyLong()))
+        when(verCarritoUseCase.ejecutar(anyString()))
                 .thenThrow(new NoSuchElementException());
 
         // Act y Assert
-        mockMvc.perform(get("/api/carritos/100"))
+        mockMvc.perform(get("/api/carrito").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isNotFound());
     }
     @Test
     void deberiaQuitarElArticuloYRetornar204() throws Exception {
 
         // Act y Assert
-        mockMvc.perform(delete("/api/carritos/100/items/1"))
+        mockMvc.perform(delete("/api/carrito/items/1").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isNoContent());
 
-        verify(quitarArticuloDelCarritoUseCase).ejecutar(100L, 1L);
+        verify(quitarArticuloDelCarritoUseCase).ejecutar("u-100", 1L);
     }
 
     @Test
@@ -183,10 +194,10 @@ class CarritoControllerTest {
 
         // Arrange
         doThrow(new NoSuchElementException())
-                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyLong(), anyLong());
+                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyString(), anyLong());
 
         // Act y Assert
-        mockMvc.perform(delete("/api/carritos/100/items/1"))
+        mockMvc.perform(delete("/api/carrito/items/1").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isNotFound());
     }
 
@@ -195,10 +206,16 @@ class CarritoControllerTest {
 
         // Arrange
         doThrow(new ArticuloNoEncontradoEnCarritoException())
-                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyLong(), anyLong());
+                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyString(), anyLong());
 
         // Act y Assert
-        mockMvc.perform(delete("/api/carritos/100/items/99"))
+        mockMvc.perform(delete("/api/carrito/items/99").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void sinTokenDebeResponder401() throws Exception {
+        mockMvc.perform(get("/api/carrito"))
+                .andExpect(status().isUnauthorized());
     }
 }

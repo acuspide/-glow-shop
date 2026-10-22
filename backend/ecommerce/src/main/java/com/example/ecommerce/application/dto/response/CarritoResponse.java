@@ -5,7 +5,7 @@ import java.util.List;
 
 public record CarritoResponse(
         long id,
-        long clienteId,
+        String clienteId,
         List<ItemCarritoResponse> items,
         BigDecimal total
 ) {

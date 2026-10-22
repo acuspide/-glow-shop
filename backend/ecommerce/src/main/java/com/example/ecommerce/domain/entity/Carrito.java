@@ -13,15 +13,15 @@ import java.util.Optional;
 
 public class Carrito {
     private final long id;
-    private final long clienteId;
+    private final String clienteId;
     private final List<ItemCarrito> items;
 
-    private Carrito(long id, long clienteId) {
+    private Carrito(long id, String clienteId) {
         this.id = id;
         this.clienteId = clienteId;
         this.items = new ArrayList<>();
     }
-    public static Carrito crear(long id, long clienteId) {
+    public static Carrito crear(long id, String clienteId) {
         return new Carrito(id, clienteId);
     }
     public void agregarArticulo(Articulo articulo, int cantidad) {
@@ -68,7 +68,7 @@ public class Carrito {
         return id;
     }
 
-    public long getClienteId() {
+    public String getClienteId() {
         return clienteId;
     }
 

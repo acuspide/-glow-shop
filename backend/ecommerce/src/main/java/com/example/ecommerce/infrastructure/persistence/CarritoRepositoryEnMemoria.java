@@ -21,9 +21,9 @@ public class CarritoRepositoryEnMemoria implements CarritoRepository {
     }
 
     @Override
-    public Optional<Carrito> obtenerPorClienteId(long clienteId) {
+    public Optional<Carrito> obtenerPorClienteId(String clienteId) {
         return carritos.values().stream()
-                .filter(carrito -> carrito.getClienteId() == clienteId)
+                .filter(carrito -> carrito.getClienteId().equals(clienteId))
                 .findFirst();
     }
 

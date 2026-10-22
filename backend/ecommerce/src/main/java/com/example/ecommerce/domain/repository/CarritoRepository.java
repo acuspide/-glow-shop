@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface CarritoRepository {
     Optional<Carrito> obtenerPorId(long id);
 
-    Optional<Carrito> obtenerPorClienteId(long clienteId);
+    Optional<Carrito> obtenerPorClienteId(String clienteId);
 
     long siguienteId();
 

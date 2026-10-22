@@ -20,10 +20,12 @@
 
 | Operacion del dominio | Método HTTP | Endpoint |
 |---|---|---|
-| Agregar artículo al carrito | POST | /api/carritos/{clienteId}/items |
-| Ver carrito | GET | /api/carritos/{clienteId} |
-| Vaciar carrito | DELETE | /api/carritos/{clienteId}/items |
-| Quitar artículo del carrito | DELETE | /api/carritos/{clienteId}/items/{articuloId} |
+| Agregar artículo al carrito | POST | /api/carrito/items |
+| Ver carrito | GET | /api/carrito |
+| Vaciar carrito | DELETE | /api/carrito/items |
+| Quitar artículo del carrito | DELETE | /api/carrito/items/{articuloId} |
+
+El carrito es siempre el del cliente con sesión iniciada: se identifica con `Authorization: Bearer <token>` (sin token → 401).
 
 # Mapeo Dominio -> API - Usuario
 

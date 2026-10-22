@@ -50,13 +50,13 @@ class QuitarArticuloDelCarritoUseCaseTest {
     void deberiaQuitarElArticuloCuandoEstaEnElCarrito() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
+        Carrito carrito = Carrito.crear(1L, "u-100");
         carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
         carrito.agregarArticulo(crearArticuloPublicado(2L, "50000"), 1);
-        when(carritoRepository.obtenerPorClienteId(100L)).thenReturn(Optional.of(carrito));
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 
         // Act
-        useCase.ejecutar(100L, 1L);
+        useCase.ejecutar("u-100", 1L);
 
         // Assert
         assertEquals(1, carrito.getItems().size());
@@ -68,11 +68,11 @@ class QuitarArticuloDelCarritoUseCaseTest {
     void deberiaLanzarExcepcionCuandoElClienteNoTieneCarrito() {
 
         // Arrange
-        when(carritoRepository.obtenerPorClienteId(100L)).thenReturn(Optional.empty());
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
         // Act y Assert
         assertThrows(NoSuchElementException.class, () -> {
-            useCase.ejecutar(100L, 1L);
+            useCase.ejecutar("u-100", 1L);
         });
 
         verify(carritoRepository, never()).guardar(any());
@@ -82,13 +82,13 @@ class QuitarArticuloDelCarritoUseCaseTest {
     void deberiaLanzarExcepcionCuandoElArticuloNoEstaEnElCarrito() {
 
         // Arrange
-        Carrito carrito = Carrito.crear(1L, 100L);
+        Carrito carrito = Carrito.crear(1L, "u-100");
         carrito.agregarArticulo(crearArticuloPublicado(1L, "20000"), 2);
-        when(carritoRepository.obtenerPorClienteId(100L)).thenReturn(Optional.of(carrito));
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carrito));
 
         // Act y Assert
         assertThrows(ArticuloNoEncontradoEnCarritoException.class, () -> {
-            useCase.ejecutar(100L, 99L);
+            useCase.ejecutar("u-100", 99L);
         });
 
         assertEquals(1, carrito.getItems().size());
