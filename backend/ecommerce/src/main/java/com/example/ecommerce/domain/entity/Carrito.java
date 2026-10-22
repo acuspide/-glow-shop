@@ -38,7 +38,7 @@ public class Carrito {
         items.add(new ItemCarrito(articulo.getId(), cantidadTotal, articulo.getPrecio()));
     }
 
-    public void eliminarItem(long articuloId) {
+    public void quitarArticulo(long articuloId) {
         ItemCarrito item = buscarItem(articuloId)
                 .orElseThrow(ArticuloNoEncontradoEnCarritoException::new);
         items.remove(item);

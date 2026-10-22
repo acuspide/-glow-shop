@@ -22,7 +22,8 @@ import com.example.ecommerce.application.usecase.VaciarCarritoUseCase;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-
+import com.example.ecommerce.application.usecase.QuitarArticuloDelCarritoUseCase;
+import com.example.ecommerce.domain.exception.ArticuloNoEncontradoEnCarritoException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -51,6 +52,8 @@ class CarritoControllerTest {
 
     @MockitoBean
     private VaciarCarritoUseCase vaciarCarritoUseCase;
+    @MockitoBean
+    private QuitarArticuloDelCarritoUseCase quitarArticuloDelCarritoUseCase;
 
     @Test
     void deberiaAgregarArticuloCuandoDatosValidos() throws Exception {
@@ -164,5 +167,38 @@ class CarritoControllerTest {
         // Act y Assert
         mockMvc.perform(get("/api/carritos/100"))
                 .andExpect(status().isNotFound());
+    }
+    @Test
+    void deberiaQuitarElArticuloYRetornar204() throws Exception {
+
+        // Act y Assert
+        mockMvc.perform(delete("/api/carritos/100/items/1"))
+                .andExpect(status().isNoContent());
+
+        verify(quitarArticuloDelCarritoUseCase).ejecutar(100L, 1L);
+    }
+
+    @Test
+    void deberiaRetornar404AlQuitarCuandoElClienteNoTieneCarrito() throws Exception {
+
+        // Arrange
+        doThrow(new NoSuchElementException())
+                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyLong(), anyLong());
+
+        // Act y Assert
+        mockMvc.perform(delete("/api/carritos/100/items/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deberiaRetornar400CuandoElArticuloNoEstaEnElCarrito() throws Exception {
+
+        // Arrange
+        doThrow(new ArticuloNoEncontradoEnCarritoException())
+                .when(quitarArticuloDelCarritoUseCase).ejecutar(anyLong(), anyLong());
+
+        // Act y Assert
+        mockMvc.perform(delete("/api/carritos/100/items/99"))
+                .andExpect(status().isBadRequest());
     }
 }
