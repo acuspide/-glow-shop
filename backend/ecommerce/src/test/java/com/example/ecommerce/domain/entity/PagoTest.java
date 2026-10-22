@@ -1,21 +1,14 @@
 package com.example.ecommerce.domain.entity;
 
-import com.example.ecommerce.domain.exception.MedioPagoRequeridoException;
-import com.example.ecommerce.domain.exception.MontoPagoRequeridoException;
-import com.example.ecommerce.domain.exception.TransaccionRequeridaException;
-import com.example.ecommerce.domain.exception.TransicionEstadoInvalidaException;
+import com.example.ecommerce.domain.exception.*;
 import com.example.ecommerce.domain.valueobject.EstadoPago;
 import com.example.ecommerce.domain.valueobject.MedioPago;
 import com.example.ecommerce.domain.valueobject.Precio;
 import org.junit.jupiter.api.Test;
-import com.example.ecommerce.domain.exception.MotivoRechazoRequeridoException;
+
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PagoTest {
 
@@ -139,5 +132,36 @@ public class PagoTest {
 
         // Act y Assert
         assertThrows(TransicionEstadoInvalidaException.class, pago::reembolsar);
+    }
+    @Test
+    void unPagoRechazadoSePuedeReintentar() {
+
+        // Arrange
+        Pago pago = crearPago();
+        pago.rechazar("tx-456", "Fondos insuficientes");
+
+        // Act y Assert
+        assertDoesNotThrow(pago::verificarQueSePuedeReintentar);
+    }
+
+    @Test
+    void unPagoAprobadoNoSePuedeReintentar() {
+
+        // Arrange
+        Pago pago = crearPago();
+        pago.aprobar("tx-123");
+
+        // Act y Assert
+        assertThrows(PagoNoReintentableException.class, pago::verificarQueSePuedeReintentar);
+    }
+
+    @Test
+    void unPagoPendienteNoSePuedeReintentar() {
+
+        // Arrange
+        Pago pago = crearPago();
+
+        // Act y Assert
+        assertThrows(PagoNoReintentableException.class, pago::verificarQueSePuedeReintentar);
     }
 }

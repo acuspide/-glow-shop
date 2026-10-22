@@ -3,6 +3,7 @@ package com.example.ecommerce.infrastructure.rest;
 import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.response.PagoResponse;
 import com.example.ecommerce.application.usecase.ProcesarPagoDePedidoUseCase;
+import com.example.ecommerce.application.usecase.ReintentarPagoUseCase;
 import com.example.ecommerce.domain.entity.Pago;
 import com.example.ecommerce.domain.exception.PagoNoRegistrableException;
 import com.example.ecommerce.domain.exception.PedidoAjenoException;
@@ -44,14 +45,16 @@ class PagoControllerTest {
     private ProcesarPagoDePedidoUseCase procesarPagoDePedidoUseCase;
 
     @MockitoBean
+    private ConsultarEstadoDePagoUseCase consultarEstadoDePagoUseCase;
+
+    @MockitoBean
+    private ReintentarPagoUseCase reintentarPagoUseCase;      // ← este
+
+    @MockitoBean
     private PagoMapper mapper;
 
     @MockitoBean
     private TokenService tokenService;
-
-    @MockitoBean
-    private ConsultarEstadoDePagoUseCase consultarEstadoDePagoUseCase;
-
     private static final String CON_NEQUI = """
             {
                 "medioPago": "NEQUI"

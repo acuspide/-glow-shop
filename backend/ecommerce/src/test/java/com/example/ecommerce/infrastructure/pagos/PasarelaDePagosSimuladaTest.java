@@ -13,11 +13,15 @@ class PasarelaDePagosSimuladaTest {
 
     private final PasarelaDePagosSimulada pasarela = new PasarelaDePagosSimulada();
 
+    private ResultadoCobro cobrar(String monto, MedioPago medio) {
+        return pasarela.cobrar(new Precio(new BigDecimal(monto)), medio);
+    }
+
     @Test
     void deberiaAprobarUnCobroCuandoAlcanzanLosFondos() {
 
         // Act
-        ResultadoCobro resultado = pasarela.cobrar(new Precio(new BigDecimal("40000")), MedioPago.NEQUI);
+        ResultadoCobro resultado = cobrar("40000", MedioPago.NEQUI);
 
         // Assert
         assertTrue(resultado.aprobado());
@@ -28,7 +32,7 @@ class PasarelaDePagosSimuladaTest {
     void deberiaAprobarUnCobroIgualAlSaldoDisponible() {
 
         // Act
-        ResultadoCobro resultado = pasarela.cobrar(new Precio(new BigDecimal("1000000")), MedioPago.PSE);
+        ResultadoCobro resultado = cobrar("1000000", MedioPago.NEQUI);
 
         // Assert
         assertTrue(resultado.aprobado());
@@ -38,7 +42,7 @@ class PasarelaDePagosSimuladaTest {
     void deberiaRechazarPorFondosInsuficientesCuandoElMontoSuperaElSaldo() {
 
         // Act
-        ResultadoCobro resultado = pasarela.cobrar(new Precio(new BigDecimal("1000001")), MedioPago.TARJETA_CREDITO);
+        ResultadoCobro resultado = cobrar("1000001", MedioPago.NEQUI);
 
         // Assert
         assertFalse(resultado.aprobado());
@@ -46,11 +50,23 @@ class PasarelaDePagosSimuladaTest {
     }
 
     @Test
+    void elMismoMontoRechazadoConNequiPuedeAprobarseConTarjetaDeCredito() {
+
+        // Act
+        ResultadoCobro conNequi = cobrar("1200000", MedioPago.NEQUI);
+        ResultadoCobro conTarjeta = cobrar("1200000", MedioPago.TARJETA_CREDITO);
+
+        // Assert
+        assertFalse(conNequi.aprobado());
+        assertTrue(conTarjeta.aprobado());
+    }
+
+    @Test
     void cadaCobroDebeTenerUnIdentificadorDeTransaccionUnico() {
 
         // Act
-        ResultadoCobro primero = pasarela.cobrar(new Precio(new BigDecimal("40000")), MedioPago.NEQUI);
-        ResultadoCobro segundo = pasarela.cobrar(new Precio(new BigDecimal("40000")), MedioPago.NEQUI);
+        ResultadoCobro primero = cobrar("40000", MedioPago.NEQUI);
+        ResultadoCobro segundo = cobrar("40000", MedioPago.NEQUI);
 
         // Assert
         assertFalse(primero.transaccionId().isBlank());

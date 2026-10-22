@@ -14,7 +14,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.ecommerce.application.usecase.ConsultarEstadoDePagoUseCase;
 import java.net.URI;
 import java.util.UUID;
-
+import com.example.ecommerce.application.dto.request.ReintentarPagoRequest;
+import com.example.ecommerce.application.usecase.ReintentarPagoUseCase;
 /**
  * Pagos del cliente con sesión iniciada ("Authorization: Bearer <token>").
  * Un pago rechazado no es un error: se responde 201 con el pago y su motivo de rechazo.
@@ -28,6 +29,7 @@ public class PagoController {
     private final ConsultarEstadoDePagoUseCase consultarEstadoDePagoUseCase;
     private final PagoMapper mapper;
     private final TokenService tokenService;
+    private final ReintentarPagoUseCase reintentarPagoUseCase;
 
     @PostMapping("/pedidos/{pedidoId}/pagos")
     public ResponseEntity<PagoResponse> procesarPago(
@@ -58,6 +60,27 @@ public class PagoController {
         Pago pago = consultarEstadoDePagoUseCase.ejecutar(id, clienteDelToken(autorizacion));
 
         return ResponseEntity.ok(mapper.toResponse(pago)); // 200
+    }
+    @PostMapping("/pagos/{id}/reintentos")
+    public ResponseEntity<PagoResponse> reintentarPago(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @PathVariable String id,
+            @RequestBody(required = false) ReintentarPagoRequest request) {
+
+        Pago nuevoPago = reintentarPagoUseCase.ejecutar(
+                UUID.randomUUID().toString(),
+                id,
+                clienteDelToken(autorizacion),
+                request != null ? request.medioPago() : null
+        );
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/api/pagos/{id}")
+                .buildAndExpand(nuevoPago.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(mapper.toResponse(nuevoPago)); // 201
     }
     private String clienteDelToken(String autorizacion) {
         return tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));

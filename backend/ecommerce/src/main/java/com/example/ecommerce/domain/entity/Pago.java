@@ -1,13 +1,10 @@
 package com.example.ecommerce.domain.entity;
 
-import com.example.ecommerce.domain.exception.MedioPagoRequeridoException;
-import com.example.ecommerce.domain.exception.MontoPagoRequeridoException;
-import com.example.ecommerce.domain.exception.TransaccionRequeridaException;
-import com.example.ecommerce.domain.exception.TransicionEstadoInvalidaException;
+import com.example.ecommerce.domain.exception.*;
 import com.example.ecommerce.domain.valueobject.EstadoPago;
 import com.example.ecommerce.domain.valueobject.MedioPago;
 import com.example.ecommerce.domain.valueobject.Precio;
-import com.example.ecommerce.domain.exception.MotivoRechazoRequeridoException;
+
 import java.util.Objects;
 
 public class Pago {
@@ -91,7 +88,11 @@ public class Pago {
             throw new TransaccionRequeridaException();
         }
     }
-
+    public void verificarQueSePuedeReintentar() {
+        if (estado != EstadoPago.RECHAZADO) {
+            throw new PagoNoReintentableException();
+        }
+    }
     public boolean estaAprobado() {
         return estado == EstadoPago.APROBADO;
     }
