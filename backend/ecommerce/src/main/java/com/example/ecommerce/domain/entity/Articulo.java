@@ -32,7 +32,9 @@ public class Articulo {
             List<TipoPiel> tiposPiel,
             Inventario inventario,
             FechaVencimiento fechaVencimiento,
-            Tienda tienda){
+            Tienda tienda,
+            boolean eliminado,
+            boolean publicado){
 
         this.id = id;
         this.nombre = nombre;
@@ -44,8 +46,8 @@ public class Articulo {
         this.inventario = inventario;
         this.fechaVencimiento = fechaVencimiento;
         this.tienda = tienda;
-        this.eliminado = false;
-        this.publicado = false;
+        this.eliminado = eliminado;
+        this.publicado = publicado;
 
     }
     public static Articulo crear(
@@ -70,8 +72,28 @@ public class Articulo {
                 tiposPiel,
                 inventario,
                 fechaVencimiento,
-                tienda
+                tienda,
+                false,
+                false
         );
+    }
+
+    public static Articulo reconstruir(
+            String id,
+            NombreArticulo nombre,
+            Precio precio,
+            Categoria categoria,
+            Marca marca,
+            Tono tono,
+            List<TipoPiel> tiposPiel,
+            Inventario inventario,
+            FechaVencimiento fechaVencimiento,
+            Tienda tienda,
+            boolean eliminado,
+            boolean publicado
+    ) {
+        return new Articulo(id, nombre, precio, categoria, marca, tono, tiposPiel,
+                inventario, fechaVencimiento, tienda, eliminado, publicado);
     }
 
     public void publicar(){

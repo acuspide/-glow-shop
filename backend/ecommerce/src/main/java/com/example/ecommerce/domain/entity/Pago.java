@@ -13,16 +13,20 @@ public class Pago {
     private final Precio monto;
     private EstadoPago estado;
 
-    private Pago(String id, String pedidoId, Precio monto) {
+    private Pago(String id, String pedidoId, Precio monto, EstadoPago estado) {
         this.id = id;
         this.pedidoId = pedidoId;
         this.monto = monto;
-        this.estado = EstadoPago.PENDIENTE;
+        this.estado = estado;
     }
 
     public static Pago crear(String id, String pedidoId, Precio monto) {
         validarMonto(monto);
-        return new Pago(id, pedidoId, monto);
+        return new Pago(id, pedidoId, monto, EstadoPago.PENDIENTE);
+    }
+
+    public static Pago reconstruir(String id, String pedidoId, Precio monto, EstadoPago estado) {
+        return new Pago(id, pedidoId, monto, estado);
     }
 
     private static void validarMonto(Precio monto) {

@@ -13,8 +13,6 @@ public class RutinaCuidado {
     private final List<Articulo> articulos;
 
     private RutinaCuidado(String id, String nombre, List<Articulo> articulos) {
-        validarArticulos(articulos);
-
         this.id = id;
         this.nombre = nombre;
         this.articulos = List.copyOf(articulos);
@@ -25,10 +23,15 @@ public class RutinaCuidado {
             String nombre,
             List<Articulo> articulos
     ) {
+        validarArticulos(articulos);
         return new RutinaCuidado(id, nombre, articulos);
     }
 
-    private void validarArticulos(List<Articulo> articulos) {
+    public static RutinaCuidado reconstruir(String id, String nombre, List<Articulo> articulos) {
+        return new RutinaCuidado(id, nombre, articulos);
+    }
+
+    private static void validarArticulos(List<Articulo> articulos) {
 
         if (articulos == null || articulos.size() < 2) {
             throw new RutinaSinMinimoDeArticulosException();

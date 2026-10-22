@@ -29,23 +29,36 @@ public class Pedido {
     private Precio costoEnvio;
     private String pagoConfirmadoId;
 
-    private Pedido(String id, String clienteId) {
+    private Pedido(String id, String clienteId, List<DetallePedido> detalles, EstadoPedido estado,
+                   String cuponId, Precio descuento, Precio impuestos, Precio costoEnvio,
+                   String pagoConfirmadoId) {
         this.id = id;
         this.clienteId = clienteId;
-        this.detalles = new ArrayList<>();
-        this.estado = EstadoPedido.PENDIENTE;
-        this.descuento = new Precio(BigDecimal.ZERO);
-        this.impuestos = new Precio(BigDecimal.ZERO);
-        this.costoEnvio = new Precio(BigDecimal.ZERO);
+        this.detalles = new ArrayList<>(detalles);
+        this.estado = estado;
+        this.cuponId = cuponId;
+        this.descuento = descuento;
+        this.impuestos = impuestos;
+        this.costoEnvio = costoEnvio;
+        this.pagoConfirmadoId = pagoConfirmadoId;
     }
 
     public static Pedido crear(String id, String clienteId, List<DetallePedido> detalles) {
         if (detalles == null || detalles.isEmpty()) {
             throw new PedidoSinDetallesException();
         }
-        Pedido pedido = new Pedido(id, clienteId);
+        Precio cero = new Precio(BigDecimal.ZERO);
+        Pedido pedido = new Pedido(id, clienteId, List.of(), EstadoPedido.PENDIENTE,
+                null, cero, cero, cero, null);
         detalles.forEach(pedido::agregarDetalle);
         return pedido;
+    }
+
+    public static Pedido reconstruir(String id, String clienteId, List<DetallePedido> detalles,
+                                     EstadoPedido estado, String cuponId, Precio descuento,
+                                     Precio impuestos, Precio costoEnvio, String pagoConfirmadoId) {
+        return new Pedido(id, clienteId, detalles, estado, cuponId, descuento, impuestos,
+                costoEnvio, pagoConfirmadoId);
     }
 
     public void agregarDetalle(DetallePedido detalle) {

@@ -16,13 +16,18 @@ public class Carrito {
     private final String clienteId;
     private final List<ItemCarrito> items;
 
-    private Carrito(String id, String clienteId) {
+    private Carrito(String id, String clienteId, List<ItemCarrito> items) {
         this.id = id;
         this.clienteId = clienteId;
-        this.items = new ArrayList<>();
+        this.items = new ArrayList<>(items);
     }
+
     public static Carrito crear(String id, String clienteId) {
-        return new Carrito(id, clienteId);
+        return new Carrito(id, clienteId, List.of());
+    }
+
+    public static Carrito reconstruir(String id, String clienteId, List<ItemCarrito> items) {
+        return new Carrito(id, clienteId, items);
     }
     public void agregarArticulo(Articulo articulo, int cantidad) {
         if (cantidad <= 0) {

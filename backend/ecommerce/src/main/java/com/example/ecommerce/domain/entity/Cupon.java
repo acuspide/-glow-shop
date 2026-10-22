@@ -32,6 +32,10 @@ public class Cupon {
         return new Cupon(id, codigo, porcentaje, fechaExpiracion);
     }
 
+    public static Cupon reconstruir(String id, String codigo, int porcentaje, LocalDate fechaExpiracion) {
+        return new Cupon(id, codigo, porcentaje, fechaExpiracion);
+    }
+
     private static void validarCodigo(String codigo) {
         if (codigo == null || codigo.trim().isEmpty()) {
             throw new CodigoCuponRequeridoException();
