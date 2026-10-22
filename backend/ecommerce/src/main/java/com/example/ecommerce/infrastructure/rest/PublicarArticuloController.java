@@ -6,6 +6,7 @@ import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.application.dto.response.ListarArticulosResponse;
 import com.example.ecommerce.application.usecase.ListarArticulosUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.ListarArticulosMapper;
+import lombok.RequiredArgsConstructor;
 
 import com.example.ecommerce.application.dto.response.ConsultarInventarioResponse;
 import com.example.ecommerce.application.usecase.ConsultarInventarioUseCase;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/articulos")
 public class PublicarArticuloController {
     private final PublicarArticuloUseCase publicarArticuloUseCase;
@@ -37,25 +39,6 @@ public class PublicarArticuloController {
     private final ConsultarInventarioUseCase consultarInventarioUseCase;
     private final ConsultarInventarioMapper consultarInventarioMapper;
 
-    public PublicarArticuloController(
-            PublicarArticuloUseCase publicarArticuloUseCase,
-            PublicarArticuloMapper mapper,
-            MostrarDetalleArticuloUseCase mostrarDetalleArticuloUseCase,
-            MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper,
-            ListarArticulosUseCase listarArticulosUseCase,
-            ListarArticulosMapper listarArticulosMapper,
-            ConsultarInventarioUseCase consultarInventarioUseCase,
-            ConsultarInventarioMapper consultarInventarioMapper) {
-
-        this.publicarArticuloUseCase = publicarArticuloUseCase;
-        this.mapper = mapper;
-        this.mostrarDetalleArticuloUseCase = mostrarDetalleArticuloUseCase;
-        this.mostrarDetalleArticuloMapper = mostrarDetalleArticuloMapper;
-        this.listarArticulosUseCase = listarArticulosUseCase;
-        this.listarArticulosMapper = listarArticulosMapper;
-        this.consultarInventarioUseCase = consultarInventarioUseCase;
-        this.consultarInventarioMapper = consultarInventarioMapper;
-    }
     @GetMapping
     public ResponseEntity<List<ListarArticulosResponse>> listarArticulos() {
 

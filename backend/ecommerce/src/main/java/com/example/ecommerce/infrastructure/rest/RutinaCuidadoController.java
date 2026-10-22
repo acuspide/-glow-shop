@@ -9,6 +9,7 @@ import com.example.ecommerce.application.usecase.ObtenerRutinaCuidadoUseCase;
 import com.example.ecommerce.application.dto.request.ActualizarRutinaCuidadoRequest;
 import com.example.ecommerce.application.usecase.ActualizarRutinaCuidadoUseCase;
 import com.example.ecommerce.application.usecase.AgregarArticuloARutinaUseCase;
+import lombok.RequiredArgsConstructor;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/rutinas")
 public class RutinaCuidadoController {
 
@@ -26,21 +28,6 @@ public class RutinaCuidadoController {
     private final RutinaCuidadoMapper mapper;
     private final ActualizarRutinaCuidadoUseCase actualizarRutinaCuidadoUseCase;
     private final AgregarArticuloARutinaUseCase agregarArticuloARutinaUseCase;
-
-
-    public RutinaCuidadoController(
-            CrearRutinaCuidadoUseCase crearRutinaCuidadoUseCase,
-            ObtenerRutinaCuidadoUseCase obtenerRutinaCuidadoUseCase,
-            RutinaCuidadoMapper mapper,
-            ActualizarRutinaCuidadoUseCase actualizarRutinaCuidadoUseCase,
-            AgregarArticuloARutinaUseCase agregarArticuloARutinaUseCase) {
-
-        this.crearRutinaCuidadoUseCase = crearRutinaCuidadoUseCase;
-        this.obtenerRutinaCuidadoUseCase = obtenerRutinaCuidadoUseCase;
-        this.mapper = mapper;
-        this.actualizarRutinaCuidadoUseCase = actualizarRutinaCuidadoUseCase;
-        this.agregarArticuloARutinaUseCase = agregarArticuloARutinaUseCase;
-    }
 
     @PostMapping
     public ResponseEntity<RutinaCuidadoResponse> crear(
@@ -103,6 +90,5 @@ public class RutinaCuidadoController {
 
         return ResponseEntity.ok(response);
     }
-
 
 }

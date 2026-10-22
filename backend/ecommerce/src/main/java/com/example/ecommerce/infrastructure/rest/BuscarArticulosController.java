@@ -5,6 +5,7 @@ import com.example.ecommerce.application.usecase.BuscarArticulosUseCase;
 import com.example.ecommerce.domain.valueobject.CriteriosBusquedaArticulo;
 import com.example.ecommerce.infrastructure.rest.mapper.BuscarArticulosMapper;
 import com.example.ecommerce.infrastructure.rest.mapper.MostrarDetalleArticuloMapper;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,21 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/buscarArticulos")
 public class BuscarArticulosController {
     private final BuscarArticulosUseCase buscarArticulosUseCase;
     private final BuscarArticulosMapper buscarArticulosMapper;
     private final MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper;
-
-    public BuscarArticulosController(
-            BuscarArticulosUseCase buscarArticulosUseCase,
-            BuscarArticulosMapper buscarArticulosMapper,
-            MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper) {
-
-        this.buscarArticulosUseCase = buscarArticulosUseCase;
-        this.buscarArticulosMapper = buscarArticulosMapper;
-        this.mostrarDetalleArticuloMapper = mostrarDetalleArticuloMapper;
-    }
 
     @GetMapping
     public ResponseEntity<List<MostrarDetalleArticuloResponse>> buscar(

@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.ecommerce.application.usecase.VaciarCarritoUseCase;
 import com.example.ecommerce.application.usecase.QuitarArticuloDelCarritoUseCase;
+import lombok.RequiredArgsConstructor;
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/carritos")
 public class CarritoController {
 
@@ -20,18 +22,6 @@ public class CarritoController {
     private final VerCarritoUseCase verCarritoUseCase;
     private final VaciarCarritoUseCase vaciarCarritoUseCase;
     private final QuitarArticuloDelCarritoUseCase quitarArticuloDelCarritoUseCase;
-
-    public CarritoController(AgregarAlCarritoUseCase agregarAlCarritoUseCase,
-                             CarritoMapper mapper,
-                             VerCarritoUseCase verCarritoUseCase,
-                             VaciarCarritoUseCase vaciarCarritoUseCase,
-                             QuitarArticuloDelCarritoUseCase quitarArticuloDelCarritoUseCase) {
-        this.agregarAlCarritoUseCase = agregarAlCarritoUseCase;
-        this.mapper = mapper;
-        this.verCarritoUseCase = verCarritoUseCase;
-        this.vaciarCarritoUseCase = vaciarCarritoUseCase;
-        this.quitarArticuloDelCarritoUseCase = quitarArticuloDelCarritoUseCase;
-    }
 
     @PostMapping("/{clienteId}/items")
     public ResponseEntity<CarritoResponse> agregarArticulo(
