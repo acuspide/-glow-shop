@@ -13,16 +13,19 @@ public class Pago {
     private final Precio monto;
     private EstadoPago estado;
 
-    public Pago(long id, long pedidoId, Precio monto) {
-        validarMonto(monto);
-
+    private Pago(long id, long pedidoId, Precio monto) {
         this.id = id;
         this.pedidoId = pedidoId;
         this.monto = monto;
         this.estado = EstadoPago.PENDIENTE;
     }
 
-    private void validarMonto(Precio monto) {
+    public static Pago crear(long id, long pedidoId, Precio monto) {
+        validarMonto(monto);
+        return new Pago(id, pedidoId, monto);
+    }
+
+    private static void validarMonto(Precio monto) {
         if (monto == null) {
             throw new MontoPagoRequeridoException();
         }
