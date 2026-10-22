@@ -20,7 +20,7 @@ import java.util.Objects;
 
 public class Pedido {
     private final long id;
-    private final long clienteId;
+    private final String clienteId;
     private final List<DetallePedido> detalles;
     private EstadoPedido estado;
     private Long cuponId;
@@ -29,7 +29,7 @@ public class Pedido {
     private Precio costoEnvio;
     private Long pagoConfirmadoId;
 
-    private Pedido(long id, long clienteId) {
+    private Pedido(long id, String clienteId) {
         this.id = id;
         this.clienteId = clienteId;
         this.detalles = new ArrayList<>();
@@ -39,7 +39,7 @@ public class Pedido {
         this.costoEnvio = new Precio(BigDecimal.ZERO);
     }
 
-    public static Pedido crear(long id, long clienteId, List<DetallePedido> detalles) {
+    public static Pedido crear(long id, String clienteId, List<DetallePedido> detalles) {
         if (detalles == null || detalles.isEmpty()) {
             throw new PedidoSinDetallesException();
         }
@@ -156,7 +156,7 @@ public class Pedido {
         return id;
     }
 
-    public long getClienteId() {
+    public String getClienteId() {
         return clienteId;
     }
 

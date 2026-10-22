@@ -16,7 +16,7 @@ public class ConfirmarPedidoUseCase {
     private final PedidoRepository repository;
 
     @Transactional
-    public Pedido ejecutar(long pedidoId, long clienteId, List<DetallePedido> detalles) {
+    public Pedido ejecutar(long pedidoId, String clienteId, List<DetallePedido> detalles) {
 
         Pedido pedido = Pedido.crear(pedidoId, clienteId, detalles);
 

@@ -27,7 +27,7 @@ public class ConfirmarPedidoUseCaseTest {
         List<DetallePedido> detalles = List.of(new DetallePedido(1L, 2, precio));
 
         // Act
-        Pedido pedido = useCase.ejecutar(1L, 100L, detalles);
+        Pedido pedido = useCase.ejecutar(1L, "u-100", detalles);
 
         // Assert
         assertEquals(EstadoPedido.CONFIRMADO, pedido.getEstado());
@@ -43,7 +43,7 @@ public class ConfirmarPedidoUseCaseTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> {
-            useCase.ejecutar(1L, 100L, List.of());
+            useCase.ejecutar(1L, "u-100", List.of());
         });
     }
 }

@@ -18,7 +18,7 @@ public class HistorialDeComprasConPedidosTest {
     private final HistorialDeComprasConPedidos historial = new HistorialDeComprasConPedidos(pedidoRepository);
 
     // Se simula el pedido para no depender de cómo se construye (es del módulo de pedidos).
-    private Pedido pedido(long clienteId, EstadoPedido estado, long articuloId) {
+    private Pedido pedido(String clienteId, EstadoPedido estado, long articuloId) {
         Pedido pedido = mock(Pedido.class);
         DetallePedido detalle = mock(DetallePedido.class);
         when(detalle.getArticuloId()).thenReturn(articuloId);
@@ -30,26 +30,26 @@ public class HistorialDeComprasConPedidosTest {
 
     @Test
     void conUnPedidoEntregadoDelArticuloElClienteLoRecibio() {
-        Pedido pedido = pedido(7L, EstadoPedido.ENTREGADO, 10L); // se crea antes: Mockito no permite simular dentro de otro when
+        Pedido pedido = pedido("u-7", EstadoPedido.ENTREGADO, 10L); // se crea antes: Mockito no permite simular dentro de otro when
         when(pedidoRepository.listarTodos()).thenReturn(List.of(pedido));
 
-        assertTrue(historial.clienteRecibioArticulo("7", 10L));
+        assertTrue(historial.clienteRecibioArticulo("u-7", 10L));
     }
 
     @Test
     void unPedidoQueNoSeHaEntregadoNoCuenta() {
-        Pedido pedido = pedido(7L, EstadoPedido.ENVIADO, 10L); // se crea antes: Mockito no permite simular dentro de otro when
+        Pedido pedido = pedido("u-7", EstadoPedido.ENVIADO, 10L); // se crea antes: Mockito no permite simular dentro de otro when
         when(pedidoRepository.listarTodos()).thenReturn(List.of(pedido));
 
-        assertFalse(historial.clienteRecibioArticulo("7", 10L));
+        assertFalse(historial.clienteRecibioArticulo("u-7", 10L));
     }
 
     @Test
     void elPedidoDebeSerDelMismoClienteYDelMismoArticulo() {
-        Pedido pedido = pedido(7L, EstadoPedido.ENTREGADO, 10L); // se crea antes: Mockito no permite simular dentro de otro when
+        Pedido pedido = pedido("u-7", EstadoPedido.ENTREGADO, 10L); // se crea antes: Mockito no permite simular dentro de otro when
         when(pedidoRepository.listarTodos()).thenReturn(List.of(pedido));
 
-        assertFalse(historial.clienteRecibioArticulo("8", 10L));
-        assertFalse(historial.clienteRecibioArticulo("7", 11L));
+        assertFalse(historial.clienteRecibioArticulo("u-8", 10L));
+        assertFalse(historial.clienteRecibioArticulo("u-7", 11L));
     }
 }

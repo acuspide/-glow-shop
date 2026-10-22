@@ -21,7 +21,7 @@ public class PedidoTest {
     }
 
     private Pedido crearPedido() {
-        return Pedido.crear(1L, 100L, List.of(detalle(1L, 2, "10000")));
+        return Pedido.crear(1L, "u-100", List.of(detalle(1L, 2, "10000")));
     }
 
     private Cupon cuponVigente(long id, int porcentaje) {
@@ -39,14 +39,14 @@ public class PedidoTest {
     void unPedidoNoDebePoderCrearseSinDetalles() {
 
         // Act y Assert
-        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear(1L, 100L, List.of()));
+        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear(1L, "u-100", List.of()));
     }
 
     @Test
     void unPedidoNoDebePoderCrearseConListaDeDetallesNula() {
 
         // Act y Assert
-        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear(1L, 100L, null));
+        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear(1L, "u-100", null));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class PedidoTest {
         List<DetallePedido> detalles = List.of(detalle(1L, 2, "10000"), detalle(2L, 1, "5000"));
 
         // Act
-        Pedido pedido = Pedido.crear(1L, 100L, detalles);
+        Pedido pedido = Pedido.crear(1L, "u-100", detalles);
 
         // Assert
         assertEquals(2, pedido.getDetalles().size());
@@ -92,7 +92,7 @@ public class PedidoTest {
     void elPrecioDeUnDetalleYaAgregadoNoCambiaSiCambiaElPrecioDelArticulo() {
 
         // Arrange
-        Pedido pedido = Pedido.crear(1L, 100L, List.of(detalle(1L, 1, "10000")));
+        Pedido pedido = Pedido.crear(1L, "u-100", List.of(detalle(1L, 1, "10000")));
 
         // Act
         // Simulamos que el precio del artículo cambia después de la compra
