@@ -9,7 +9,8 @@ import com.example.ecommerce.domain.service.VerificadorDeCalificacion;
 import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+import com.example.ecommerce.domain.repository.ArticuloRepository;
+import com.example.ecommerce.domain.service.VerificadorDeDisponibilidadDelCarrito;
 /**
  * Los servicios de dominio no llevan anotaciones de Spring; aquí se le indica a Spring cómo crearlos.
  */
@@ -30,5 +31,9 @@ public class DomainServiceConfig {
     @Bean
     public VerificadorDeArticuloSinPedidosActivos verificadorDeArticuloSinPedidosActivos(PedidoRepository pedidoRepository) {
         return new VerificadorDeArticuloSinPedidosActivos(pedidoRepository);
+    }
+    @Bean
+    public VerificadorDeDisponibilidadDelCarrito verificadorDeDisponibilidadDelCarrito(ArticuloRepository articuloRepository) {
+        return new VerificadorDeDisponibilidadDelCarrito(articuloRepository);
     }
 }

@@ -189,4 +189,97 @@ public class CarritoTest {
         // Assert
         assertTrue(carrito.estaVacio());
     }
+    @Test
+    void modificarCantidadDebeReemplazarLaCantidadNoSumarla() {
+
+        // Arrange
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 10);
+        carrito.agregarArticulo(labial, 2);
+
+        // Act
+        carrito.modificarCantidad(labial, 5);
+
+        // Assert
+        assertEquals(1, carrito.getItems().size());
+        assertEquals(5, carrito.getItems().get(0).getCantidad());
+        assertEquals(new BigDecimal("50000"), carrito.calcularTotal());
+    }
+
+    @Test
+    void modificarCantidadDebePermitirDisminuirLaCantidad() {
+
+        // Arrange
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 10);
+        carrito.agregarArticulo(labial, 5);
+
+        // Act
+        carrito.modificarCantidad(labial, 1);
+
+        // Assert
+        assertEquals(1, carrito.getItems().get(0).getCantidad());
+        assertEquals(new BigDecimal("10000"), carrito.calcularTotal());
+    }
+
+    @Test
+    void modificarCantidadDebeConservarElOrdenDeLosArticulos() {
+
+        // Arrange
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 10);
+        Articulo base = crearArticuloPublicado("a-2", "30000", 10);
+        carrito.agregarArticulo(labial, 1);
+        carrito.agregarArticulo(base, 1);
+
+        // Act
+        carrito.modificarCantidad(labial, 3);
+
+        // Assert
+        assertEquals("a-1", carrito.getItems().get(0).getArticuloId());
+        assertEquals("a-2", carrito.getItems().get(1).getArticuloId());
+    }
+
+    @Test
+    void noDebePermitirModificarAUnaCantidadCero() {
+
+        // Arrange
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 10);
+        carrito.agregarArticulo(labial, 2);
+
+        // Act y Assert
+        assertThrows(CantidadInvalidaException.class, () -> {
+            carrito.modificarCantidad(labial, 0);
+        });
+        assertEquals(2, carrito.getItems().get(0).getCantidad());
+    }
+
+    @Test
+    void noDebePermitirQueLaNuevaCantidadSupereElStock() {
+
+        // Arrange
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 5);
+        carrito.agregarArticulo(labial, 2);
+
+        // Act y Assert
+        assertThrows(CantidadSuperaStockException.class, () -> {
+            carrito.modificarCantidad(labial, 6);
+        });
+        assertEquals(2, carrito.getItems().get(0).getCantidad());
+    }
+
+    @Test
+    void noDebePermitirModificarUnArticuloQueNoEstaEnElCarrito() {
+
+        // Arrange
+        Carrito carrito = Carrito.crear("c-1", "u-100");
+        Articulo labial = crearArticuloPublicado("a-1", "10000", 10);
+
+        // Act y Assert
+        assertThrows(ArticuloNoEncontradoEnCarritoException.class, () -> {
+            carrito.modificarCantidad(labial, 2);
+        });
+    }
 }

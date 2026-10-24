@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.entity;
 
+import com.example.ecommerce.domain.exception.PedidoAjenoException;
 import com.example.ecommerce.domain.exception.PedidoSinDetallesException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.valueobject.DetallePedido;
@@ -13,7 +14,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import com.example.ecommerce.domain.exception.PagoNoRegistrableException;
+import com.example.ecommerce.domain.valueobject.MedioPago;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 public class PedidoTest {
 
     private DetallePedido detalle(String articuloId, int cantidad, String precio) {
@@ -29,8 +32,8 @@ public class PedidoTest {
     }
 
     private Pago pagoAprobado(String pagoId, String pedidoId, String monto) {
-        Pago pago = Pago.crear(pagoId, pedidoId, new Precio(new BigDecimal(monto)));
-        pago.aprobar();
+        Pago pago = Pago.crear(pagoId, pedidoId, new Precio(new BigDecimal(monto)), MedioPago.TARJETA_CREDITO);
+        pago.aprobar("tx-" + pagoId);
         return pago;
     }
 
@@ -293,7 +296,7 @@ public class PedidoTest {
         // Arrange
         Pedido pedido = crearPedido();
         pedido.confirmar();
-        Pago pagoPendiente =Pago.crear("pa-50", "p-1", new Precio(new BigDecimal("20000")));
+        Pago pagoPendiente = Pago.crear("pa-50", "p-1", new Precio(new BigDecimal("20000")), MedioPago.TARJETA_CREDITO);
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> pedido.registrarPago(pagoPendiente));
@@ -416,5 +419,56 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, pedido::enviar);
+    }
+    @Test
+    void unPedidoConfirmadoSinPagoDebeAceptarUnPago() {
+
+        // Arrange
+        Pedido pedido = crearPedido();
+        pedido.confirmar();
+
+        // Act y Assert
+        assertDoesNotThrow(pedido::verificarQueAceptaPago);
+    }
+
+    @Test
+    void unPedidoPendienteNoDebeAceptarUnPago() {
+
+        // Arrange
+        Pedido pedido = crearPedido();
+
+        // Act y Assert
+        assertThrows(PagoNoRegistrableException.class, pedido::verificarQueAceptaPago);
+    }
+
+    @Test
+    void unPedidoYaPagadoNoDebeAceptarOtroPago() {
+
+        // Arrange
+        Pedido pedido = crearPedido();
+        pedido.confirmar();
+        pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20000"));
+
+        // Act y Assert
+        assertThrows(PagoNoRegistrableException.class, pedido::verificarQueAceptaPago);
+    }
+    @Test
+    void unPedidoDebePertenecerAlClienteQueLoCreo() {
+
+        // Arrange
+        Pedido pedido = crearPedido();
+
+        // Act y Assert
+        assertDoesNotThrow(() -> pedido.verificarQuePerteneceA(pedido.getClienteId()));
+    }
+
+    @Test
+    void unPedidoNoDebePertenecerAOtroCliente() {
+
+        // Arrange
+        Pedido pedido = crearPedido();
+
+        // Act y Assert
+        assertThrows(PedidoAjenoException.class, () -> pedido.verificarQuePerteneceA("otro-cliente"));
     }
 }

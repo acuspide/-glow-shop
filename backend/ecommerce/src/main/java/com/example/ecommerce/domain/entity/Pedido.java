@@ -1,18 +1,10 @@
 package com.example.ecommerce.domain.entity;
 
-import com.example.ecommerce.domain.exception.CargoPedidoRequeridoException;
-import com.example.ecommerce.domain.exception.CuponNoVigenteException;
-import com.example.ecommerce.domain.exception.CuponYaAplicadoException;
-import com.example.ecommerce.domain.exception.DescuentoSuperaSubtotalException;
-import com.example.ecommerce.domain.exception.PedidoNoModificableException;
-import com.example.ecommerce.domain.exception.PedidoSinDetallesException;
-import com.example.ecommerce.domain.exception.TransicionEstadoInvalidaException;
+import com.example.ecommerce.domain.exception.*;
 import com.example.ecommerce.domain.valueobject.DetallePedido;
 import com.example.ecommerce.domain.valueobject.EstadoPedido;
 import com.example.ecommerce.domain.valueobject.Precio;
-import com.example.ecommerce.domain.exception.PagoInvalidoException;
-import com.example.ecommerce.domain.exception.PagoNoRegistrableException;
-import com.example.ecommerce.domain.exception.PagoNoRegistradoException;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,10 +100,20 @@ public class Pedido {
         transicionarA(EstadoPedido.CONFIRMADO);
     }
 
-    public void registrarPago(Pago pago) {
+
+    public void verificarQuePerteneceA(String clienteId) {
+        if (!this.clienteId.equals(clienteId)) {
+            throw new PedidoAjenoException();
+        }
+    }
+    public void verificarQueAceptaPago() {
         if (estado != EstadoPedido.CONFIRMADO || pagoConfirmadoId != null) {
             throw new PagoNoRegistrableException();
         }
+    }
+
+    public void registrarPago(Pago pago) {
+        verificarQueAceptaPago();
         if (pago == null
                 || !pago.estaAprobado()
                 || !pago.getPedidoId().equals(id)

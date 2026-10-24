@@ -42,7 +42,19 @@ public class Carrito {
         itemExistente.ifPresent(items::remove);
         items.add(new ItemCarrito(articulo.getId(), cantidadTotal, articulo.getPrecio()));
     }
+    public void modificarCantidad(Articulo articulo, int nuevaCantidad) {
+        if (nuevaCantidad <= 0) {
+            throw new CantidadInvalidaException();
+        }
 
+        ItemCarrito itemActual = buscarItem(articulo.getId())
+                .orElseThrow(ArticuloNoEncontradoEnCarritoException::new);
+
+        articulo.validarDisponibleParaVenta(nuevaCantidad);
+
+        int posicion = items.indexOf(itemActual);
+        items.set(posicion, new ItemCarrito(articulo.getId(), nuevaCantidad, articulo.getPrecio()));
+    }
     public void quitarArticulo(String articuloId) {
         ItemCarrito item = buscarItem(articuloId)
                 .orElseThrow(ArticuloNoEncontradoEnCarritoException::new);

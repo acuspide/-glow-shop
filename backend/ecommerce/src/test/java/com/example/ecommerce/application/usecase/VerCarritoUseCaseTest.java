@@ -3,18 +3,30 @@ package com.example.ecommerce.application.usecase;
 import com.example.ecommerce.domain.entity.*;
 import com.example.ecommerce.domain.repository.CarritoRepository;
 import com.example.ecommerce.domain.valueobject.*;
-import com.example.ecommerce.infrastructure.persistence.CarritoRepositoryEnMemoria;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-public class VerCarritoUseCaseTest {
+@ExtendWith(MockitoExtension.class)
+class VerCarritoUseCaseTest {
+
+    @Mock
+    private CarritoRepository carritoRepository;
+
+    @InjectMocks
+    private VerCarritoUseCase useCase;
 
     private Articulo crearArticuloPublicado(String id, String precio) {
         Articulo articulo = Articulo.crear(
@@ -34,16 +46,13 @@ public class VerCarritoUseCaseTest {
     }
 
     @Test
-    void debeMostrarLosArticulosYElTotalDelCarritoDelCliente() {
+    void deberiaMostrarLosArticulosYElTotalDelCarritoDelCliente() {
 
         // Arrange
-        CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
-        VerCarritoUseCase useCase = new VerCarritoUseCase(carritoRepository);
-
         Carrito carritoDeAna = Carrito.crear("c-1", "u-100");
         carritoDeAna.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
         carritoDeAna.agregarArticulo(crearArticuloPublicado("a-2", "50000"), 1);
-        carritoRepository.guardar(carritoDeAna);
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carritoDeAna));
 
         // Act
         Carrito carrito = useCase.ejecutar("u-100");
@@ -51,34 +60,34 @@ public class VerCarritoUseCaseTest {
         // Assert
         assertEquals(2, carrito.getItems().size());
         assertEquals(new BigDecimal("90000"), carrito.calcularTotal());
+        verify(carritoRepository).obtenerPorClienteId("u-100");
     }
 
     @Test
-    void debeMostrarSoloElCarritoDelClienteIndicado() {
+    void deberiaLanzarExcepcionCuandoElClienteNoTieneCarrito() {
 
         // Arrange
-        CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
-        VerCarritoUseCase useCase = new VerCarritoUseCase(carritoRepository);
-        carritoRepository.guardar(Carrito.crear("c-1", "u-100"));
-        carritoRepository.guardar(Carrito.crear("c-2", "u-200"));
-
-        // Act
-        Carrito carrito = useCase.ejecutar("u-200");
-
-        // Assert
-        assertEquals("u-200", carrito.getClienteId());
-    }
-
-    @Test
-    void debeLanzarErrorSiElClienteNoTieneCarrito() {
-
-        // Arrange
-        CarritoRepository carritoRepository = new CarritoRepositoryEnMemoria();
-        VerCarritoUseCase useCase = new VerCarritoUseCase(carritoRepository);
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
         // Act y Assert
         assertThrows(NoSuchElementException.class, () -> {
             useCase.ejecutar("u-100");
         });
+    }
+
+    @Test
+    void verElCarritoNoDebeModificarloNiGuardarlo() {
+
+        // Arrange
+        Carrito carritoDeAna = Carrito.crear("c-1", "u-100");
+        carritoDeAna.agregarArticulo(crearArticuloPublicado("a-1", "20000"), 2);
+        when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.of(carritoDeAna));
+
+        // Act
+        useCase.ejecutar("u-100");
+
+        // Assert
+        assertEquals(1, carritoDeAna.getItems().size());
+        verify(carritoRepository, never()).guardar(any());
     }
 }

@@ -24,8 +24,16 @@
 | Ver carrito | GET | /api/carrito |
 | Vaciar carrito | DELETE | /api/carrito/items |
 | Quitar artículo del carrito | DELETE | /api/carrito/items/{articuloId} |
-
+| Modificar cantidad en el carrito | PUT | /api/carrito/items/{articuloId} |
+| Validar disponibilidad del carrito | GET | /api/carrito/disponibilidad |
 El carrito es siempre el del cliente con sesión iniciada: se identifica con `Authorization: Bearer <token>` (sin token → 401).
+# Mapeo Dominio -> API - Pedido
+
+| Operacion del dominio | Método HTTP | Endpoint |
+|---|---|---|
+| Confirmar pedido | POST | /api/pedidos |
+
+El pedido se arma con los artículos del carrito del cliente con sesión iniciada (`Authorization: Bearer <token>`). Antes de confirmarlo se valida la disponibilidad del carrito (stock y precio vigentes); si algo falla, no se modifica nada.
 
 # Mapeo Dominio -> API - Usuario
 
@@ -37,6 +45,17 @@ Regla de negocio (RN03): clientes y vendedores se registran solos; solo un admin
 | Usuario.registrarVendedor (autorregistro) | POST | /api/usuarios/vendedores | 201 Created + Location | Hecho |
 | autenticarUsuario | POST | /api/auth/login | 200 OK | Hecho |
 | administrador.crearUsuarioConRol (vendedor o administrador) | POST | /api/admin/usuarios | 201 Created + Location | Hecho (requiere JWT de administrador) |
+
+# Mapeo Dominio -> API - Pago
+
+| Operacion del dominio | Método HTTP | Endpoint |
+|---|---|---|
+| Procesar pago de pedido | POST | /api/pedidos/{pedidoId}/pagos |
+| Consultar estado de pago | GET | /api/pagos/{id} |
+| Reintentar pago | POST | /api/pagos/{id}/reintentos |
+| Listar historial de pagos | GET | /api/pagos |
+
+El monto se toma del total del pedido. Un pago rechazado por la pasarela (por ejemplo, por fondos insuficientes) también responde 201: el pago queda registrado con su estado y su motivo.
 
 ## Errores
 
