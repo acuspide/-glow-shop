@@ -4,6 +4,7 @@ import com.example.ecommerce.domain.exception.*;
 import com.example.ecommerce.domain.valueobject.EstadoPago;
 import com.example.ecommerce.domain.valueobject.MedioPago;
 import com.example.ecommerce.domain.valueobject.Precio;
+import java.time.LocalDateTime;
 
 import java.util.Objects;
 
@@ -12,16 +13,18 @@ public class Pago {
     private final String pedidoId;
     private final Precio monto;
     private final MedioPago medioPago;
+    private final LocalDateTime fechaPago;
     private EstadoPago estado;
     private String transaccionId;   // lo entrega el sistema de pago (RN56)
     private String motivoRechazo;   // solo si el pago fue rechazado
 
-    private Pago(String id, String pedidoId, Precio monto, MedioPago medioPago,
+    private Pago(String id, String pedidoId, Precio monto, MedioPago medioPago, LocalDateTime fechaPago,
                  EstadoPago estado, String transaccionId, String motivoRechazo) {
         this.id = id;
         this.pedidoId = pedidoId;
         this.monto = monto;
         this.medioPago = medioPago;
+        this.fechaPago = fechaPago;
         this.estado = estado;
         this.transaccionId = transaccionId;
         this.motivoRechazo = motivoRechazo;
@@ -30,12 +33,14 @@ public class Pago {
     public static Pago crear(String id, String pedidoId, Precio monto, MedioPago medioPago) {
         validarMonto(monto);
         validarMedioPago(medioPago);
-        return new Pago(id, pedidoId, monto, medioPago, EstadoPago.PENDIENTE, null, null);
+        // Un pago NUEVO: fecha de ahora y siempre PENDIENTE.
+        return new Pago(id, pedidoId, monto, medioPago, LocalDateTime.now(), EstadoPago.PENDIENTE, null, null);
     }
 
     public static Pago reconstruir(String id, String pedidoId, Precio monto, MedioPago medioPago,
-                                   EstadoPago estado, String transaccionId, String motivoRechazo) {
-        return new Pago(id, pedidoId, monto, medioPago, estado, transaccionId, motivoRechazo);
+                                   LocalDateTime fechaPago, EstadoPago estado,
+                                   String transaccionId, String motivoRechazo) {
+        return new Pago(id, pedidoId, monto, medioPago, fechaPago, estado, transaccionId, motivoRechazo);
     }
 
     private static void validarMonto(Precio monto) {
@@ -101,6 +106,7 @@ public class Pago {
     public String getPedidoId() { return pedidoId; }
     public Precio getMonto() { return monto; }
     public MedioPago getMedioPago() { return medioPago; }
+    public LocalDateTime getFechaPago() { return fechaPago; }
     public EstadoPago getEstado() { return estado; }
     public String getTransaccionId() { return transaccionId; }
     public String getMotivoRechazo() { return motivoRechazo; }

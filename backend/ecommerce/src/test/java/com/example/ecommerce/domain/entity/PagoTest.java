@@ -5,7 +5,7 @@ import com.example.ecommerce.domain.valueobject.EstadoPago;
 import com.example.ecommerce.domain.valueobject.MedioPago;
 import com.example.ecommerce.domain.valueobject.Precio;
 import org.junit.jupiter.api.Test;
-
+import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -163,5 +163,19 @@ public class PagoTest {
 
         // Act y Assert
         assertThrows(PagoNoReintentableException.class, pago::verificarQueSePuedeReintentar);
+    }
+    @Test
+    void unPagoNuevoDebeGuardarLaFechaEnQueSeCreo() {
+
+        // Arrange
+        LocalDateTime antes = LocalDateTime.now();
+
+        // Act
+        Pago pago = crearPago();
+
+        // Assert
+        assertNotNull(pago.getFechaPago());
+        assertFalse(pago.getFechaPago().isBefore(antes));
+        assertFalse(pago.getFechaPago().isAfter(LocalDateTime.now()));
     }
 }

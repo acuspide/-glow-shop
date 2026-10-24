@@ -14,6 +14,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.ecommerce.application.usecase.ConsultarEstadoDePagoUseCase;
 import java.net.URI;
 import java.util.UUID;
+import com.example.ecommerce.application.usecase.ListarHistorialDePagosUseCase;
+import java.util.List;
 import com.example.ecommerce.application.dto.request.ReintentarPagoRequest;
 import com.example.ecommerce.application.usecase.ReintentarPagoUseCase;
 /**
@@ -27,6 +29,7 @@ public class PagoController {
 
     private final ProcesarPagoDePedidoUseCase procesarPagoDePedidoUseCase;
     private final ConsultarEstadoDePagoUseCase consultarEstadoDePagoUseCase;
+    private final ListarHistorialDePagosUseCase listarHistorialDePagosUseCase;
     private final PagoMapper mapper;
     private final TokenService tokenService;
     private final ReintentarPagoUseCase reintentarPagoUseCase;
@@ -52,6 +55,18 @@ public class PagoController {
 
         return ResponseEntity.created(location).body(mapper.toResponse(pago)); // 201
     }
+    @GetMapping("/pagos")
+    public ResponseEntity<List<PagoResponse>> listarHistorial(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion) {
+
+        List<PagoResponse> historial = listarHistorialDePagosUseCase.ejecutar(clienteDelToken(autorizacion))
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(historial); // 200, lista vacía si no hay pagos
+    }
+
     @GetMapping("/pagos/{id}")
     public ResponseEntity<PagoResponse> consultarEstado(
             @RequestHeader(value = "Authorization", required = false) String autorizacion,

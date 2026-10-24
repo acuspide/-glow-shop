@@ -13,9 +13,11 @@ public class PagoMapper {
                 pago.getPedidoId(),
                 pago.getMonto().valor(),
                 pago.getMedioPago().name(),
+                pago.getFechaPago(),
                 pago.getEstado().name(),
                 pago.getTransaccionId(),
                 pago.getMotivoRechazo()
         );
     }
+
 }

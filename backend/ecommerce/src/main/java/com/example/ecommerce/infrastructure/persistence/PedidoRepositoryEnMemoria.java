@@ -28,4 +28,11 @@ public class PedidoRepositoryEnMemoria implements PedidoRepository {
     public List<Pedido> listarTodos() {
         return List.copyOf(pedidos.values());
     }
+    @Override
+    public List<Pedido> obtenerPorClienteId(String clienteId) {
+        return pedidos.values().stream()
+                .filter(p -> p.getClienteId().equals(clienteId))
+                .toList();
+    }
+
 }

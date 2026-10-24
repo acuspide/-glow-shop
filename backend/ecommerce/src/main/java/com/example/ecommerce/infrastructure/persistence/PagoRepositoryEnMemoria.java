@@ -5,6 +5,7 @@ import com.example.ecommerce.domain.repository.PagoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -21,5 +22,12 @@ public class PagoRepositoryEnMemoria implements PagoRepository {
     @Override
     public void guardar(Pago pago) {
         pagos.put(pago.getId(), pago);
+    }
+
+    @Override
+    public List<Pago> obtenerPorPedidoId(String pedidoId) {
+        return pagos.values().stream()
+                .filter(p -> p.getPedidoId().equals(pedidoId))
+                .toList();
     }
 }

@@ -11,5 +11,6 @@ public interface PedidoRepository {
     void guardar(Pedido pedido);
 
     List<Pedido> listarTodos();
+    List<Pedido> obtenerPorClienteId(String clienteId);
 }
 
