@@ -2,11 +2,13 @@ package com.example.ecommerce.infrastructure.config;
 
 import com.example.ecommerce.domain.repository.CalificacionRepository;
 import com.example.ecommerce.domain.repository.HistorialDeCompras;
+import com.example.ecommerce.domain.repository.MarcaRepository;
 import com.example.ecommerce.domain.repository.PedidoRepository;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.service.VerificadorDeArticuloSinPedidosActivos;
 import com.example.ecommerce.domain.service.VerificadorDeCalificacion;
 import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
+import com.example.ecommerce.domain.service.VerificadorDeMarcaUnica;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
@@ -35,5 +37,9 @@ public class DomainServiceConfig {
     @Bean
     public VerificadorDeDisponibilidadDelCarrito verificadorDeDisponibilidadDelCarrito(ArticuloRepository articuloRepository) {
         return new VerificadorDeDisponibilidadDelCarrito(articuloRepository);
+    }
+    @Bean
+    public VerificadorDeMarcaUnica verificadorDeMarcaUnica(MarcaRepository marcaRepository) {
+        return new VerificadorDeMarcaUnica(marcaRepository);
     }
 }

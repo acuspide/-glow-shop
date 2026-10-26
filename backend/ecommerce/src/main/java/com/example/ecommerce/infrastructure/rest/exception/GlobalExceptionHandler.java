@@ -9,6 +9,7 @@ import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.exception.TokenInvalidoException;
 import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.domain.exception.MarcaDuplicadaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,6 +56,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CorreoElectronicoDuplicadoException.class)
     public ResponseEntity<Map<String, Object>> manejarCorreoDuplicado(
             CorreoElectronicoDuplicadoException ex) {
+
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(MarcaDuplicadaException.class)
+    public ResponseEntity<Map<String, Object>> manejarMarcaDuplicada(
+            MarcaDuplicadaException ex) {
 
         return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
     }
