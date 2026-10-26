@@ -1,18 +1,10 @@
 package com.example.ecommerce.infrastructure.config;
 
-import com.example.ecommerce.domain.repository.CalificacionRepository;
-import com.example.ecommerce.domain.repository.HistorialDeCompras;
-import com.example.ecommerce.domain.repository.MarcaRepository;
-import com.example.ecommerce.domain.repository.PedidoRepository;
-import com.example.ecommerce.domain.repository.UsuarioRepository;
-import com.example.ecommerce.domain.service.VerificadorDeArticuloSinPedidosActivos;
-import com.example.ecommerce.domain.service.VerificadorDeCalificacion;
-import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
-import com.example.ecommerce.domain.service.VerificadorDeMarcaUnica;
+import com.example.ecommerce.domain.repository.*;
+import com.example.ecommerce.domain.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import com.example.ecommerce.domain.repository.ArticuloRepository;
-import com.example.ecommerce.domain.service.VerificadorDeDisponibilidadDelCarrito;
+
 /**
  * Los servicios de dominio no llevan anotaciones de Spring; aquí se le indica a Spring cómo crearlos.
  */
@@ -41,5 +33,9 @@ public class DomainServiceConfig {
     @Bean
     public VerificadorDeMarcaUnica verificadorDeMarcaUnica(MarcaRepository marcaRepository) {
         return new VerificadorDeMarcaUnica(marcaRepository);
+    }
+    @Bean
+    public VerificadorDeCategoriaUnica verificadorDeCategoriaUnica(CategoriaRepository categoriaRepository) {
+        return new VerificadorDeCategoriaUnica(categoriaRepository);
     }
 }

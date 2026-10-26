@@ -12,7 +12,7 @@ public class Categoria {
     private Categoria(String id, String nombre) {
         validarNombre(nombre);
         this.id = id;
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
     }
     public static Categoria crear(String id, String nombre) {
         return new Categoria(id, nombre);
