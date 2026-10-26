@@ -1,20 +1,10 @@
 package com.example.ecommerce.infrastructure.rest.exception;
 
-import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
-import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
-import com.example.ecommerce.domain.exception.CalificacionAjenaException;
-import com.example.ecommerce.domain.exception.CorreoElectronicoDuplicadoException;
-import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
-import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
-import com.example.ecommerce.domain.exception.TokenInvalidoException;
-import com.example.ecommerce.domain.exception.UsuarioInactivoException;
-import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.domain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
-import com.example.ecommerce.domain.exception.PedidoAjenoException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -55,6 +45,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CorreoElectronicoDuplicadoException.class)
     public ResponseEntity<Map<String, Object>> manejarCorreoDuplicado(
             CorreoElectronicoDuplicadoException ex) {
+
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(MarcaDuplicadaException.class)
+    public ResponseEntity<Map<String, Object>> manejarMarcaDuplicada(
+            MarcaDuplicadaException ex) {
+
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
+    }
+    @ExceptionHandler(CategoriaDuplicadaException.class)
+    public ResponseEntity<Map<String, Object>> manejarCategoriaDuplicada(
+            CategoriaDuplicadaException ex) {
 
         return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
     }

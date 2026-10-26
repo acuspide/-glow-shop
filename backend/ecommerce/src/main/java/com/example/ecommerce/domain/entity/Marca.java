@@ -11,7 +11,7 @@ public class Marca {
     private Marca(String id, String nombre) {
         validarNombre(nombre);
         this.id = id;
-        this.nombre = nombre;
+        this.nombre = nombre.trim();
     }
     public static Marca crear(String id, String nombre) {
         return new Marca(id, nombre);
