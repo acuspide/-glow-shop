@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.NoSuchElementException;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +50,7 @@ class ValidarDisponibilidadDelCarritoUseCaseTest {
         when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
         // Act y Assert
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(RecursoNoEncontradoException.class, () -> {
             useCase.ejecutar("u-100");
         });
 

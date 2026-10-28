@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.domain.entity.Calificacion;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
@@ -24,7 +26,7 @@ public class ActualizarCalificacionUseCase {
     public Calificacion ejecutar(String calificacionId, String clienteId, int estrellas, String comentario) {
         Usuario cliente = usuarioRepository.obtenerPorId(clienteId)
                 .orElseThrow(AccionSoloParaClienteException::new);
-        Calificacion calificacion = calificacionRepository.obtenerPorId(calificacionId).orElseThrow(); // -> 404
+        Calificacion calificacion = calificacionRepository.obtenerPorId(calificacionId).orElseThrow(() -> new RecursoNoEncontradoException("la calificación", calificacionId));
 
         calificacion.actualizarPor(cliente, new Puntuacion(estrellas), comentario);
         calificacionRepository.guardar(calificacion);

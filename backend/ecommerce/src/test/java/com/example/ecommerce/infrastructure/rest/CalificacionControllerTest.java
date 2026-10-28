@@ -1,5 +1,7 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.response.CalificacionResponse;
@@ -203,7 +205,7 @@ class CalificacionControllerTest {
     void actualizarUnaCalificacionQueNoExisteDebeResponder404() throws Exception {
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
         when(actualizarCalificacionUseCase.ejecutar("no-existe", "u-1", 3, "Regular"))
-                .thenThrow(new java.util.NoSuchElementException());
+                .thenThrow(new RecursoNoEncontradoException("el recurso", "no-existe"));
 
         mockMvc.perform(put("/api/calificaciones/no-existe")
                         .header("Authorization", "Bearer token-ana")

@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,7 +71,7 @@ class QuitarArticuloDelCarritoUseCaseTest {
         when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
         // Act y Assert
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(RecursoNoEncontradoException.class, () -> {
             useCase.ejecutar("u-100", "a-1");
         });
 

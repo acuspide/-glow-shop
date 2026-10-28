@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.NoSuchElementException;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -102,7 +102,7 @@ class PedidoControllerTest {
 
         // Arrange
         when(confirmarPedidoUseCase.ejecutar(anyString(), anyString()))
-                .thenThrow(new NoSuchElementException());
+                .thenThrow(new RecursoNoEncontradoException("el recurso", "no-existe"));
 
         // Act y Assert
         mockMvc.perform(post("/api/pedidos").header("Authorization", "Bearer token-ana"))

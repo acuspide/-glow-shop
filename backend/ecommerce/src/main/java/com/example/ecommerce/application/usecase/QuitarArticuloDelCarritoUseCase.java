@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.domain.entity.Carrito;
 import com.example.ecommerce.domain.repository.CarritoRepository;
 
@@ -15,7 +17,7 @@ public class QuitarArticuloDelCarritoUseCase {
 
     @Transactional
     public void ejecutar(String clienteId, String articuloId) {
-        Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId).orElseThrow();
+        Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId).orElseThrow(() -> new RecursoNoEncontradoException("el carrito del cliente", clienteId));
         carrito.quitarArticulo(articuloId);
         carritoRepository.guardar(carrito);
     }

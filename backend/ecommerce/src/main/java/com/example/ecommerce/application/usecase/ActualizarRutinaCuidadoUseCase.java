@@ -1,4 +1,7 @@
 package com.example.ecommerce.application.usecase;
+
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.RutinaCuidado;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
@@ -23,14 +26,14 @@ public class ActualizarRutinaCuidadoUseCase {
             List<String> articulosIds) {
 
         rutinaRepository.obtenerPorId(id)
-                .orElseThrow();
+                .orElseThrow(() -> new RecursoNoEncontradoException("la rutina", id));
 
         List<Articulo> articulos = new ArrayList<>();
 
         for (String articuloId : articulosIds) {
             Articulo articulo = articuloRepository
                     .obtenerPorId(articuloId)
-                    .orElseThrow();
+                    .orElseThrow(() -> new ArticuloNoEncontradoException(articuloId));
 
             articulos.add(articulo);
         }

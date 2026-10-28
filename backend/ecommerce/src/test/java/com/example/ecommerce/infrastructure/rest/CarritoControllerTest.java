@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.NoSuchElementException;
+
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -134,7 +134,7 @@ class CarritoControllerTest {
                 """;
 
         when(agregarAlCarritoUseCase.ejecutar(anyString(), anyString(), anyString(), anyInt()))
-                .thenThrow(new NoSuchElementException());
+                .thenThrow(new RecursoNoEncontradoException("el recurso", "no-existe"));
 
         // Act y Assert
         mockMvc.perform(post("/api/carrito/items").header("Authorization", "Bearer token-ana")
@@ -164,7 +164,7 @@ class CarritoControllerTest {
 
         // Arrange
         when(verCarritoUseCase.ejecutar(anyString()))
-                .thenThrow(new NoSuchElementException());
+                .thenThrow(new RecursoNoEncontradoException("el recurso", "no-existe"));
 
         // Act y Assert
         mockMvc.perform(get("/api/carrito").header("Authorization", "Bearer token-ana"))
@@ -185,7 +185,7 @@ class CarritoControllerTest {
     void deberiaRetornar404AlQuitarCuandoElClienteNoTieneCarrito() throws Exception {
 
         // Arrange
-        doThrow(new NoSuchElementException())
+        doThrow(new RecursoNoEncontradoException("el recurso", "no-existe"))
                 .when(quitarArticuloDelCarritoUseCase).ejecutar(anyString(), anyString());
 
         // Act y Assert
@@ -273,7 +273,7 @@ class CarritoControllerTest {
                 }
                 """;
 
-        doThrow(new NoSuchElementException())
+        doThrow(new RecursoNoEncontradoException("el recurso", "no-existe"))
                 .when(modificarCantidadEnCarritoUseCase).ejecutar(anyString(), anyString(), anyInt());
 
         // Act y Assert
@@ -297,7 +297,7 @@ class CarritoControllerTest {
     void deberiaRetornar404AlVaciarCuandoElClienteNoTieneCarrito() throws Exception {
 
         // Arrange
-        doThrow(new NoSuchElementException())
+        doThrow(new RecursoNoEncontradoException("el recurso", "no-existe"))
                 .when(vaciarCarritoUseCase).ejecutar(anyString());
 
         // Act y Assert
@@ -342,7 +342,7 @@ class CarritoControllerTest {
     void deberiaRetornar404AlValidarCuandoElClienteNoTieneCarrito() throws Exception {
 
         // Arrange
-        doThrow(new NoSuchElementException())
+        doThrow(new RecursoNoEncontradoException("el recurso", "no-existe"))
                 .when(validarDisponibilidadDelCarritoUseCase).ejecutar(anyString());
 
         // Act y Assert

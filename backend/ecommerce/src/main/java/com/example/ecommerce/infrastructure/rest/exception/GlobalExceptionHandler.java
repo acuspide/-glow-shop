@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(ArticuloNoEncontradoException.class)
-    public ResponseEntity<Map<String, Object>> manejarArticuloNoEncontrado(
-            ArticuloNoEncontradoException ex) {
+    // Cualquier búsqueda por id que no encuentra nada (artículo, carrito, pedido, usuario...).
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> manejarRecursoNoEncontrado(
+            RecursoNoEncontradoException ex) {
 
         return construirRespuesta(
                 HttpStatus.NOT_FOUND,
@@ -29,16 +29,6 @@ public class GlobalExceptionHandler {
         return construirRespuesta(
                 HttpStatus.BAD_REQUEST,
                 ex.getMessage()
-        );
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Map<String, Object>> manejarNoEncontrado(
-            NoSuchElementException ex) {
-
-        return construirRespuesta(
-                HttpStatus.NOT_FOUND,
-                "El recurso solicitado no existe"
         );
     }
 

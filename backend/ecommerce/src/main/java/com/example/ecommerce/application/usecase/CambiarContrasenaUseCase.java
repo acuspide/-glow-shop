@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.application.PasswordHasher;
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
@@ -22,7 +24,7 @@ public class CambiarContrasenaUseCase {
     @Transactional
     public void ejecutar(String usuarioId, String contrasenaActual, String nuevaContrasenaPlano) {
         ContrasenaPlana nuevaContrasena = new ContrasenaPlana(nuevaContrasenaPlano); // valida que sea segura
-        Usuario usuario = repository.obtenerPorId(usuarioId).orElseThrow();         // no existe -> 404
+        Usuario usuario = repository.obtenerPorId(usuarioId).orElseThrow(() -> new RecursoNoEncontradoException("el usuario", usuarioId));
 
         usuario.cambiarContrasena(contrasenaActual, passwordHasher.hash(nuevaContrasena.valor()),
                 passwordHasher::verificar);

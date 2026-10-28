@@ -1,4 +1,7 @@
 package com.example.ecommerce.application.usecase;
+
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.RutinaCuidado;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
@@ -18,11 +21,11 @@ public class AgregarArticuloARutinaUseCase {
 
         RutinaCuidado rutina = rutinaRepository
                 .obtenerPorId(rutinaId)
-                .orElseThrow();
+                .orElseThrow(() -> new RecursoNoEncontradoException("la rutina", rutinaId));
 
         Articulo articulo = articuloRepository
                 .obtenerPorId(articuloId)
-                .orElseThrow();
+                .orElseThrow(() -> new ArticuloNoEncontradoException(articuloId));
 
         RutinaCuidado rutinaActualizada = rutina.agregarArticulo(articulo);
 

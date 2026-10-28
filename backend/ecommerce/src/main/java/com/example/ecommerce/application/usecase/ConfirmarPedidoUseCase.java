@@ -1,5 +1,8 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
+
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.Carrito;
 import com.example.ecommerce.domain.entity.Pedido;
@@ -27,7 +30,7 @@ public class ConfirmarPedidoUseCase {
 
     @Transactional
     public Pedido ejecutar(String pedidoId, String clienteId) {
-        Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId).orElseThrow();
+        Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId).orElseThrow(() -> new RecursoNoEncontradoException("el carrito del cliente", clienteId));
 
         // Se valida TODO el carrito antes de modificar cualquier cosa (CU-57).
         verificador.verificarQuePuedePagarse(carrito);
@@ -53,7 +56,7 @@ public class ConfirmarPedidoUseCase {
 
     private void descontarInventario(Carrito carrito) {
         for (ItemCarrito item : carrito.getItems()) {
-            Articulo articulo = articuloRepository.obtenerPorId(item.getArticuloId()).orElseThrow();
+            Articulo articulo = articuloRepository.obtenerPorId(item.getArticuloId()).orElseThrow(() -> new ArticuloNoEncontradoException(item.getArticuloId()));
             articulo.disminuirInventario(item.getCantidad());
             articuloRepository.guardar(articulo);
         }
