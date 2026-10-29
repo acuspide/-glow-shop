@@ -8,9 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.stereotype.Repository;
 
-@Repository
+// Se usa en las pruebas unitarias. En la aplicación corre el adaptador JPA (persistence/jpa).
 public class UsuarioRepositoryEnMemoria implements UsuarioRepository {
 
     private final Map<String, Usuario> usuarios = new HashMap<>();
