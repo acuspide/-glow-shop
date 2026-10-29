@@ -29,7 +29,7 @@ public class ListarArticulosUseCaseTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
     }
 
@@ -153,7 +153,7 @@ public class ListarArticulosUseCaseTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(5),
                 new FechaVencimiento(LocalDate.of(2025, 12, 31)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         disponible.publicar();

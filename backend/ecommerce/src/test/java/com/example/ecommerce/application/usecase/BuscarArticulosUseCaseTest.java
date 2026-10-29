@@ -38,7 +38,7 @@ public class BuscarArticulosUseCaseTest {
                 List.of(tipoPiel),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2028, 12, 31)),
-                Tienda.crear(tiendaId, tienda)
+                Tienda.reconstruir(tiendaId, tienda, "", "v-1", EstadoTienda.ACTIVA)
         );
     }
 
@@ -251,7 +251,7 @@ public class BuscarArticulosUseCaseTest {
                 List.of(TipoPiel.GRASA),
                 Inventario.crear(8),
                 new FechaVencimiento(LocalDate.of(2025, 12, 31)),
-                Tienda.crear("t-2", "Tienda Glam")
+                Tienda.reconstruir("t-2", "Tienda Glam", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         // Guardamos el artículo vencido sin intentar publicarlo.

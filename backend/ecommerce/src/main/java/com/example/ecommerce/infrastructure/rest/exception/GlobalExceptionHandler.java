@@ -80,6 +80,18 @@ public class GlobalExceptionHandler {
         return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
     }
 
+    @ExceptionHandler(AccionSoloParaVendedorException.class)
+    public ResponseEntity<Map<String, Object>> manejarAccionSoloParaVendedor(
+            AccionSoloParaVendedorException ex) {
+
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
+    @ExceptionHandler(TiendaAjenaException.class)
+    public ResponseEntity<Map<String, Object>> manejarTiendaAjena(TiendaAjenaException ex) {
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
     @ExceptionHandler(CalificacionAjenaException.class)
     public ResponseEntity<Map<String, Object>> manejarCalificacionAjena(CalificacionAjenaException ex) {
         return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403

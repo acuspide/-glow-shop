@@ -8,6 +8,7 @@ import com.example.ecommerce.domain.entity.Categoria;
 import com.example.ecommerce.domain.entity.Inventario;
 import com.example.ecommerce.domain.entity.Marca;
 import com.example.ecommerce.domain.entity.Tienda;
+import com.example.ecommerce.domain.valueobject.EstadoTienda;
 import com.example.ecommerce.domain.valueobject.FechaVencimiento;
 import com.example.ecommerce.domain.valueobject.NombreArticulo;
 import com.example.ecommerce.domain.valueobject.Precio;
@@ -27,7 +28,8 @@ public class PublicarArticuloMapper {
                 request.tiposPiel(),
                 Inventario.crear(request.cantidadDisponible()),
                 new FechaVencimiento(request.fechaVencimiento()),
-                Tienda.crear(request.tiendaId(), request.tiendaNombre())
+                // TEMPORAL: en el commit de publicar artículo la tienda se carga de su repositorio y se valida.
+                Tienda.reconstruir(request.tiendaId(), request.tiendaNombre(), "", "", EstadoTienda.ACTIVA)
         );
     }
 

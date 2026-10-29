@@ -3,6 +3,7 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.domain.exception.CreacionUsuarioNoPermitidaException;
 import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.exception.AccionSoloParaVendedorException;
 import com.example.ecommerce.domain.exception.AutodesactivacionNoPermitidaException;
 import com.example.ecommerce.domain.exception.UsuarioYaDesactivadoException;
 import com.example.ecommerce.domain.exception.ContrasenaActualIncorrectaException;
@@ -339,5 +340,21 @@ public class UsuarioTest {
         // Assert
         assertEquals(DatosPrueba.TELEFONO, usuario.getTelefono());
         assertEquals(DatosPrueba.FECHA, usuario.getFechaNacimiento());
+    }
+
+    @Test
+    void unVendedorActivoPasaLaVerificacionDeVendedor() {
+        Usuario vera = Usuario.registrarVendedor("u-2", "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+
+        assertDoesNotThrow(vera::verificarQueEsVendedorActivo);
+    }
+
+    @Test
+    void unClienteOUnVendedorDesactivadoNoPasanLaVerificacionDeVendedor() {
+        Usuario ana = Usuario.registrarCliente("u-1", "Ana", new Email("ana@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA);
+        Usuario inactivo = Usuario.reconstruir("u-3", "Vale", new Email("vale@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA, RolUsuario.VENDEDOR, false);
+
+        assertThrows(AccionSoloParaVendedorException.class, ana::verificarQueEsVendedorActivo);
+        assertThrows(AccionSoloParaVendedorException.class, inactivo::verificarQueEsVendedorActivo);
     }
 }

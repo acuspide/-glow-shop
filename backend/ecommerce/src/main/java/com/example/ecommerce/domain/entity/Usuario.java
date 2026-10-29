@@ -2,6 +2,7 @@ package com.example.ecommerce.domain.entity;
 
 import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
 import com.example.ecommerce.domain.exception.AccionSoloParaClienteException;
+import com.example.ecommerce.domain.exception.AccionSoloParaVendedorException;
 import com.example.ecommerce.domain.exception.AutodesactivacionNoPermitidaException;
 import com.example.ecommerce.domain.exception.ContrasenaActualIncorrectaException;
 import com.example.ecommerce.domain.exception.ContrasenaRequeridaException;
@@ -159,6 +160,13 @@ public class Usuario {
     public void verificarQueEsClienteActivo() {
         if (rol != RolUsuario.CLIENTE || !activo) {
             throw new AccionSoloParaClienteException();
+        }
+    }
+
+    // Para las acciones propias del vendedor (registrar su tienda, publicar artículos...).
+    public void verificarQueEsVendedorActivo() {
+        if (rol != RolUsuario.VENDEDOR || !activo) {
+            throw new AccionSoloParaVendedorException();
         }
     }
 
