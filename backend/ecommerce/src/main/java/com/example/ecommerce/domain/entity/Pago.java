@@ -67,6 +67,11 @@ public class Pago {
         }
     }
 
+    /** Al reintentar, si el cliente no elige otro medio de pago se usa el mismo del intento rechazado. */
+    public MedioPago medioParaReintentar(MedioPago medioElegido) {
+        return medioElegido != null ? medioElegido : this.medioPago;
+    }
+
     public void aprobar(String transaccionId) {
         validarEstadoActual(EstadoPago.PENDIENTE, EstadoPago.APROBADO);
         validarTransaccion(transaccionId);

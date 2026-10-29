@@ -32,8 +32,7 @@ public class ReintentarPagoUseCase {
         pedido.verificarQuePerteneceA(clienteId);
         pagoRechazado.verificarQueSePuedeReintentar();
 
-        // Si no se elige otro medio, se reintenta con el mismo.
-        MedioPago medio = (medioPago != null) ? medioPago : pagoRechazado.getMedioPago();
+        MedioPago medio = pagoRechazado.medioParaReintentar(medioPago);
 
         return procesarPagoDePedidoUseCase.ejecutar(nuevoPagoId, pedido.getId(), clienteId, medio);
     }

@@ -216,4 +216,24 @@ public class PagoTest {
         // Act y Assert
         assertThrows(MotivoRechazoRequeridoException.class, () -> pago.registrarResultado(false, "tx-2", " "));
     }
+
+    @Test
+    void medioParaReintentarDebeUsarElMedioElegido() {
+
+        // Arrange
+        Pago pago = crearPago();                                         // TARJETA_CREDITO
+
+        // Act y Assert
+        assertEquals(MedioPago.NEQUI, pago.medioParaReintentar(MedioPago.NEQUI));
+    }
+
+    @Test
+    void medioParaReintentarSinElegirDebeUsarElMismoMedio() {
+
+        // Arrange
+        Pago pago = crearPago();
+
+        // Act y Assert
+        assertEquals(MedioPago.TARJETA_CREDITO, pago.medioParaReintentar(null));
+    }
 }
