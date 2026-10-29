@@ -15,6 +15,10 @@ import com.example.ecommerce.domain.valueobject.Precio;
 import com.example.ecommerce.domain.valueobject.TipoPiel;
 import com.example.ecommerce.domain.valueobject.Tono;
 import com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria;
+import com.example.ecommerce.infrastructure.persistence.CategoriaRepositoryEnMemoria;
+import com.example.ecommerce.infrastructure.persistence.MarcaRepositoryEnMemoria;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+import com.example.ecommerce.domain.exception.TiendaAjenaException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -24,6 +28,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ActualizarArticuloUseCaseTest {
+    private ActualizarArticuloUseCase crearUseCase(ArticuloRepository repository) {
+        CategoriaRepositoryEnMemoria categorias = new CategoriaRepositoryEnMemoria();
+        categorias.guardar(Categoria.crear("cat-2", "Cuidado facial"));
+        MarcaRepositoryEnMemoria marcas = new MarcaRepositoryEnMemoria();
+        marcas.guardar(Marca.crear("m-2", "Nueva marca"));
+        return new ActualizarArticuloUseCase(repository, categorias, marcas);
+    }
+
     private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
@@ -43,7 +55,7 @@ public class ActualizarArticuloUseCaseTest {
     void debeActualizarDatosDeArticuloExistente() {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
         ActualizarArticuloUseCase useCase =
-                new ActualizarArticuloUseCase(repository);
+                crearUseCase(repository);
 
         Articulo articulo = crearArticulo("a-1", 10);
         articulo.publicar();
@@ -51,10 +63,11 @@ public class ActualizarArticuloUseCaseTest {
 
         Articulo actualizado = useCase.ejecutar(
                 "a-1",
+                "v-1",
                 new NombreArticulo("Crema hidratante"),
                 new Precio(new BigDecimal("45000")),
-                Categoria.crear("cat-2", "Cuidado facial"),
-                Marca.crear("m-2", "Nueva marca"),
+                "cat-2",
+                "m-2",
                 Tono.CLARO,
                 List.of(TipoPiel.NORMAL),
                 new FechaVencimiento(LocalDate.of(2031, 12, 31))
@@ -89,16 +102,17 @@ public class ActualizarArticuloUseCaseTest {
     void debeLanzarExcepcionCuandoArticuloNoExiste() {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
         ActualizarArticuloUseCase useCase =
-                new ActualizarArticuloUseCase(repository);
+                crearUseCase(repository);
 
         assertThrows(
                 ArticuloNoEncontradoException.class,
                 () -> useCase.ejecutar(
                         "a-99",
+                        "v-1",
                         new NombreArticulo("Crema hidratante"),
                         new Precio(new BigDecimal("45000")),
-                        Categoria.crear("cat-2", "Cuidado facial"),
-                        Marca.crear("m-2", "Nueva marca"),
+                        "cat-2",
+                        "m-2",
                         Tono.CLARO,
                         List.of(TipoPiel.NORMAL),
                         new FechaVencimiento(LocalDate.of(2031, 12, 31))
@@ -110,7 +124,7 @@ public class ActualizarArticuloUseCaseTest {
     void noDebeActualizarSiLaFechaEstaVencida() {
         ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
         ActualizarArticuloUseCase useCase =
-                new ActualizarArticuloUseCase(repository);
+                crearUseCase(repository);
 
         Articulo articulo = crearArticulo("a-1", 10);
         repository.guardar(articulo);
@@ -119,10 +133,11 @@ public class ActualizarArticuloUseCaseTest {
                 ArticuloVencidoException.class,
                 () -> useCase.ejecutar(
                         "a-1",
+                        "v-1",
                         new NombreArticulo("Crema hidratante"),
                         new Precio(new BigDecimal("45000")),
-                        Categoria.crear("cat-2", "Cuidado facial"),
-                        Marca.crear("m-2", "Nueva marca"),
+                        "cat-2",
+                        "m-2",
                         Tono.CLARO,
                         List.of(TipoPiel.NORMAL),
                         new FechaVencimiento(LocalDate.now().minusDays(1))
@@ -131,5 +146,36 @@ public class ActualizarArticuloUseCaseTest {
 
         assertEquals("Shampoo", articulo.getNombre().valor());
         assertEquals(10, articulo.getCantidadDisponible());
+    }
+
+    @Test
+    void otroVendedorNoPuedeActualizarElArticulo() {
+        ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
+        ActualizarArticuloUseCase useCase = crearUseCase(repository);
+        Articulo articulo = crearArticulo("a-1", 10);
+        repository.guardar(articulo);
+
+        assertThrows(TiendaAjenaException.class, () -> useCase.ejecutar(
+                "a-1", "v-otro",
+                new NombreArticulo("Crema hidratante"),
+                new Precio(new BigDecimal("45000")),
+                "cat-2", "m-2", Tono.CLARO, List.of(TipoPiel.NORMAL),
+                new FechaVencimiento(LocalDate.of(2031, 12, 31))));
+
+        assertEquals("Shampoo", articulo.getNombre().valor());
+    }
+
+    @Test
+    void debeFallarSiLaCategoriaNoExiste() {
+        ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
+        ActualizarArticuloUseCase useCase = crearUseCase(repository);
+        repository.guardar(crearArticulo("a-1", 10));
+
+        assertThrows(RecursoNoEncontradoException.class, () -> useCase.ejecutar(
+                "a-1", "v-1",
+                new NombreArticulo("Crema hidratante"),
+                new Precio(new BigDecimal("45000")),
+                "cat-99", "m-2", Tono.CLARO, List.of(TipoPiel.NORMAL),
+                new FechaVencimiento(LocalDate.of(2031, 12, 31))));
     }
 }
