@@ -2,13 +2,12 @@ package com.example.ecommerce.infrastructure.persistence;
 
 import com.example.ecommerce.domain.entity.Tienda;
 import com.example.ecommerce.domain.repository.TiendaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Repository
+// Se usa en las pruebas unitarias. En la aplicación corre el adaptador JPA (persistence/jpa).
 public class TiendaRepositoryEnMemoria implements TiendaRepository {
 
     private final Map<String, Tienda> tiendas = new ConcurrentHashMap<>();
