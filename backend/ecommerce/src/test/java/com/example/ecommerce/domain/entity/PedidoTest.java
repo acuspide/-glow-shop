@@ -483,4 +483,49 @@ public class PedidoTest {
         assertThrows(TiendaRequeridaException.class,
                 () -> Pedido.crear("p-1", "u-100", " ", List.of(detalle("a-1", 1, "10000"))));
     }
+
+    // Pedido confirmado y pagado (total 20000), listo para que el vendedor lo despache.
+    private Pedido pedidoPagado() {
+        Pedido pedido = crearPedido();
+        pedido.confirmar();
+        pedido.registrarPago(pagoAprobado("pa-50", "p-1", "20000"));
+        return pedido;
+    }
+
+    @Test
+    void elVendedorAvanzaElPedidoHastaEntregado() {
+        Pedido pedido = pedidoPagado();
+
+        pedido.avanzarA(EstadoPedido.EN_PREPARACION);
+        pedido.avanzarA(EstadoPedido.ENVIADO);
+        pedido.avanzarA(EstadoPedido.ENTREGADO);
+
+        assertEquals(EstadoPedido.ENTREGADO, pedido.getEstado());
+    }
+
+    @Test
+    void noSePuedePrepararUnPedidoSinPago() {
+        Pedido pedido = crearPedido();
+        pedido.confirmar();
+
+        assertThrows(ReglaDominioException.class, () -> pedido.avanzarA(EstadoPedido.EN_PREPARACION));
+        assertEquals(EstadoPedido.CONFIRMADO, pedido.getEstado());
+    }
+
+    @Test
+    void noSePuedeSaltarDePreparadoAEntregado() {
+        Pedido pedido = pedidoPagado();
+        pedido.avanzarA(EstadoPedido.EN_PREPARACION);
+
+        assertThrows(ReglaDominioException.class, () -> pedido.avanzarA(EstadoPedido.ENTREGADO));
+    }
+
+    @Test
+    void elVendedorNoPuedeElegirEstadosQueNoSonDeDespacho() {
+        Pedido pedido = pedidoPagado();
+
+        assertThrows(ReglaDominioException.class, () -> pedido.avanzarA(EstadoPedido.CANCELADO));
+        assertThrows(ReglaDominioException.class, () -> pedido.avanzarA(EstadoPedido.PENDIENTE));
+        assertEquals(EstadoPedido.CONFIRMADO, pedido.getEstado());
+    }
 }

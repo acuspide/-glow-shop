@@ -146,6 +146,20 @@ public class Pedido {
         transicionarA(EstadoPedido.CANCELADO);
     }
 
+    /**
+     * El vendedor despacha su pedido paso a paso: EN_PREPARACION -> ENVIADO -> ENTREGADO.
+     * Cada paso conserva sus propias reglas (para preparar, el pago debe estar registrado).
+     * Cualquier otro destino no lo puede elegir el vendedor.
+     */
+    public void avanzarA(EstadoPedido destino) {
+        switch (destino) {
+            case EN_PREPARACION -> iniciarPreparacion();
+            case ENVIADO -> enviar();
+            case ENTREGADO -> entregar();
+            default -> throw new TransicionEstadoInvalidaException(estado.name(), destino.name());
+        }
+    }
+
     private void transicionarA(EstadoPedido nuevoEstado) {
         if (!estado.puedeTransicionarA(nuevoEstado)) {
             throw new TransicionEstadoInvalidaException(estado.name(), nuevoEstado.name());
