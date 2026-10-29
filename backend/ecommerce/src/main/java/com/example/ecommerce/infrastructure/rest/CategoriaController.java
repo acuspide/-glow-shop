@@ -1,4 +1,5 @@
 package com.example.ecommerce.infrastructure.rest;
+import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.request.CrearCategoriaRequest;
 import com.example.ecommerce.application.dto.response.CrearCategoriaResponse;
 import com.example.ecommerce.application.usecase.CrearCategoriaUseCase;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -16,19 +18,24 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.UUID;
 
+// Solo el administrador crea; el administrador sale del token y el caso de uso verifica su rol.
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/categorias")
 public class CategoriaController {
     private final CrearCategoriaUseCase crearCategoriaUseCase;
     private final CategoriaMapper mapper;
+    private final TokenService tokenService;
 
     @PostMapping
     public ResponseEntity<CrearCategoriaResponse> crear(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
             @Valid @RequestBody CrearCategoriaRequest request) {
 
+        String administradorId = tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
         Categoria categoria = crearCategoriaUseCase.ejecutar(
                 UUID.randomUUID().toString(),
+                administradorId,
                 request.nombre()
         );
 
