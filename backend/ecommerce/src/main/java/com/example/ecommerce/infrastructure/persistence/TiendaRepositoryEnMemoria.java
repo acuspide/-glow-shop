@@ -27,4 +27,11 @@ public class TiendaRepositoryEnMemoria implements TiendaRepository {
         return tiendas.values().stream()
                 .anyMatch(tienda -> tienda.getVendedorId().equals(vendedorId));
     }
+
+    @Override
+    public Optional<Tienda> obtenerPorVendedorId(String vendedorId) {
+        return tiendas.values().stream()
+                .filter(tienda -> tienda.getVendedorId().equals(vendedorId))
+                .findFirst();
+    }
 }

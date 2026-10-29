@@ -29,4 +29,9 @@ public class TiendaRepositoryJpa implements TiendaRepository {
     public boolean existePorVendedorId(String vendedorId) {
         return dataRepository.existsByVendedorId(vendedorId);
     }
+
+    @Override
+    public Optional<Tienda> obtenerPorVendedorId(String vendedorId) {
+        return dataRepository.findByVendedorId(vendedorId).map(mapper::toDomain);
+    }
 }

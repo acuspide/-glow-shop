@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** El ciclo de compra completo guardado en H2: pedido confirmado, pago aprobado y pedido entregado. */
 @DataJpaTest
@@ -88,6 +89,8 @@ class PedidoYPagoRepositoryJpaTest {
         pagos.guardar(Pago.crear("pa-2", "p-1", new Precio(new BigDecimal("55000")), MedioPago.PSE));
 
         assertEquals(2, pedidos.obtenerPorClienteId("u-1").size());
+        assertEquals(3, pedidos.obtenerPorTiendaId("t-1").size());
+        assertTrue(pedidos.obtenerPorTiendaId("t-9").isEmpty());
         assertEquals(3, pedidos.listarTodos().size());
         assertEquals(2, pagos.obtenerPorPedidoId("p-1").size());
         assertEquals("Fondos insuficientes", pagos.obtenerPorId("pa-1").orElseThrow().getMotivoRechazo());

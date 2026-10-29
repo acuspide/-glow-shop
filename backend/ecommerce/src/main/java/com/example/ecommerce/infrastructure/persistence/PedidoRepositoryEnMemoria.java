@@ -34,4 +34,10 @@ public class PedidoRepositoryEnMemoria implements PedidoRepository {
                 .toList();
     }
 
+    @Override
+    public List<Pedido> obtenerPorTiendaId(String tiendaId) {
+        return pedidos.values().stream()
+                .filter(p -> p.getTiendaId().equals(tiendaId))
+                .toList();
+    }
 }

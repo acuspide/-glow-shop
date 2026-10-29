@@ -4,17 +4,21 @@ import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.request.ActualizarEstadoPedidoRequest;
 import com.example.ecommerce.application.dto.response.PedidoResponse;
 import com.example.ecommerce.application.usecase.ActualizarEstadoPedidoUseCase;
+import com.example.ecommerce.application.usecase.ListarPedidosDeMiTiendaUseCase;
 import com.example.ecommerce.domain.entity.Pedido;
 import com.example.ecommerce.infrastructure.rest.mapper.PedidoMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Pedidos que recibe la tienda del vendedor con sesión iniciada. El vendedor sale del token.
@@ -25,8 +29,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class VendedorPedidoController {
 
     private final ActualizarEstadoPedidoUseCase actualizarEstadoPedidoUseCase;
+    private final ListarPedidosDeMiTiendaUseCase listarPedidosDeMiTiendaUseCase;
     private final TokenService tokenService;
     private final PedidoMapper mapper;
+
+    // Listar pedidos de mi tienda: lo que el vendedor tiene que despachar.
+    @GetMapping
+    public ResponseEntity<List<PedidoResponse>> listarPedidosDeMiTienda(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion) {
+
+        List<PedidoResponse> pedidos = listarPedidosDeMiTiendaUseCase.ejecutar(vendedorDelToken(autorizacion))
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(pedidos);
+    }
 
     // Actualizar estado del pedido: EN_PREPARACION -> ENVIADO -> ENTREGADO.
     @PutMapping("/{id}/estado")

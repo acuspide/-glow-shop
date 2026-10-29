@@ -12,4 +12,6 @@ public interface TiendaRepository {
 
     /** RN08: un vendedor administra una sola tienda. */
     boolean existePorVendedorId(String vendedorId);
+
+    Optional<Tienda> obtenerPorVendedorId(String vendedorId);
 }

@@ -35,4 +35,9 @@ public class PedidoRepositoryJpa implements PedidoRepository {
     public List<Pedido> obtenerPorClienteId(String clienteId) {
         return dataRepository.findByClienteId(clienteId).stream().map(mapper::toDomain).toList();
     }
+
+    @Override
+    public List<Pedido> obtenerPorTiendaId(String tiendaId) {
+        return dataRepository.findByTiendaId(tiendaId).stream().map(mapper::toDomain).toList();
+    }
 }
