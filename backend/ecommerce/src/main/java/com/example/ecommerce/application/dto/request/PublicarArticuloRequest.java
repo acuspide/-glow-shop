@@ -22,14 +22,8 @@ public record PublicarArticuloRequest(
         @NotBlank(message = "El identificador de la categoría es obligatorio")
         String categoriaId,
 
-        @NotBlank(message = "El nombre de la categoría es obligatorio")
-        String categoriaNombre,
-
         @NotBlank(message = "El identificador de la marca es obligatorio")
         String marcaId,
-
-        @NotBlank(message = "El nombre de la marca es obligatorio")
-        String marcaNombre,
 
         @NotNull(message = "El tono es obligatorio")
         Tono tono,
@@ -46,9 +40,6 @@ public record PublicarArticuloRequest(
         LocalDate fechaVencimiento,
 
         @NotBlank(message = "El identificador de la tienda es obligatorio")
-        String tiendaId,
-
-        @NotBlank(message = "El nombre de la tienda es obligatorio")
-        String tiendaNombre
+        String tiendaId
 ) {
 }

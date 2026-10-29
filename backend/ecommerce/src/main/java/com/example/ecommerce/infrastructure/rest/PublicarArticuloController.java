@@ -1,4 +1,10 @@
 package com.example.ecommerce.infrastructure.rest;
+
+import com.example.ecommerce.application.TokenService;
+import com.example.ecommerce.domain.entity.Inventario;
+import com.example.ecommerce.domain.valueobject.FechaVencimiento;
+import com.example.ecommerce.domain.valueobject.NombreArticulo;
+import com.example.ecommerce.domain.valueobject.Precio;
 import com.example.ecommerce.application.dto.request.PublicarArticuloRequest;
 import com.example.ecommerce.application.dto.response.PublicarArticuloResponse;
 import com.example.ecommerce.application.usecase.PublicarArticuloUseCase;
@@ -39,6 +45,7 @@ public class PublicarArticuloController {
     private final ListarArticulosMapper listarArticulosMapper;
     private final ConsultarInventarioUseCase consultarInventarioUseCase;
     private final ConsultarInventarioMapper consultarInventarioMapper;
+    private final TokenService tokenService;
 
     @GetMapping
     public ResponseEntity<List<ListarArticulosResponse>> listarArticulos() {
@@ -50,14 +57,27 @@ public class PublicarArticuloController {
 
         return ResponseEntity.ok(response);
     }
+    // Publicar artículo: el vendedor sale del token y publica en su tienda activa.
     @PostMapping
     public ResponseEntity<PublicarArticuloResponse> publicar(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
             @Valid @RequestBody PublicarArticuloRequest request) {
 
-        Articulo articulo = mapper.toEntity(UUID.randomUUID().toString(), request);
+        String vendedorId = tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
 
-        Articulo articuloPublicado =
-                publicarArticuloUseCase.ejecutar(articulo);
+        Articulo articuloPublicado = publicarArticuloUseCase.ejecutar(
+                UUID.randomUUID().toString(),
+                vendedorId,
+                new NombreArticulo(request.nombre()),
+                new Precio(request.precio()),
+                request.categoriaId(),
+                request.marcaId(),
+                request.tono(),
+                request.tiposPiel(),
+                Inventario.crear(request.cantidadDisponible()),
+                new FechaVencimiento(request.fechaVencimiento()),
+                request.tiendaId()
+        );
 
         PublicarArticuloResponse response =
                 mapper.toResponse(articuloPublicado);
