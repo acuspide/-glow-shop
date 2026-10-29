@@ -14,11 +14,12 @@ public class ActualizarInventarioUseCase {
     private final ArticuloRepository repository;
 
     @Transactional
-    public Articulo aumentar(String id, int cantidad) {
+    public Articulo aumentar(String id, String vendedorId, int cantidad) {
 
         Articulo articulo = repository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));
 
+        articulo.verificarQueEsDelVendedor(vendedorId);
         articulo.aumentarInventario(cantidad);
 
         repository.guardar(articulo);
@@ -27,11 +28,12 @@ public class ActualizarInventarioUseCase {
     }
 
     @Transactional
-    public Articulo disminuir(String id, int cantidad) {
+    public Articulo disminuir(String id, String vendedorId, int cantidad) {
 
         Articulo articulo = repository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));
 
+        articulo.verificarQueEsDelVendedor(vendedorId);
         articulo.disminuirInventario(cantidad);
 
         repository.guardar(articulo);

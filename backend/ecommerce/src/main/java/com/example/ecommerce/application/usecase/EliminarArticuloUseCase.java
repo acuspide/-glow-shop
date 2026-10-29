@@ -15,10 +15,11 @@ public class EliminarArticuloUseCase {
     private final VerificadorDeArticuloSinPedidosActivos verificadorSinPedidosActivos;
 
     @Transactional
-    public Articulo ejecutar(String id) {
+    public Articulo ejecutar(String id, String vendedorId) {
         Articulo articulo = articuloRepository.obtenerPorId(id)
                 .orElseThrow(() -> new ArticuloNoEncontradoException(id));
 
+        articulo.verificarQueEsDelVendedor(vendedorId);
         verificadorSinPedidosActivos.verificarQuePuedeEliminarse(id);
         articulo.eliminar();
         articuloRepository.guardar(articulo);
