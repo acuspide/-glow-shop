@@ -55,6 +55,18 @@ public class Pago {
         }
     }
 
+    /**
+     * Registra lo que respondió la pasarela: si aprobó el cobro el pago queda APROBADO,
+     * si no, queda RECHAZADO con su motivo.
+     */
+    public void registrarResultado(boolean aprobado, String transaccionId, String motivoRechazo) {
+        if (aprobado) {
+            aprobar(transaccionId);
+        } else {
+            rechazar(transaccionId, motivoRechazo);
+        }
+    }
+
     public void aprobar(String transaccionId) {
         validarEstadoActual(EstadoPago.PENDIENTE, EstadoPago.APROBADO);
         validarTransaccion(transaccionId);

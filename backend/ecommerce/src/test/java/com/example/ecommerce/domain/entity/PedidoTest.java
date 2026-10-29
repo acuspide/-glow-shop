@@ -528,4 +528,35 @@ public class PedidoTest {
         assertThrows(ReglaDominioException.class, () -> pedido.avanzarA(EstadoPedido.PENDIENTE));
         assertEquals(EstadoPedido.CONFIRMADO, pedido.getEstado());
     }
+
+    @Test
+    void registrarSiFueAprobadoDebeRegistrarUnPagoAprobado() {
+
+        // Arrange
+        Pedido pedido = crearPedido();                                   // total 20000
+        pedido.confirmar();
+
+        // Act
+        pedido.registrarSiFueAprobado(pagoAprobado("pa-50", "p-1", "20000"));
+
+        // Assert
+        assertEquals("pa-50", pedido.getPagoConfirmadoId());
+    }
+
+    @Test
+    void registrarSiFueAprobadoNoDebeTocarElPedidoConUnPagoRechazado() {
+
+        // Arrange
+        Pedido pedido = crearPedido();
+        pedido.confirmar();
+        Pago pagoRechazado = Pago.crear("pa-50", "p-1", new Precio(new BigDecimal("20000")), MedioPago.TARJETA_CREDITO);
+        pagoRechazado.rechazar("tx-50", "Fondos insuficientes");
+
+        // Act
+        pedido.registrarSiFueAprobado(pagoRechazado);
+
+        // Assert
+        assertEquals(null, pedido.getPagoConfirmadoId());
+        assertEquals(EstadoPedido.CONFIRMADO, pedido.getEstado());
+    }
 }

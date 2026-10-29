@@ -117,6 +117,13 @@ public class Pedido {
         }
     }
 
+    /** Un pago aprobado confirma el pedido; un pago rechazado lo deja como estaba, esperando otro intento. */
+    public void registrarSiFueAprobado(Pago pago) {
+        if (pago.estaAprobado()) {
+            registrarPago(pago);
+        }
+    }
+
     public void registrarPago(Pago pago) {
         verificarQueAceptaPago();
         if (pago == null

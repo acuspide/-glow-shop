@@ -178,4 +178,42 @@ public class PagoTest {
         assertFalse(pago.getFechaPago().isBefore(antes));
         assertFalse(pago.getFechaPago().isAfter(LocalDateTime.now()));
     }
+
+    @Test
+    void registrarResultadoAprobadoDebeDejarElPagoAprobado() {
+
+        // Arrange
+        Pago pago = crearPago();
+
+        // Act
+        pago.registrarResultado(true, "tx-1", null);
+
+        // Assert
+        assertEquals(EstadoPago.APROBADO, pago.getEstado());
+        assertEquals("tx-1", pago.getTransaccionId());
+    }
+
+    @Test
+    void registrarResultadoRechazadoDebeDejarElPagoRechazadoConSuMotivo() {
+
+        // Arrange
+        Pago pago = crearPago();
+
+        // Act
+        pago.registrarResultado(false, "tx-2", "Fondos insuficientes");
+
+        // Assert
+        assertEquals(EstadoPago.RECHAZADO, pago.getEstado());
+        assertEquals("Fondos insuficientes", pago.getMotivoRechazo());
+    }
+
+    @Test
+    void registrarResultadoRechazadoSinMotivoDebeFallar() {
+
+        // Arrange
+        Pago pago = crearPago();
+
+        // Act y Assert
+        assertThrows(MotivoRechazoRequeridoException.class, () -> pago.registrarResultado(false, "tx-2", " "));
+    }
 }
