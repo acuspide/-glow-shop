@@ -52,6 +52,11 @@ public class GlobalExceptionHandler {
         return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    @ExceptionHandler(VendedorYaTieneTiendaException.class)
+    public ResponseEntity<Map<String, Object>> manejarVendedorYaTieneTienda(VendedorYaTieneTiendaException ex) {
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage()); // 409
+    }
+
     @ExceptionHandler(CredencialesInvalidasException.class)
     public ResponseEntity<Map<String, Object>> manejarCredencialesInvalidas(
             CredencialesInvalidasException ex) {
