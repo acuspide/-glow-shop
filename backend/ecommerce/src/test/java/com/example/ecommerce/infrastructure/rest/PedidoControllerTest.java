@@ -4,6 +4,7 @@ import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.response.PedidoResponse;
 import com.example.ecommerce.application.usecase.ConfirmarPedidoUseCase;
 import com.example.ecommerce.application.usecase.ConsultarPedidoUseCase;
+import com.example.ecommerce.application.usecase.ListarMisPedidosUseCase;
 import com.example.ecommerce.domain.exception.PedidoAjenoException;
 import com.example.ecommerce.domain.entity.Pedido;
 import com.example.ecommerce.domain.exception.CarritoVacioException;
@@ -46,6 +47,9 @@ class PedidoControllerTest {
 
     @MockitoBean
     private ConsultarPedidoUseCase consultarPedidoUseCase;
+
+    @MockitoBean
+    private ListarMisPedidosUseCase listarMisPedidosUseCase;
 
     @MockitoBean
     private PedidoMapper mapper;
@@ -164,5 +168,37 @@ class PedidoControllerTest {
                 .andExpect(status().isUnauthorized());
 
         verify(consultarPedidoUseCase, never()).ejecutar(any(), any());
+    }
+
+    @Test
+    void deberiaListarLosPedidosDelClienteYRetornar200() throws Exception {
+        Pedido pedido = Pedido.crear("p-1", "u-100",
+                List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
+        when(listarMisPedidosUseCase.ejecutar("u-100")).thenReturn(List.of(pedido));
+        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "CONFIRMADO",
+                List.of(), new BigDecimal("40000"), new BigDecimal("40000")));
+
+        mockMvc.perform(get("/api/pedidos").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].id").value("p-1"))
+                .andExpect(jsonPath("$[0].estado").value("CONFIRMADO"));
+    }
+
+    @Test
+    void deberiaRetornarUnaListaVaciaSiElClienteNoTienePedidos() throws Exception {
+        when(listarMisPedidosUseCase.ejecutar("u-100")).thenReturn(List.of());
+
+        mockMvc.perform(get("/api/pedidos").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void deberiaRetornar401AlListarSinToken() throws Exception {
+        mockMvc.perform(get("/api/pedidos"))
+                .andExpect(status().isUnauthorized());
+
+        verify(listarMisPedidosUseCase, never()).ejecutar(any());
     }
 }
