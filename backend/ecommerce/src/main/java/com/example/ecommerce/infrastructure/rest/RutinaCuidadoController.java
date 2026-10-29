@@ -1,5 +1,6 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.request.CrearRutinaCuidadoRequest;
 import com.example.ecommerce.application.dto.response.RutinaCuidadoResponse;
 import com.example.ecommerce.application.usecase.CrearRutinaCuidadoUseCase;
@@ -29,13 +30,16 @@ public class RutinaCuidadoController {
     private final RutinaCuidadoMapper mapper;
     private final ActualizarRutinaCuidadoUseCase actualizarRutinaCuidadoUseCase;
     private final AgregarArticuloARutinaUseCase agregarArticuloARutinaUseCase;
+    private final TokenService tokenService;
 
     @PostMapping
     public ResponseEntity<RutinaCuidadoResponse> crear(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
             @Valid @RequestBody CrearRutinaCuidadoRequest request) {
 
         RutinaCuidado rutina = crearRutinaCuidadoUseCase.ejecutar(
                 UUID.randomUUID().toString(),
+                administradorDelToken(autorizacion),
                 request.nombre(),
                 request.articulosIds()
         );
@@ -65,11 +69,13 @@ public class RutinaCuidadoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<RutinaCuidadoResponse> actualizar(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
             @PathVariable String id,
             @Valid @RequestBody ActualizarRutinaCuidadoRequest request) {
 
         RutinaCuidado rutina = actualizarRutinaCuidadoUseCase.ejecutar(
                 id,
+                administradorDelToken(autorizacion),
                 request.nombre(),
                 request.articulosIds()
         );
@@ -81,15 +87,20 @@ public class RutinaCuidadoController {
 
     @PostMapping("/{id}/articulos/{articuloId}")
     public ResponseEntity<RutinaCuidadoResponse> agregarArticulo(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
             @PathVariable String id,
             @PathVariable String articuloId) {
 
         RutinaCuidado rutina = agregarArticuloARutinaUseCase
-                .ejecutar(id, articuloId);
+                .ejecutar(id, administradorDelToken(autorizacion), articuloId);
 
         RutinaCuidadoResponse response = mapper.toResponse(rutina);
 
         return ResponseEntity.ok(response);
     }
 
+    // Crear, editar y agregar artículos a una rutina es solo para el administrador; ver una rutina es público.
+    private String administradorDelToken(String autorizacion) {
+        return tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion));
+    }
 }
