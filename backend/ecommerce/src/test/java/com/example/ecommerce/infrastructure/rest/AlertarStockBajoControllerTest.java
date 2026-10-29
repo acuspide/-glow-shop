@@ -1,5 +1,7 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.application.TokenService;
+import org.junit.jupiter.api.BeforeEach;
 import com.example.ecommerce.application.dto.response.ConsultarInventarioCompletoResponse;
 import com.example.ecommerce.application.usecase.AlertarStockBajoUseCase;
 import com.example.ecommerce.domain.entity.Articulo;
@@ -23,6 +25,14 @@ public class AlertarStockBajoControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
+    private TokenService tokenService;
+
+    @BeforeEach
+    void sesionDeVera() {
+        org.mockito.Mockito.when(tokenService.extraerUsuarioId("token-vera")).thenReturn("v-1");
+    }
+
+    @MockitoBean
     private AlertarStockBajoUseCase alertarStockBajoUseCase;
 
     @MockitoBean
@@ -32,7 +42,7 @@ public class AlertarStockBajoControllerTest {
     void debeRetornarArticulosConStockBajo() throws Exception {
         Articulo articulo = mock(Articulo.class);
 
-        when(alertarStockBajoUseCase.ejecutar())
+        when(alertarStockBajoUseCase.ejecutar("v-1"))
                 .thenReturn(List.of(articulo));
 
         when(inventarioMapper.toResponse(List.of(articulo)))
@@ -49,7 +59,7 @@ public class AlertarStockBajoControllerTest {
                         )
                 );
 
-        mockMvc.perform(get("/api/inventario/stock-bajo"))
+        mockMvc.perform(get("/api/inventario/stock-bajo").header("Authorization", "Bearer token-vera"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articulos").isArray())
                 .andExpect(jsonPath("$.articulos.length()").value(1))
@@ -57,7 +67,7 @@ public class AlertarStockBajoControllerTest {
                 .andExpect(jsonPath("$.articulos[0].nombre").value("Shampoo"))
                 .andExpect(jsonPath("$.articulos[0].cantidadDisponible").value(3));
 
-        verify(alertarStockBajoUseCase).ejecutar();
+        verify(alertarStockBajoUseCase).ejecutar("v-1");
         verify(inventarioMapper).toResponse(List.of(articulo));
     }
 
@@ -65,7 +75,7 @@ public class AlertarStockBajoControllerTest {
     void debeRetornarListaVaciaCuandoNoHayArticulosConStockBajo()
             throws Exception {
 
-        when(alertarStockBajoUseCase.ejecutar())
+        when(alertarStockBajoUseCase.ejecutar("v-1"))
                 .thenReturn(List.of());
 
         when(inventarioMapper.toResponse(List.of()))
@@ -73,12 +83,18 @@ public class AlertarStockBajoControllerTest {
                         new ConsultarInventarioCompletoResponse(List.of())
                 );
 
-        mockMvc.perform(get("/api/inventario/stock-bajo"))
+        mockMvc.perform(get("/api/inventario/stock-bajo").header("Authorization", "Bearer token-vera"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articulos").isArray())
                 .andExpect(jsonPath("$.articulos.length()").value(0));
 
-        verify(alertarStockBajoUseCase).ejecutar();
+        verify(alertarStockBajoUseCase).ejecutar("v-1");
         verify(inventarioMapper).toResponse(List.of());
+    }
+
+    @Test
+    void sinTokenRetorna401() throws Exception {
+        mockMvc.perform(get("/api/inventario/stock-bajo"))
+                .andExpect(status().isUnauthorized());
     }
 }
