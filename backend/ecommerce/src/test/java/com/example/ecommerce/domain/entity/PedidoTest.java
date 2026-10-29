@@ -3,6 +3,7 @@ package com.example.ecommerce.domain.entity;
 import com.example.ecommerce.domain.exception.PedidoAjenoException;
 import com.example.ecommerce.domain.exception.PedidoSinDetallesException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.domain.exception.TiendaRequeridaException;
 import com.example.ecommerce.domain.valueobject.DetallePedido;
 import com.example.ecommerce.domain.valueobject.EstadoPedido;
 import com.example.ecommerce.domain.valueobject.Precio;
@@ -24,7 +25,7 @@ public class PedidoTest {
     }
 
     private Pedido crearPedido() {
-        return Pedido.crear("p-1", "u-100", List.of(detalle("a-1", 2, "10000")));
+        return Pedido.crear("p-1", "u-100", "t-1", List.of(detalle("a-1", 2, "10000")));
     }
 
     private Cupon cuponVigente(String id, int porcentaje) {
@@ -42,14 +43,14 @@ public class PedidoTest {
     void unPedidoNoDebePoderCrearseSinDetalles() {
 
         // Act y Assert
-        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear("p-1", "u-100", List.of()));
+        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear("p-1", "u-100", "t-1", List.of()));
     }
 
     @Test
     void unPedidoNoDebePoderCrearseConListaDeDetallesNula() {
 
         // Act y Assert
-        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear("p-1", "u-100", null));
+        assertThrows(PedidoSinDetallesException.class, () -> Pedido.crear("p-1", "u-100", "t-1", null));
     }
 
     @Test
@@ -59,7 +60,7 @@ public class PedidoTest {
         List<DetallePedido> detalles = List.of(detalle("a-1", 2, "10000"), detalle("a-2", 1, "5000"));
 
         // Act
-        Pedido pedido = Pedido.crear("p-1", "u-100", detalles);
+        Pedido pedido = Pedido.crear("p-1", "u-100", "t-1", detalles);
 
         // Assert
         assertEquals(2, pedido.getDetalles().size());
@@ -95,7 +96,7 @@ public class PedidoTest {
     void elPrecioDeUnDetalleYaAgregadoNoCambiaSiCambiaElPrecioDelArticulo() {
 
         // Arrange
-        Pedido pedido = Pedido.crear("p-1", "u-100", List.of(detalle("a-1", 1, "10000")));
+        Pedido pedido = Pedido.crear("p-1", "u-100", "t-1", List.of(detalle("a-1", 1, "10000")));
 
         // Act
         // Simulamos que el precio del artículo cambia después de la compra
@@ -470,5 +471,16 @@ public class PedidoTest {
 
         // Act y Assert
         assertThrows(PedidoAjenoException.class, () -> pedido.verificarQuePerteneceA("otro-cliente"));
+    }
+
+    @Test
+    void unPedidoGuardaLaTiendaALaQuePertenece() {
+        assertEquals("t-1", crearPedido().getTiendaId());
+    }
+
+    @Test
+    void unPedidoNoPuedeCrearseSinTienda() {
+        assertThrows(TiendaRequeridaException.class,
+                () -> Pedido.crear("p-1", "u-100", " ", List.of(detalle("a-1", 1, "10000"))));
     }
 }

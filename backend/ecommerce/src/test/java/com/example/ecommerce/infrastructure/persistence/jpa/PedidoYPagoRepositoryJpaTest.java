@@ -32,7 +32,7 @@ class PedidoYPagoRepositoryJpaTest {
     private PagoRepositoryJpa pagos;
 
     private Pedido pedido(String id, String clienteId) {
-        return Pedido.crear(id, clienteId, List.of(
+        return Pedido.crear(id, clienteId, "t-1", List.of(
                 new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000"))),
                 new DetallePedido("a-2", 1, new Precio(new BigDecimal("15000")))));
     }

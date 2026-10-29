@@ -32,7 +32,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,28 +65,51 @@ class PedidoControllerTest {
     void deberiaConfirmarElPedidoYRetornar201() throws Exception {
 
         // Arrange
-        Pedido pedidoSimulado = Pedido.crear("p-1", "u-100",
+        Pedido pedidoSimulado = Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
-        when(confirmarPedidoUseCase.ejecutar(anyString(), eq("u-100"))).thenReturn(pedidoSimulado);
+        when(confirmarPedidoUseCase.ejecutar(eq("u-100"), any())).thenReturn(List.of(pedidoSimulado));
         when(mapper.toResponse(any()))
-                .thenReturn(new PedidoResponse("p-1", "u-100", "CONFIRMADO", List.of(),
+                .thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO", List.of(),
                         new BigDecimal("40000"), new BigDecimal("40000")));
 
         // Act y Assert
         mockMvc.perform(post("/api/pedidos").header("Authorization", "Bearer token-ana"))
                 .andExpect(status().isCreated())                     // HTTP 201
-                .andExpect(header().exists("Location"))
-                .andExpect(jsonPath("$.estado").value("CONFIRMADO"))
-                .andExpect(jsonPath("$.total").value(40000));
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].tiendaId").value("t-1"))
+                .andExpect(jsonPath("$[0].estado").value("CONFIRMADO"))
+                .andExpect(jsonPath("$[0].total").value(40000));
 
-        verify(confirmarPedidoUseCase).ejecutar(anyString(), eq("u-100"));
+        verify(confirmarPedidoUseCase).ejecutar(eq("u-100"), any());
+    }
+
+    @Test
+    void deberiaRetornarUnPedidoPorCadaTiendaDelCarrito() throws Exception {
+
+        // Arrange: el carrito tenía artículos de dos tiendas
+        Pedido deT1 = Pedido.crear("p-1", "u-100", "t-1",
+                List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
+        Pedido deT2 = Pedido.crear("p-2", "u-100", "t-2",
+                List.of(new DetallePedido("a-2", 1, new Precio(new BigDecimal("50000")))));
+        when(confirmarPedidoUseCase.ejecutar(eq("u-100"), any())).thenReturn(List.of(deT1, deT2));
+        when(mapper.toResponse(deT1)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO",
+                List.of(), new BigDecimal("40000"), new BigDecimal("40000")));
+        when(mapper.toResponse(deT2)).thenReturn(new PedidoResponse("p-2", "u-100", "t-2", "CONFIRMADO",
+                List.of(), new BigDecimal("50000"), new BigDecimal("50000")));
+
+        // Act y Assert
+        mockMvc.perform(post("/api/pedidos").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].tiendaId").value("t-1"))
+                .andExpect(jsonPath("$[1].tiendaId").value("t-2"));
     }
 
     @Test
     void deberiaRetornar400CuandoElCarritoEstaVacio() throws Exception {
 
         // Arrange
-        when(confirmarPedidoUseCase.ejecutar(anyString(), anyString()))
+        when(confirmarPedidoUseCase.ejecutar(anyString(), any()))
                 .thenThrow(new CarritoVacioException());
 
         // Act y Assert
@@ -99,7 +121,7 @@ class PedidoControllerTest {
     void deberiaRetornar400CuandoElPrecioDeUnArticuloCambio() throws Exception {
 
         // Arrange
-        when(confirmarPedidoUseCase.ejecutar(anyString(), anyString()))
+        when(confirmarPedidoUseCase.ejecutar(anyString(), any()))
                 .thenThrow(new PrecioDelArticuloCambioException("a-1"));
 
         // Act y Assert
@@ -111,7 +133,7 @@ class PedidoControllerTest {
     void deberiaRetornar404CuandoElClienteNoTieneCarrito() throws Exception {
 
         // Arrange
-        when(confirmarPedidoUseCase.ejecutar(anyString(), anyString()))
+        when(confirmarPedidoUseCase.ejecutar(anyString(), any()))
                 .thenThrow(new RecursoNoEncontradoException("el recurso", "no-existe"));
 
         // Act y Assert
@@ -126,15 +148,15 @@ class PedidoControllerTest {
         mockMvc.perform(post("/api/pedidos"))
                 .andExpect(status().isUnauthorized());
 
-        verify(confirmarPedidoUseCase, never()).ejecutar(anyString(), anyString());
+        verify(confirmarPedidoUseCase, never()).ejecutar(any(), any());
     }
 
     @Test
     void deberiaMostrarElPedidoDelClienteYRetornar200() throws Exception {
-        Pedido pedido = Pedido.crear("p-1", "u-100",
+        Pedido pedido = Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         when(consultarPedidoUseCase.ejecutar("p-1", "u-100")).thenReturn(pedido);
-        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "PENDIENTE",
+        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "PENDIENTE",
                 List.of(), new BigDecimal("40000"), new BigDecimal("40000")));
 
         mockMvc.perform(get("/api/pedidos/p-1").header("Authorization", "Bearer token-ana"))
@@ -172,10 +194,10 @@ class PedidoControllerTest {
 
     @Test
     void deberiaListarLosPedidosDelClienteYRetornar200() throws Exception {
-        Pedido pedido = Pedido.crear("p-1", "u-100",
+        Pedido pedido = Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         when(listarMisPedidosUseCase.ejecutar("u-100")).thenReturn(List.of(pedido));
-        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "CONFIRMADO",
+        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO",
                 List.of(), new BigDecimal("40000"), new BigDecimal("40000")));
 
         mockMvc.perform(get("/api/pedidos").header("Authorization", "Bearer token-ana"))

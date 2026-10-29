@@ -24,7 +24,7 @@ class ConsultarPedidoUseCaseTest {
 
     @BeforeEach
     void prepararPedido() {
-        pedidoDeAna = Pedido.crear("p-1", "u-1",
+        pedidoDeAna = Pedido.crear("p-1", "u-1", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         pedidos.guardar(pedidoDeAna);
     }

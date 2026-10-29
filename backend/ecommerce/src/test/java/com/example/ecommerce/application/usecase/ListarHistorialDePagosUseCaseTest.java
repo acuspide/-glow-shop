@@ -35,7 +35,7 @@ class ListarHistorialDePagosUseCaseTest {
     private ListarHistorialDePagosUseCase useCase;
 
     private Pedido pedido(String id) {
-        return Pedido.crear(id, "u-100",
+        return Pedido.crear(id, "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 1, new Precio(new BigDecimal("20000")))));
     }
 

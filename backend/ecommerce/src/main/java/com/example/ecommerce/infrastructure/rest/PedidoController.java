@@ -8,11 +8,10 @@ import com.example.ecommerce.application.usecase.ListarMisPedidosUseCase;
 import com.example.ecommerce.domain.entity.Pedido;
 import com.example.ecommerce.infrastructure.rest.mapper.PedidoMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,24 +30,19 @@ public class PedidoController {
     private final PedidoMapper mapper;
     private final TokenService tokenService;
 
+    // Confirmar pedido: crea un pedido por cada tienda del carrito (201 con la lista de pedidos).
     @PostMapping
-    public ResponseEntity<PedidoResponse> confirmarPedido(
+    public ResponseEntity<List<PedidoResponse>> confirmarPedido(
             @RequestHeader(value = "Authorization", required = false) String autorizacion) {
 
-        Pedido pedido = confirmarPedidoUseCase.ejecutar(
-                UUID.randomUUID().toString(),
-                clienteDelToken(autorizacion)
-        );
+        List<PedidoResponse> pedidos = confirmarPedidoUseCase.ejecutar(
+                        clienteDelToken(autorizacion),
+                        () -> UUID.randomUUID().toString())
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
 
-        PedidoResponse response = mapper.toResponse(pedido);
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(pedido.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(response); // 201
+        return ResponseEntity.status(HttpStatus.CREATED).body(pedidos);
     }
 
     // Listar mis pedidos: el historial de compras del cliente del token.

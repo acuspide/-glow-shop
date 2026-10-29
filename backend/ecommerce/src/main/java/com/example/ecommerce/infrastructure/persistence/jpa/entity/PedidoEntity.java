@@ -33,6 +33,9 @@ public class PedidoEntity {
     @Column(name = "cliente_id", nullable = false, length = 36)
     private String clienteId;
 
+    @Column(name = "tienda_id", nullable = false, length = 36)
+    private String tiendaId;
+
     // Los detalles guardan el precio congelado del momento de la compra (tabla pedido_detalles).
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "pedido_detalles", joinColumns = @JoinColumn(name = "pedido_id"))

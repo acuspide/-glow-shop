@@ -13,6 +13,7 @@ import java.util.Objects;
 public class Pedido {
     private final String id;
     private final String clienteId;
+    private final String tiendaId;   // un pedido por tienda: el vendedor de esa tienda lo despacha
     private final List<DetallePedido> detalles;
     private EstadoPedido estado;
     private String cuponId;
@@ -21,11 +22,12 @@ public class Pedido {
     private Precio costoEnvio;
     private String pagoConfirmadoId;
 
-    private Pedido(String id, String clienteId, List<DetallePedido> detalles, EstadoPedido estado,
+    private Pedido(String id, String clienteId, String tiendaId, List<DetallePedido> detalles, EstadoPedido estado,
                    String cuponId, Precio descuento, Precio impuestos, Precio costoEnvio,
                    String pagoConfirmadoId) {
         this.id = id;
         this.clienteId = clienteId;
+        this.tiendaId = tiendaId;
         this.detalles = new ArrayList<>(detalles);
         this.estado = estado;
         this.cuponId = cuponId;
@@ -35,21 +37,24 @@ public class Pedido {
         this.pagoConfirmadoId = pagoConfirmadoId;
     }
 
-    public static Pedido crear(String id, String clienteId, List<DetallePedido> detalles) {
+    public static Pedido crear(String id, String clienteId, String tiendaId, List<DetallePedido> detalles) {
         if (detalles == null || detalles.isEmpty()) {
             throw new PedidoSinDetallesException();
         }
+        if (tiendaId == null || tiendaId.isBlank()) {
+            throw new TiendaRequeridaException();
+        }
         Precio cero = new Precio(BigDecimal.ZERO);
-        Pedido pedido = new Pedido(id, clienteId, List.of(), EstadoPedido.PENDIENTE,
+        Pedido pedido = new Pedido(id, clienteId, tiendaId, List.of(), EstadoPedido.PENDIENTE,
                 null, cero, cero, cero, null);
         detalles.forEach(pedido::agregarDetalle);
         return pedido;
     }
 
-    public static Pedido reconstruir(String id, String clienteId, List<DetallePedido> detalles,
+    public static Pedido reconstruir(String id, String clienteId, String tiendaId, List<DetallePedido> detalles,
                                      EstadoPedido estado, String cuponId, Precio descuento,
                                      Precio impuestos, Precio costoEnvio, String pagoConfirmadoId) {
-        return new Pedido(id, clienteId, detalles, estado, cuponId, descuento, impuestos,
+        return new Pedido(id, clienteId, tiendaId, detalles, estado, cuponId, descuento, impuestos,
                 costoEnvio, pagoConfirmadoId);
     }
 
@@ -173,6 +178,10 @@ public class Pedido {
 
     public String getClienteId() {
         return clienteId;
+    }
+
+    public String getTiendaId() {
+        return tiendaId;
     }
 
     public EstadoPedido getEstado() {
