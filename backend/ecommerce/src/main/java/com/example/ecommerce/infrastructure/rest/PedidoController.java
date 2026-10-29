@@ -3,6 +3,7 @@ package com.example.ecommerce.infrastructure.rest;
 import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.response.PedidoResponse;
 import com.example.ecommerce.application.usecase.ConfirmarPedidoUseCase;
+import com.example.ecommerce.application.usecase.ConsultarPedidoUseCase;
 import com.example.ecommerce.domain.entity.Pedido;
 import com.example.ecommerce.infrastructure.rest.mapper.PedidoMapper;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.UUID;
 public class PedidoController {
 
     private final ConfirmarPedidoUseCase confirmarPedidoUseCase;
+    private final ConsultarPedidoUseCase consultarPedidoUseCase;
     private final PedidoMapper mapper;
     private final TokenService tokenService;
 
@@ -44,6 +46,17 @@ public class PedidoController {
                 .toUri();
 
         return ResponseEntity.created(location).body(response); // 201
+    }
+
+    // Consultar pedido: solo el cliente dueño del pedido puede verlo.
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoResponse> consultarPedido(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion,
+            @PathVariable String id) {
+
+        Pedido pedido = consultarPedidoUseCase.ejecutar(id, clienteDelToken(autorizacion));
+
+        return ResponseEntity.ok(mapper.toResponse(pedido));
     }
 
     private String clienteDelToken(String autorizacion) {

@@ -3,6 +3,8 @@ package com.example.ecommerce.infrastructure.rest;
 import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.response.PedidoResponse;
 import com.example.ecommerce.application.usecase.ConfirmarPedidoUseCase;
+import com.example.ecommerce.application.usecase.ConsultarPedidoUseCase;
+import com.example.ecommerce.domain.exception.PedidoAjenoException;
 import com.example.ecommerce.domain.entity.Pedido;
 import com.example.ecommerce.domain.exception.CarritoVacioException;
 import com.example.ecommerce.domain.exception.PrecioDelArticuloCambioException;
@@ -27,6 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,6 +43,9 @@ class PedidoControllerTest {
 
     @MockitoBean
     private ConfirmarPedidoUseCase confirmarPedidoUseCase;
+
+    @MockitoBean
+    private ConsultarPedidoUseCase consultarPedidoUseCase;
 
     @MockitoBean
     private PedidoMapper mapper;
@@ -117,5 +123,46 @@ class PedidoControllerTest {
                 .andExpect(status().isUnauthorized());
 
         verify(confirmarPedidoUseCase, never()).ejecutar(anyString(), anyString());
+    }
+
+    @Test
+    void deberiaMostrarElPedidoDelClienteYRetornar200() throws Exception {
+        Pedido pedido = Pedido.crear("p-1", "u-100",
+                List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
+        when(consultarPedidoUseCase.ejecutar("p-1", "u-100")).thenReturn(pedido);
+        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "PENDIENTE",
+                List.of(), new BigDecimal("40000"), new BigDecimal("40000")));
+
+        mockMvc.perform(get("/api/pedidos/p-1").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("p-1"))
+                .andExpect(jsonPath("$.estado").value("PENDIENTE"))
+                .andExpect(jsonPath("$.total").value(40000));
+    }
+
+    @Test
+    void deberiaRetornar403AlConsultarUnPedidoAjeno() throws Exception {
+        when(consultarPedidoUseCase.ejecutar("p-2", "u-100")).thenThrow(new PedidoAjenoException());
+
+        mockMvc.perform(get("/api/pedidos/p-2").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deberiaRetornar404AlConsultarUnPedidoQueNoExiste() throws Exception {
+        when(consultarPedidoUseCase.ejecutar("p-9", "u-100"))
+                .thenThrow(new RecursoNoEncontradoException("el pedido", "p-9"));
+
+        mockMvc.perform(get("/api/pedidos/p-9").header("Authorization", "Bearer token-ana"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.mensaje").value("No se encontró el pedido con id: p-9"));
+    }
+
+    @Test
+    void deberiaRetornar401AlConsultarSinToken() throws Exception {
+        mockMvc.perform(get("/api/pedidos/p-1"))
+                .andExpect(status().isUnauthorized());
+
+        verify(consultarPedidoUseCase, never()).ejecutar(any(), any());
     }
 }
