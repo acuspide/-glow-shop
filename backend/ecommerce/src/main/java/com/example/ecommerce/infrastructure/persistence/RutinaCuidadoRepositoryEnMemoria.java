@@ -1,5 +1,4 @@
 package com.example.ecommerce.infrastructure.persistence;
-import org.springframework.stereotype.Repository;
 
 import com.example.ecommerce.domain.entity.RutinaCuidado;
 import com.example.ecommerce.domain.repository.RutinaCuidadoRepository;
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Repository
+// Se usa en las pruebas unitarias. En la aplicación corre el adaptador JPA (persistence/jpa).
 public class RutinaCuidadoRepositoryEnMemoria implements RutinaCuidadoRepository {
     private final Map<String, RutinaCuidado> rutinas = new HashMap<>();
 
