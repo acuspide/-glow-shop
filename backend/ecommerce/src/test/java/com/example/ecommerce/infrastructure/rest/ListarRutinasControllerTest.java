@@ -57,7 +57,7 @@ public class ListarRutinasControllerTest {
                         )
                 );
 
-        mockMvc.perform(get("/rutinas"))
+        mockMvc.perform(get("/api/rutinas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rutinas.length()").value(1))
                 .andExpect(jsonPath("$.rutinas[0].id").value("r-1"))
@@ -77,7 +77,7 @@ public class ListarRutinasControllerTest {
         when(listarRutinasMapper.toResponse(List.of()))
                 .thenReturn(new ListarRutinasResponse(List.of()));
 
-        mockMvc.perform(get("/rutinas"))
+        mockMvc.perform(get("/api/rutinas"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.rutinas").isArray())
                 .andExpect(jsonPath("$.rutinas.length()").value(0));

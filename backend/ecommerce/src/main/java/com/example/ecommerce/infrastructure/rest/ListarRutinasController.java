@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rutinas")
+@RequestMapping("/api/rutinas")
 public class ListarRutinasController {
     private final ListarRutinasUseCase listarRutinasUseCase;
     private final ListarRutinasMapper listarRutinasMapper;
