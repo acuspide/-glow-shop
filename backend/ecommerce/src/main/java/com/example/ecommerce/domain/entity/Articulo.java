@@ -147,6 +147,10 @@ public class Articulo {
         return inventario.getCantidadDisponible();
     }
 
+    public boolean isEliminado() {
+        return eliminado;
+    }
+
     public boolean isPublicado() {
         return publicado;
     }
