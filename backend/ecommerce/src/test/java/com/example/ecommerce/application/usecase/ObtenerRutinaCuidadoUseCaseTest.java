@@ -24,7 +24,7 @@ public class ObtenerRutinaCuidadoUseCaseTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                Tienda.crear("t-1", "Tienda prueba")
+                Tienda.reconstruir("t-1", "Tienda prueba", "", "v-1", EstadoTienda.ACTIVA)
         );
     }
 

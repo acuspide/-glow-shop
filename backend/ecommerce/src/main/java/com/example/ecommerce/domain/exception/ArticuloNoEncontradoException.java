@@ -1,8 +1,8 @@
 package com.example.ecommerce.domain.exception;
 
-public class ArticuloNoEncontradoException extends ReglaDominioException {
+public class ArticuloNoEncontradoException extends RecursoNoEncontradoException {
 
     public ArticuloNoEncontradoException(String id) {
-        super("No se encontró el artículo con id: " + id);
+        super("el artículo", id);
     }
 }

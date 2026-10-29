@@ -13,7 +13,7 @@ import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.NoSuchElementException;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -51,6 +51,6 @@ public class DesactivarUsuarioUseCaseTest {
 
     @Test
     void siElUsuarioNoExisteDebeLanzarNoEncontrado() {
-        assertThrows(NoSuchElementException.class, () -> useCase.ejecutar("a-1", "no-existe"));
+        assertThrows(RecursoNoEncontradoException.class, () -> useCase.ejecutar("a-1", "no-existe"));
     }
 }

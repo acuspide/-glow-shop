@@ -30,7 +30,7 @@ public class ArticuloTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         Articulo articulo2 = Articulo.crear(
@@ -43,7 +43,7 @@ public class ArticuloTest {
                 List.of(TipoPiel.SECA),
                 Inventario.crear(20),
                 new FechaVencimiento(LocalDate.of(2028, 5, 20)),
-                Tienda.crear("t-2", "Otra Tienda")
+                Tienda.reconstruir("t-2", "Otra Tienda", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         // Act
@@ -66,7 +66,7 @@ public class ArticuloTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2025, 1, 1)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         // Act y Assert
@@ -91,7 +91,7 @@ public class ArticuloTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         // Act y Assert
@@ -116,7 +116,7 @@ public class ArticuloTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         // Act y Assert
@@ -141,7 +141,7 @@ public class ArticuloTest {
                 List.of(TipoPiel.SECA),
                 Inventario.crear(20),
                 new FechaVencimiento(LocalDate.of(2028, 5, 20)),
-                Tienda.crear("t-2", "Tienda Beauty")
+                Tienda.reconstruir("t-2", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         // Act
@@ -164,7 +164,7 @@ public class ArticuloTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.of(2027, 12, 31)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
 
         // Act
@@ -185,7 +185,7 @@ public class ArticuloTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(stock),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
     }
 

@@ -1,4 +1,6 @@
 package com.example.ecommerce.application.usecase;
+
+import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +29,7 @@ public class CrearRutinaCuidadoUseCase {
         for (String articuloId : articulosIds) {
             Articulo articulo = articuloRepository
                     .obtenerPorId(articuloId)
-                    .orElseThrow();
+                    .orElseThrow(() -> new ArticuloNoEncontradoException(articuloId));
 
             articulos.add(articulo);
         }

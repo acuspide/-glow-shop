@@ -1,5 +1,10 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.application.TokenService;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+import com.example.ecommerce.domain.exception.TiendaAjenaException;
+import com.example.ecommerce.domain.exception.TiendaNoActivaException;
+import com.example.ecommerce.domain.valueobject.EstadoTienda;
 import com.example.ecommerce.application.dto.response.ConsultarInventarioResponse;
 import com.example.ecommerce.application.dto.response.MostrarDetalleArticuloResponse;
 import com.example.ecommerce.application.usecase.ConsultarInventarioUseCase;
@@ -25,7 +30,6 @@ import com.example.ecommerce.application.dto.response.ListarArticulosResponse;
 import java.util.Collections;
 import com.example.ecommerce.application.usecase.ListarArticulosUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.ListarArticulosMapper;
-import com.example.ecommerce.application.dto.request.PublicarArticuloRequest;
 import com.example.ecommerce.application.dto.response.PublicarArticuloResponse;
 import com.example.ecommerce.domain.exception.ArticuloVencidoException;
 
@@ -34,6 +38,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -67,6 +72,9 @@ public class PublicarArticuloControllerTest {
 
     @MockitoBean
     private ConsultarInventarioMapper consultarInventarioMapper;
+
+    @MockitoBean
+    private TokenService tokenService;
 
     @Test
     void debeMostrarDetalleDeArticuloCuandoExiste() throws Exception {
@@ -119,10 +127,29 @@ public class PublicarArticuloControllerTest {
     }
 
 
+    private static final String CUERPO_PUBLICAR = """
+            {
+                "nombre": "Labial",
+                "precio": 20000,
+                "categoriaId": "cat-1",
+                "marcaId": "m-1",
+                "tono": "CLARO",
+                "tiposPiel": ["NORMAL"],
+                "cantidadDisponible": 10,
+                "fechaVencimiento": "2027-12-31",
+                "tiendaId": "t-1"
+            }
+            """;
+
+    private Articulo cuandoPubliqueVera() {
+        when(tokenService.extraerUsuarioId("token-vera")).thenReturn("v-1");
+        return mock(Articulo.class);
+    }
+
     @Test
     void debePublicarArticuloCorrectamente() throws Exception {
 
-        Articulo articulo = mock(Articulo.class);
+        Articulo articulo = cuandoPubliqueVera();
 
         PublicarArticuloResponse response =
                 new PublicarArticuloResponse(
@@ -142,10 +169,8 @@ public class PublicarArticuloControllerTest {
                         true
                 );
 
-        when(publicarArticuloMapper.toEntity(anyString(), any(PublicarArticuloRequest.class)))
-                .thenReturn(articulo);
-
-        when(publicarArticuloUseCase.ejecutar(articulo))
+        when(publicarArticuloUseCase.ejecutar(anyString(), eq("v-1"), any(), any(), eq("cat-1"), eq("m-1"),
+                any(), any(), any(), any(), eq("t-1")))
                 .thenReturn(articulo);
 
         when(publicarArticuloMapper.toResponse(articulo))
@@ -154,77 +179,94 @@ public class PublicarArticuloControllerTest {
         when(articulo.getId()).thenReturn("a-1");
 
         mockMvc.perform(post("/api/articulos")
+                        .header("Authorization", "Bearer token-vera")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                            {
-                                "nombre": "Labial",
-                                "precio": 20000,
-                                "categoriaId": "cat-1",
-                                "categoriaNombre": "Labios",
-                                "marcaId": "m-1",
-                                "marcaNombre": "Maybelline",
-                                "tono": "CLARO",
-                                "tiposPiel": ["NORMAL"],
-                                "cantidadDisponible": 10,
-                                "fechaVencimiento": "2027-12-31",
-                                "tiendaId": "t-1",
-                                "tiendaNombre": "Tienda Beauty"
-                            }
-                            """))
+                        .content(CUERPO_PUBLICAR))
                 .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "http://localhost/api/articulos/a-1"))
                 .andExpect(jsonPath("$.id").value("a-1"))
                 .andExpect(jsonPath("$.nombre").value("Labial"))
                 .andExpect(jsonPath("$.precio").value(20000))
+                .andExpect(jsonPath("$.tiendaNombre").value("Tienda Beauty"))
                 .andExpect(jsonPath("$.publicado").value(true));
-
-        verify(publicarArticuloUseCase).ejecutar(articulo);
     }
+
     @Test
-    void debeRetornar400CuandoNoSePuedePublicarArticuloVencido() throws Exception {
-        Articulo articulo = mock(Articulo.class);
-
-        when(publicarArticuloMapper.toEntity(anyString(), any(PublicarArticuloRequest.class)))
-                .thenReturn(articulo);
-
-        when(publicarArticuloUseCase.ejecutar(articulo))
-                .thenThrow(new ArticuloVencidoException());
+    void debeRetornar401CuandoSePublicaSinToken() throws Exception {
 
         mockMvc.perform(post("/api/articulos")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                {
-                  "nombre": "Labial",
-                  "precio": 20000,
-                  "categoriaId": "cat-1",
-                  "categoriaNombre": "Labios",
-                  "marcaId": "m-1",
-                  "marcaNombre": "Maybelline",
-                  "tono": "CLARO",
-                  "tiposPiel": ["NORMAL"],
-                  "cantidadDisponible": 10,
-                  "fechaVencimiento": "2020-12-31",
-                  "tiendaId": "t-1",
-                  "tiendaNombre": "Tienda Beauty"
-                }
-                """))
+                        .content(CUERPO_PUBLICAR))
+                .andExpect(status().isUnauthorized());
+
+        verify(publicarArticuloUseCase, never()).ejecutar(any(), any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void debeRetornar400CuandoLaTiendaNoEstaActiva() throws Exception {
+
+        cuandoPubliqueVera();
+        when(publicarArticuloUseCase.ejecutar(anyString(), eq("v-1"), any(), any(), any(), any(),
+                any(), any(), any(), any(), any()))
+                .thenThrow(new TiendaNoActivaException(EstadoTienda.PENDIENTE));
+
+        mockMvc.perform(post("/api/articulos")
+                        .header("Authorization", "Bearer token-vera")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CUERPO_PUBLICAR))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje")
+                        .value("La tienda debe estar activa para publicar artículos. Estado actual: PENDIENTE."));
+    }
+
+    @Test
+    void debeRetornar403CuandoLaTiendaEsDeOtroVendedor() throws Exception {
+
+        cuandoPubliqueVera();
+        when(publicarArticuloUseCase.ejecutar(anyString(), eq("v-1"), any(), any(), any(), any(),
+                any(), any(), any(), any(), any()))
+                .thenThrow(new TiendaAjenaException());
+
+        mockMvc.perform(post("/api/articulos")
+                        .header("Authorization", "Bearer token-vera")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CUERPO_PUBLICAR))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void debeRetornar404CuandoLaCategoriaNoExiste() throws Exception {
+
+        cuandoPubliqueVera();
+        when(publicarArticuloUseCase.ejecutar(anyString(), eq("v-1"), any(), any(), any(), any(),
+                any(), any(), any(), any(), any()))
+                .thenThrow(new RecursoNoEncontradoException("la categoría", "cat-1"));
+
+        mockMvc.perform(post("/api/articulos")
+                        .header("Authorization", "Bearer token-vera")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CUERPO_PUBLICAR))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.mensaje").value("No se encontró la categoría con id: cat-1"));
+    }
+
+    @Test
+    void debeRetornar400CuandoNoSePuedePublicarArticuloVencido() throws Exception {
+
+        cuandoPubliqueVera();
+        when(publicarArticuloUseCase.ejecutar(anyString(), eq("v-1"), any(), any(), any(), any(),
+                any(), any(), any(), any(), any()))
+                .thenThrow(new ArticuloVencidoException());
+
+        mockMvc.perform(post("/api/articulos")
+                        .header("Authorization", "Bearer token-vera")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CUERPO_PUBLICAR))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.mensaje")
                         .value("No se puede publicar un artículo que esté vencido."));
-
-        verify(publicarArticuloUseCase).ejecutar(articulo);
-        verify(publicarArticuloUseCase, never()).ejecutar(
-                any(String.class),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
-        );
     }
 
     @Test

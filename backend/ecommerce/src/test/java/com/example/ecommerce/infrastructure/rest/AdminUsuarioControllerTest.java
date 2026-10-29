@@ -1,5 +1,7 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.DatosPrueba;
 import com.example.ecommerce.application.TokenService;
 import com.example.ecommerce.application.dto.response.UsuarioResponse;
@@ -216,7 +218,7 @@ class AdminUsuarioControllerTest {
     @Test
     void desactivarUnUsuarioQueNoExisteDebeResponder404() throws Exception {
         when(tokenService.extraerUsuarioId("token-admin")).thenReturn("a-1");
-        doThrow(new java.util.NoSuchElementException()).when(desactivarUsuarioUseCase).ejecutar("a-1", "no-existe");
+        doThrow(new RecursoNoEncontradoException("el recurso", "no-existe")).when(desactivarUsuarioUseCase).ejecutar("a-1", "no-existe");
 
         mockMvc.perform(put("/api/admin/usuarios/no-existe/desactivar").header("Authorization", "Bearer token-admin"))
                 .andExpect(status().isNotFound());

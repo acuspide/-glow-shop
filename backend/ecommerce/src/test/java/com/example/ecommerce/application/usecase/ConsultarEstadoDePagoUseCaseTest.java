@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.NoSuchElementException;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,7 +70,7 @@ class ConsultarEstadoDePagoUseCaseTest {
         when(pagoRepository.obtenerPorId("pa-99")).thenReturn(Optional.empty());
 
         // Act y Assert
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(RecursoNoEncontradoException.class, () -> {
             useCase.ejecutar("pa-99", "u-100");
         });
 

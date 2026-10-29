@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
+
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.Carrito;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
@@ -18,7 +20,7 @@ public class AgregarAlCarritoUseCase {
     @Transactional
     public Carrito ejecutar(String nuevoCarritoId, String clienteId, String articuloId, int cantidad) {
 
-        Articulo articulo = articuloRepository.obtenerPorId(articuloId).orElseThrow();
+        Articulo articulo = articuloRepository.obtenerPorId(articuloId).orElseThrow(() -> new ArticuloNoEncontradoException(articuloId));
 
         Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId)
                 .orElseGet(() -> Carrito.crear(nuevoCarritoId, clienteId));

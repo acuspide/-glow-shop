@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/categorias")
 public class CategoriaController {
     private final CrearCategoriaUseCase crearCategoriaUseCase;
     private final CategoriaMapper mapper;

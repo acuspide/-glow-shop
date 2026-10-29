@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.domain.entity.Carrito;
 import com.example.ecommerce.domain.repository.CarritoRepository;
 import com.example.ecommerce.domain.service.VerificadorDeDisponibilidadDelCarrito;
@@ -17,7 +19,7 @@ public class ValidarDisponibilidadDelCarritoUseCase {
 
     @Transactional(readOnly = true)
     public void ejecutar(String clienteId) {
-        Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId).orElseThrow();
+        Carrito carrito = carritoRepository.obtenerPorClienteId(clienteId).orElseThrow(() -> new RecursoNoEncontradoException("el carrito del cliente", clienteId));
         verificador.verificarQuePuedePagarse(carrito);
     }
 }

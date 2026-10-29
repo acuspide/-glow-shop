@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.application.PasarelaDePagos;
 import com.example.ecommerce.application.ResultadoCobro;
 import com.example.ecommerce.domain.entity.Pago;
@@ -23,7 +25,7 @@ public class ProcesarPagoDePedidoUseCase {
 
     @Transactional
     public Pago ejecutar(String pagoId, String pedidoId, String clienteId, MedioPago medioPago) {
-        Pedido pedido = pedidoRepository.obtenerPorId(pedidoId).orElseThrow();
+        Pedido pedido = pedidoRepository.obtenerPorId(pedidoId).orElseThrow(() -> new RecursoNoEncontradoException("el pedido", pedidoId));
 
         // Todo se verifica ANTES de cobrar, para no cobrar un pedido ajeno o ya pagado.
         pedido.verificarQuePerteneceA(clienteId);

@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,7 +44,7 @@ class AgregarAlCarritoUseCaseTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(10),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
         if (publicado) {
             articulo.publicar();
@@ -94,7 +94,7 @@ class AgregarAlCarritoUseCaseTest {
         when(articuloRepository.obtenerPorId("a-99")).thenReturn(Optional.empty());
 
         // Act y Assert
-        assertThrows(NoSuchElementException.class, () -> {
+        assertThrows(RecursoNoEncontradoException.class, () -> {
             useCase.ejecutar("c-1", "u-100", "a-99", 1);
         });
 

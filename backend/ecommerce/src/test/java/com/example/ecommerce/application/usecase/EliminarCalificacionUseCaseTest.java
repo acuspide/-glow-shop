@@ -14,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,6 +48,6 @@ public class EliminarCalificacionUseCaseTest {
 
     @Test
     void unaCalificacionQueNoExisteResponde404() {
-        assertThrows(NoSuchElementException.class, () -> useCase.ejecutar("no-existe", "u-1"));
+        assertThrows(RecursoNoEncontradoException.class, () -> useCase.ejecutar("no-existe", "u-1"));
     }
 }

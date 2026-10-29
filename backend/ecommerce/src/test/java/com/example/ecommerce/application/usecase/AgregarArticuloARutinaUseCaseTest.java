@@ -1,4 +1,6 @@
 package com.example.ecommerce.application.usecase;
+
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.RutinaCuidado;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
@@ -59,7 +61,7 @@ public class AgregarArticuloARutinaUseCaseTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                java.util.NoSuchElementException.class,
+                RecursoNoEncontradoException.class,
                 () -> useCase.ejecutar("r-1", "a-3")
         );
 
@@ -81,7 +83,7 @@ public class AgregarArticuloARutinaUseCaseTest {
                 .thenReturn(Optional.empty());
 
         assertThrows(
-                java.util.NoSuchElementException.class,
+                RecursoNoEncontradoException.class,
                 () -> useCase.ejecutar("r-1", "a-3")
         );
 

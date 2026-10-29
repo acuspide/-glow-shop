@@ -1,4 +1,6 @@
 package com.example.ecommerce.application.usecase;
+
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,6 @@ public class ObtenerRutinaCuidadoUseCase {
     @Transactional(readOnly = true)
     public RutinaCuidado ejecutar(String id) {
         return repository.obtenerPorId(id)
-                .orElseThrow();
+                .orElseThrow(() -> new RecursoNoEncontradoException("la rutina", id));
     }
 }

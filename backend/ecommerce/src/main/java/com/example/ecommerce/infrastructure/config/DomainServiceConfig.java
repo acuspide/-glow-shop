@@ -38,4 +38,9 @@ public class DomainServiceConfig {
     public VerificadorDeCategoriaUnica verificadorDeCategoriaUnica(CategoriaRepository categoriaRepository) {
         return new VerificadorDeCategoriaUnica(categoriaRepository);
     }
+
+    @Bean
+    public VerificadorDeTiendaUnicaPorVendedor verificadorDeTiendaUnicaPorVendedor(TiendaRepository tiendaRepository) {
+        return new VerificadorDeTiendaUnicaPorVendedor(tiendaRepository);
+    }
 }

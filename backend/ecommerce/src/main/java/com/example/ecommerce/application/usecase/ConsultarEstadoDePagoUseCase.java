@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.domain.entity.Pago;
 import com.example.ecommerce.domain.entity.Pedido;
 import com.example.ecommerce.domain.repository.PagoRepository;
@@ -22,8 +24,8 @@ public class ConsultarEstadoDePagoUseCase {
 
     @Transactional(readOnly = true)
     public Pago ejecutar(String pagoId, String clienteId) {
-        Pago pago = pagoRepository.obtenerPorId(pagoId).orElseThrow();
-        Pedido pedido = pedidoRepository.obtenerPorId(pago.getPedidoId()).orElseThrow();
+        Pago pago = pagoRepository.obtenerPorId(pagoId).orElseThrow(() -> new RecursoNoEncontradoException("el pago", pagoId));
+        Pedido pedido = pedidoRepository.obtenerPorId(pago.getPedidoId()).orElseThrow(() -> new RecursoNoEncontradoException("el pedido", pago.getPedidoId()));
         pedido.verificarQuePerteneceA(clienteId);
         return pago;
     }

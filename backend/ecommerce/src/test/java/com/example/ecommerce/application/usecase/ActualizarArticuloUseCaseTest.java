@@ -5,6 +5,7 @@ import com.example.ecommerce.domain.entity.Categoria;
 import com.example.ecommerce.domain.entity.Inventario;
 import com.example.ecommerce.domain.entity.Marca;
 import com.example.ecommerce.domain.entity.Tienda;
+import com.example.ecommerce.domain.valueobject.EstadoTienda;
 import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
 import com.example.ecommerce.domain.exception.ArticuloVencidoException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
@@ -34,7 +35,7 @@ public class ActualizarArticuloUseCaseTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                Tienda.crear("t-1", "Tienda prueba")
+                Tienda.reconstruir("t-1", "Tienda prueba", "", "v-1", EstadoTienda.ACTIVA)
         );
     }
 

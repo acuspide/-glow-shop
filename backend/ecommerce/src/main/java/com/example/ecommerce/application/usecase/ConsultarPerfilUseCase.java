@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.domain.entity.Usuario;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,6 @@ public class ConsultarPerfilUseCase {
 
     @Transactional(readOnly = true)
     public Usuario ejecutar(String usuarioId) {
-        return repository.obtenerPorId(usuarioId).orElseThrow(); // no existe -> 404
+        return repository.obtenerPorId(usuarioId).orElseThrow(() -> new RecursoNoEncontradoException("el usuario", usuarioId));
     }
 }

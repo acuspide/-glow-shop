@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.NoSuchElementException;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -162,7 +162,7 @@ class PagoControllerTest {
 
         // Arrange
         when(procesarPagoDePedidoUseCase.ejecutar(anyString(), anyString(), anyString(), any()))
-                .thenThrow(new NoSuchElementException());
+                .thenThrow(new RecursoNoEncontradoException("el recurso", "no-existe"));
 
         // Act y Assert
         mockMvc.perform(post("/api/pedidos/p-99/pagos").header("Authorization", "Bearer token-ana")
@@ -215,7 +215,7 @@ class PagoControllerTest {
 
         // Arrange
         when(consultarEstadoDePagoUseCase.ejecutar(anyString(), anyString()))
-                .thenThrow(new NoSuchElementException());
+                .thenThrow(new RecursoNoEncontradoException("el recurso", "no-existe"));
 
         // Act y Assert
         mockMvc.perform(get("/api/pagos/pa-99").header("Authorization", "Bearer token-ana"))
@@ -339,7 +339,7 @@ class PagoControllerTest {
 
         // Arrange
         when(reintentarPagoUseCase.ejecutar(anyString(), anyString(), anyString(), any()))
-                .thenThrow(new NoSuchElementException());
+                .thenThrow(new RecursoNoEncontradoException("el recurso", "no-existe"));
 
         // Act y Assert
         mockMvc.perform(post("/api/pagos/pa-99/reintentos").header("Authorization", "Bearer token-ana"))

@@ -36,7 +36,7 @@ public class VerificadorDeDisponibilidadDelCarritoTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(stock),
                 new FechaVencimiento(LocalDate.now().plusYears(1)),
-                Tienda.crear("t-1", "Tienda Beauty")
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
         );
         articulo.publicar();
         return articulo;

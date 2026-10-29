@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+
 import com.example.ecommerce.domain.entity.Pago;
 import com.example.ecommerce.domain.entity.Pedido;
 import com.example.ecommerce.domain.repository.PagoRepository;
@@ -24,8 +26,8 @@ public class ReintentarPagoUseCase {
 
     @Transactional
     public Pago ejecutar(String nuevoPagoId, String pagoRechazadoId, String clienteId, MedioPago medioPago) {
-        Pago pagoRechazado = pagoRepository.obtenerPorId(pagoRechazadoId).orElseThrow();
-        Pedido pedido = pedidoRepository.obtenerPorId(pagoRechazado.getPedidoId()).orElseThrow();
+        Pago pagoRechazado = pagoRepository.obtenerPorId(pagoRechazadoId).orElseThrow(() -> new RecursoNoEncontradoException("el pago", pagoRechazadoId));
+        Pedido pedido = pedidoRepository.obtenerPorId(pagoRechazado.getPedidoId()).orElseThrow(() -> new RecursoNoEncontradoException("el pedido", pagoRechazado.getPedidoId()));
 
         pedido.verificarQuePerteneceA(clienteId);
         pagoRechazado.verificarQueSePuedeReintentar();

@@ -1,5 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.valueobject.EstadoTienda;
+
 import com.example.ecommerce.domain.entity.*;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.RutinaCuidadoRepository;
@@ -32,7 +34,7 @@ public class CrearRutinaCuidadoUseCaseTest {
                 List.of(TipoPiel.NORMAL),
                 Inventario.crear(cantidad),
                 new FechaVencimiento(LocalDate.of(2030, 12, 31)),
-                Tienda.crear("t-1", "Tienda prueba")
+                Tienda.reconstruir("t-1", "Tienda prueba", "", "v-1", EstadoTienda.ACTIVA)
         );
     }
 

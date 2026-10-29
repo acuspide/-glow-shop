@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(ArticuloNoEncontradoException.class)
-    public ResponseEntity<Map<String, Object>> manejarArticuloNoEncontrado(
-            ArticuloNoEncontradoException ex) {
+    // Cualquier búsqueda por id que no encuentra nada (artículo, carrito, pedido, usuario...).
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<Map<String, Object>> manejarRecursoNoEncontrado(
+            RecursoNoEncontradoException ex) {
 
         return construirRespuesta(
                 HttpStatus.NOT_FOUND,
@@ -29,16 +29,6 @@ public class GlobalExceptionHandler {
         return construirRespuesta(
                 HttpStatus.BAD_REQUEST,
                 ex.getMessage()
-        );
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Map<String, Object>> manejarNoEncontrado(
-            NoSuchElementException ex) {
-
-        return construirRespuesta(
-                HttpStatus.NOT_FOUND,
-                "El recurso solicitado no existe"
         );
     }
 
@@ -60,6 +50,11 @@ public class GlobalExceptionHandler {
             CategoriaDuplicadaException ex) {
 
         return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(VendedorYaTieneTiendaException.class)
+    public ResponseEntity<Map<String, Object>> manejarVendedorYaTieneTienda(VendedorYaTieneTiendaException ex) {
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage()); // 409
     }
 
     @ExceptionHandler(CredencialesInvalidasException.class)
@@ -87,6 +82,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> manejarAccionSoloParaCliente(
             AccionSoloParaClienteException ex) {
 
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
+    @ExceptionHandler(AccionSoloParaVendedorException.class)
+    public ResponseEntity<Map<String, Object>> manejarAccionSoloParaVendedor(
+            AccionSoloParaVendedorException ex) {
+
+        return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
+    }
+
+    @ExceptionHandler(TiendaAjenaException.class)
+    public ResponseEntity<Map<String, Object>> manejarTiendaAjena(TiendaAjenaException ex) {
         return construirRespuesta(HttpStatus.FORBIDDEN, ex.getMessage()); // 403
     }
 
