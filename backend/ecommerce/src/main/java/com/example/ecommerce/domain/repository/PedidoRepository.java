@@ -12,5 +12,7 @@ public interface PedidoRepository {
 
     List<Pedido> listarTodos();
     List<Pedido> obtenerPorClienteId(String clienteId);
+
+    List<Pedido> obtenerPorTiendaId(String tiendaId);
 }
 

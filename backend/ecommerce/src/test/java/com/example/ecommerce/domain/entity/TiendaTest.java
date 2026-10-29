@@ -122,4 +122,12 @@ class TiendaTest {
 
         assertEquals(a, b);
     }
+
+    @Test
+    void soloElVendedorDuenoPasaLaVerificacionDeLaTienda() {
+        Tienda tienda = Tienda.reconstruir("t-1", "Glow", "", "v-1", EstadoTienda.PENDIENTE);
+
+        assertDoesNotThrow(() -> tienda.verificarQueEsDe("v-1"));
+        assertThrows(TiendaAjenaException.class, () -> tienda.verificarQueEsDe("v-2"));
+    }
 }

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class PedidoRepositoryEnMemoriaTest {
 
     private Pedido pedido(String id, String clienteId) {
-        return Pedido.crear(id, clienteId,
+        return Pedido.crear(id, clienteId, "t-1",
                 List.of(new DetallePedido("a-1", 1, new Precio(new BigDecimal("20000")))));
     }
 

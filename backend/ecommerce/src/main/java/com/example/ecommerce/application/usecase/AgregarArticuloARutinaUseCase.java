@@ -1,5 +1,8 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.domain.entity.Usuario;
+import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
 import com.example.ecommerce.domain.entity.Articulo;
@@ -15,9 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class AgregarArticuloARutinaUseCase {
     private final RutinaCuidadoRepository rutinaRepository;
     private final ArticuloRepository articuloRepository;
+    private final UsuarioRepository usuarioRepository;
 
     @Transactional
-    public RutinaCuidado ejecutar(String rutinaId, String articuloId) {
+    public RutinaCuidado ejecutar(String rutinaId, String administradorId, String articuloId) {
+
+        Usuario administrador = usuarioRepository.obtenerPorId(administradorId)
+                .orElseThrow(AccionSoloParaAdministradorException::new);
+        administrador.verificarQueEsAdministradorActivo();   // solo el administrador arma las rutinas
 
         RutinaCuidado rutina = rutinaRepository
                 .obtenerPorId(rutinaId)

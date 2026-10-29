@@ -1,5 +1,10 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.DatosPrueba;
+import com.example.ecommerce.domain.entity.Usuario;
+import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.valueobject.Email;
+import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
 import com.example.ecommerce.domain.valueobject.EstadoTienda;
 
 import com.example.ecommerce.domain.entity.*;
@@ -23,6 +28,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class CrearRutinaCuidadoUseCaseTest {
+    private static UsuarioRepositoryEnMemoria usuariosConAdminYVendedora() {
+        UsuarioRepositoryEnMemoria usuarios = new UsuarioRepositoryEnMemoria();
+        usuarios.guardar(Usuario.administradorInicial("ad-1", "Admin", new Email("admin@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
+        usuarios.guardar(Usuario.registrarVendedor("v-1", "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
+        return usuarios;
+    }
+
     private Articulo crearArticulo(String id, int cantidad) {
         return Articulo.crear(
                 id,
@@ -50,7 +62,8 @@ public class CrearRutinaCuidadoUseCaseTest {
         CrearRutinaCuidadoUseCase useCase =
                 new CrearRutinaCuidadoUseCase(
                         rutinaRepository,
-                        articuloRepository
+                        articuloRepository,
+                        usuariosConAdminYVendedora()
                 );
 
         Articulo articulo1 = crearArticulo("a-1", 10);
@@ -64,6 +77,7 @@ public class CrearRutinaCuidadoUseCaseTest {
 
         RutinaCuidado rutinaCreada = useCase.ejecutar(
                 "r-1",
+                "ad-1",
                 "Rutina de cuidado diario",
                 List.of("a-1", "a-2")
         );
@@ -78,5 +92,16 @@ public class CrearRutinaCuidadoUseCaseTest {
 
         assertTrue(rutina.isPresent());
     }
-}
 
+    @Test
+    void unVendedorNoPuedeCrearRutinas() {
+        RutinaCuidadoRepositoryEnMemoria rutinaRepository = new RutinaCuidadoRepositoryEnMemoria();
+        CrearRutinaCuidadoUseCase useCase = new CrearRutinaCuidadoUseCase(
+                rutinaRepository, new ArticuloRepositoryEnMemoria(), usuariosConAdminYVendedora());
+
+        assertThrows(AccionSoloParaAdministradorException.class,
+                () -> useCase.ejecutar("r-1", "v-1", "Rutina", List.of("a-1", "a-2")));
+        assertTrue(rutinaRepository.obtenerPorId("r-1").isEmpty());
+    }
+
+}

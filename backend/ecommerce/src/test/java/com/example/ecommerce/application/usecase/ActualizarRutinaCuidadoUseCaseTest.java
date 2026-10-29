@@ -1,5 +1,10 @@
 package com.example.ecommerce.application.usecase;
 
+import com.example.ecommerce.DatosPrueba;
+import com.example.ecommerce.domain.entity.Usuario;
+import com.example.ecommerce.domain.exception.AccionSoloParaAdministradorException;
+import com.example.ecommerce.domain.valueobject.Email;
+import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
 import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.entity.RutinaCuidado;
@@ -15,6 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ActualizarRutinaCuidadoUseCaseTest {
+    private static UsuarioRepositoryEnMemoria usuariosConAdminYVendedora() {
+        UsuarioRepositoryEnMemoria usuarios = new UsuarioRepositoryEnMemoria();
+        usuarios.guardar(Usuario.administradorInicial("ad-1", "Admin", new Email("admin@correo.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
+        usuarios.guardar(Usuario.registrarVendedor("v-1", "Vera", new Email("vera@tienda.com"), "hash", DatosPrueba.TELEFONO, DatosPrueba.FECHA));
+        return usuarios;
+    }
+
     private RutinaCuidadoRepository rutinaRepository;
     private ArticuloRepository articuloRepository;
     private ActualizarRutinaCuidadoUseCase useCase;
@@ -26,7 +38,8 @@ public class ActualizarRutinaCuidadoUseCaseTest {
 
         useCase = new ActualizarRutinaCuidadoUseCase(
                 rutinaRepository,
-                articuloRepository
+                articuloRepository,
+                usuariosConAdminYVendedora()
         );
     }
 
@@ -54,6 +67,7 @@ public class ActualizarRutinaCuidadoUseCaseTest {
 
         RutinaCuidado resultado = useCase.ejecutar(
                 rutinaId,
+                "ad-1",
                 "Rutina actualizada",
                 List.of("a-10", "a-20")
         );
@@ -74,6 +88,7 @@ public class ActualizarRutinaCuidadoUseCaseTest {
                 RecursoNoEncontradoException.class,
                 () -> useCase.ejecutar(
                         "r-99",
+                        "ad-1",
                         "Rutina actualizada",
                         List.of("a-10", "a-20")
                 )
@@ -82,4 +97,13 @@ public class ActualizarRutinaCuidadoUseCaseTest {
         verify(rutinaRepository, never()).guardar(any());
         verifyNoInteractions(articuloRepository);
     }
+
+    @Test
+    void unVendedorNoPuedeEditarRutinas() {
+        assertThrows(AccionSoloParaAdministradorException.class,
+                () -> useCase.ejecutar("r-1", "v-1", "Rutina", List.of("a-10", "a-20")));
+
+        verifyNoInteractions(rutinaRepository, articuloRepository);
+    }
+
 }

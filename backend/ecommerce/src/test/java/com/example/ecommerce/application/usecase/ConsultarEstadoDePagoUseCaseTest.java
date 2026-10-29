@@ -38,7 +38,7 @@ class ConsultarEstadoDePagoUseCaseTest {
 
     // Pedido de Ana de $40.000 y un pago suyo rechazado por fondos insuficientes.
     private Pedido pedidoDeAna() {
-        return Pedido.crear("p-1", "u-100",
+        return Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
     }
 

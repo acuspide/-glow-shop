@@ -6,6 +6,7 @@ import java.util.List;
 public record PedidoResponse(
         String id,
         String clienteId,
+        String tiendaId,
         String estado,
         List<DetallePedidoResponse> detalles,
         BigDecimal subtotal,

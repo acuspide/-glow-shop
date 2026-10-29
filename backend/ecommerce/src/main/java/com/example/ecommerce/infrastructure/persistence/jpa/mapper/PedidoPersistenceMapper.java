@@ -16,6 +16,7 @@ public class PedidoPersistenceMapper {
         PedidoEntity entity = new PedidoEntity();
         entity.setId(pedido.getId());
         entity.setClienteId(pedido.getClienteId());
+        entity.setTiendaId(pedido.getTiendaId());
         entity.setDetalles(new ArrayList<>(pedido.getDetalles().stream()
                 .map(detalle -> new LineaArticuloEmbeddable(
                         detalle.getArticuloId(), detalle.getCantidad(), detalle.getPrecioUnitario().valor()))
@@ -33,6 +34,7 @@ public class PedidoPersistenceMapper {
         return Pedido.reconstruir(
                 entity.getId(),
                 entity.getClienteId(),
+                entity.getTiendaId(),
                 entity.getDetalles().stream()
                         .map(linea -> new DetallePedido(
                                 linea.getArticuloId(), linea.getCantidad(), new Precio(linea.getPrecioUnitario())))

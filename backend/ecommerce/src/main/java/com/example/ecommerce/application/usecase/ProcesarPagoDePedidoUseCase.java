@@ -36,14 +36,10 @@ public class ProcesarPagoDePedidoUseCase {
 
         ResultadoCobro resultado = pasarelaDePagos.cobrar(pago.getMonto(), medioPago);
 
-        if (resultado.aprobado()) {
-            pago.aprobar(resultado.transaccionId());
-            pedido.registrarPago(pago);
-            pedidoRepository.guardar(pedido);
-        } else {
-            pago.rechazar(resultado.transaccionId(), resultado.motivoRechazo());
-        }
+        pago.registrarResultado(resultado.aprobado(), resultado.transaccionId(), resultado.motivoRechazo());
+        pedido.registrarSiFueAprobado(pago);
 
+        pedidoRepository.guardar(pedido);
         pagoRepository.guardar(pago);
 
         return pago;

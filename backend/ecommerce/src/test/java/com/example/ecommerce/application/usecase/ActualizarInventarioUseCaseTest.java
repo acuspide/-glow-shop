@@ -4,6 +4,7 @@ import com.example.ecommerce.domain.entity.*;
 import com.example.ecommerce.domain.exception.ArticuloNoEncontradoException;
 import com.example.ecommerce.domain.exception.CantidadInvalidaException;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.domain.exception.TiendaAjenaException;
 import com.example.ecommerce.domain.valueobject.*;
 import com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria;
 import org.junit.jupiter.api.Test;
@@ -42,7 +43,7 @@ public class ActualizarInventarioUseCaseTest {
                 new ActualizarInventarioUseCase(repository);
 
         // Act
-        useCase.aumentar("a-1", 5);
+        useCase.aumentar("a-1", "v-1", 5);
 
         // Assert
         assertEquals(15, articulo.getCantidadDisponible());
@@ -73,7 +74,7 @@ public class ActualizarInventarioUseCaseTest {
                 new ActualizarInventarioUseCase(repository);
 
         // Act
-        useCase.disminuir("a-2", 3);
+        useCase.disminuir("a-2", "v-1", 3);
 
         // Assert
         assertEquals(7, articulo.getCantidadDisponible());
@@ -90,7 +91,7 @@ public class ActualizarInventarioUseCaseTest {
 
         // Act y Assert
         assertThrows(ArticuloNoEncontradoException.class, () -> {
-            useCase.aumentar("a-999", 5);
+            useCase.aumentar("a-999", "v-1", 5);
         });
     }
     @Test
@@ -120,7 +121,7 @@ public class ActualizarInventarioUseCaseTest {
 
         // Act y Assert
         assertThrows(ReglaDominioException.class, () -> {
-            useCase.disminuir("a-3", 10);
+            useCase.disminuir("a-3", "v-1", 10);
         });
 
         // El inventario debe conservar su valor original
@@ -153,11 +154,36 @@ public class ActualizarInventarioUseCaseTest {
 
         // Act y Assert
         assertThrows(CantidadInvalidaException.class, () -> {
-            useCase.aumentar("a-4", 0);
+            useCase.aumentar("a-4", "v-1", 0);
         });
 
         // El inventario debe conservar su valor original
         assertEquals(10, articulo.getCantidadDisponible());
     }
-}
 
+    @Test
+    void noDebePermitirQueOtroVendedorCambieElInventario() {
+
+        // Arrange
+        ArticuloRepositoryEnMemoria repository = new ArticuloRepositoryEnMemoria();
+        Articulo articulo = Articulo.crear(
+                "a-5",
+                new NombreArticulo("Labial"),
+                new Precio(new BigDecimal("20000")),
+                Categoria.crear("cat-1", "Labios"),
+                Marca.crear("m-1", "Maybelline"),
+                Tono.CLARO,
+                List.of(TipoPiel.NORMAL),
+                Inventario.crear(10),
+                new FechaVencimiento(LocalDate.of(2027, 12, 31)),
+                Tienda.reconstruir("t-1", "Tienda Beauty", "", "v-1", EstadoTienda.ACTIVA)
+        );
+        repository.guardar(articulo);
+        ActualizarInventarioUseCase useCase = new ActualizarInventarioUseCase(repository);
+
+        // Act y Assert
+        assertThrows(TiendaAjenaException.class, () -> useCase.aumentar("a-5", "v-otro", 5));
+        assertThrows(TiendaAjenaException.class, () -> useCase.disminuir("a-5", "v-otro", 5));
+        assertEquals(10, articulo.getCantidadDisponible());
+    }
+}

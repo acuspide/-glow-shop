@@ -10,6 +10,7 @@ import com.example.ecommerce.domain.repository.PagoRepository;
 import com.example.ecommerce.domain.repository.PedidoRepository;
 import com.example.ecommerce.domain.valueobject.DetallePedido;
 import com.example.ecommerce.domain.valueobject.EstadoPago;
+import com.example.ecommerce.domain.valueobject.EstadoPedido;
 import com.example.ecommerce.domain.valueobject.MedioPago;
 import com.example.ecommerce.domain.valueobject.Precio;
 
@@ -46,7 +47,7 @@ class ProcesarPagoDePedidoUseCaseTest {
 
     // Pedido de Ana: 2 labiales a $20.000 = $40.000, ya confirmado.
     private Pedido pedidoConfirmadoDeAna() {
-        Pedido pedido = Pedido.crear("p-1", "u-100",
+        Pedido pedido = Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         pedido.confirmar();
         return pedido;
@@ -89,8 +90,8 @@ class ProcesarPagoDePedidoUseCaseTest {
         assertEquals(EstadoPago.RECHAZADO, pago.getEstado());
         assertEquals("Fondos insuficientes", pago.getMotivoRechazo());
         assertNull(pedido.getPagoConfirmadoId());
+        assertEquals(EstadoPedido.CONFIRMADO, pedido.getEstado());
         verify(pagoRepository).guardar(pago);
-        verify(pedidoRepository, never()).guardar(any());
     }
 
     @Test
@@ -125,7 +126,7 @@ class ProcesarPagoDePedidoUseCaseTest {
     void noDebeCobrarUnPedidoQueNoEstaConfirmado() {
 
         // Arrange
-        Pedido pedidoPendiente = Pedido.crear("p-1", "u-100",
+        Pedido pedidoPendiente = Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         when(pedidoRepository.obtenerPorId("p-1")).thenReturn(Optional.of(pedidoPendiente));
 

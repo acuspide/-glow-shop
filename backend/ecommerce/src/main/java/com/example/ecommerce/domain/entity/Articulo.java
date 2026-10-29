@@ -138,6 +138,11 @@ public class Articulo {
         return fechaVencimiento;
     }
 
+    /** Solo el vendedor dueño de la tienda que publicó el artículo puede modificarlo. */
+    public void verificarQueEsDelVendedor(String vendedorId) {
+        tienda.verificarQueEsDe(vendedorId);
+    }
+
     public Tienda getTienda() {
         return tienda;
     }

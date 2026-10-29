@@ -1,5 +1,7 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.application.TokenService;
+import org.springframework.web.bind.annotation.RequestHeader;
 import com.example.ecommerce.application.dto.response.ConsultarInventarioCompletoResponse;
 import com.example.ecommerce.application.usecase.AlertarStockBajoUseCase;
 import com.example.ecommerce.infrastructure.rest.mapper.ConsultarInventarioCompletoMapper;
@@ -15,10 +17,14 @@ import lombok.RequiredArgsConstructor;
 public class AlertarStockBajoController {
     private final AlertarStockBajoUseCase alertarStockBajoUseCase;
     private final ConsultarInventarioCompletoMapper inventarioMapper;
+    private final TokenService tokenService;
 
+    // Solo el vendedor con sesión iniciada, y solo ve los artículos de su tienda.
     @GetMapping("/stock-bajo")
-    public ResponseEntity<ConsultarInventarioCompletoResponse> alertarStockBajo() {
-        var articulos = alertarStockBajoUseCase.ejecutar();
+    public ResponseEntity<ConsultarInventarioCompletoResponse> alertarStockBajo(
+            @RequestHeader(value = "Authorization", required = false) String autorizacion) {
+        var articulos = alertarStockBajoUseCase.ejecutar(
+                tokenService.extraerUsuarioId(BearerToken.extraer(autorizacion)));
         var response = inventarioMapper.toResponse(articulos);
 
         return ResponseEntity.ok(response);

@@ -18,6 +18,7 @@ import com.example.ecommerce.domain.valueobject.Tono;
 import com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.persistence.PedidoRepositoryEnMemoria;
 import com.example.ecommerce.domain.exception.ArticuloEliminadoException;
+import com.example.ecommerce.domain.exception.TiendaAjenaException;
 import com.example.ecommerce.domain.service.VerificadorDeArticuloSinPedidosActivos;
 import org.junit.jupiter.api.Test;
 
@@ -55,7 +56,7 @@ public class EliminarArticuloUseCaseTest {
         articulo.publicar();
         repository.guardar(articulo);
 
-        Articulo eliminado = useCase.ejecutar("a-1");
+        Articulo eliminado = useCase.ejecutar("a-1", "v-1");
 
         assertSame(articulo, eliminado);
         assertSame(articulo, repository.obtenerPorId("a-1").orElseThrow());
@@ -85,7 +86,7 @@ public class EliminarArticuloUseCaseTest {
 
         assertThrows(
                 ArticuloNoEncontradoException.class,
-                () -> useCase.ejecutar("a-99")
+                () -> useCase.ejecutar("a-99", "v-1")
         );
     }
 
@@ -100,13 +101,30 @@ public class EliminarArticuloUseCaseTest {
         Articulo articulo = crearArticulo("a-1", 10);
         repository.guardar(articulo);
 
-        useCase.ejecutar("a-1");
+        useCase.ejecutar("a-1", "v-1");
 
         assertThrows(
                 ArticuloEliminadoException.class,
-                () -> useCase.ejecutar("a-1")
+                () -> useCase.ejecutar("a-1", "v-1")
         );
 
         assertSame(articulo, repository.obtenerPorId("a-1").orElseThrow());
+    }
+
+    @Test
+    void noDebePermitirQueOtroVendedorElimineElArticulo() {
+        ArticuloRepository repository = new ArticuloRepositoryEnMemoria();
+        PedidoRepository pedidoRepository = new PedidoRepositoryEnMemoria();
+
+        EliminarArticuloUseCase useCase =
+                new EliminarArticuloUseCase(repository, new VerificadorDeArticuloSinPedidosActivos(pedidoRepository));
+
+        Articulo articulo = crearArticulo("a-1", 10);
+        articulo.publicar();
+        repository.guardar(articulo);
+
+        assertThrows(TiendaAjenaException.class, () -> useCase.ejecutar("a-1", "v-otro"));
+        assertTrue(articulo.isPublicado());
+        assertFalse(articulo.isEliminado());
     }
 }

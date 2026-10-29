@@ -62,6 +62,8 @@ class CatalogoRepositoryJpaTest {
         assertEquals("v-1", leida.getVendedorId());
         assertEquals("Vegana", leida.getDescripcion());
         assertTrue(tiendas.existePorVendedorId("v-1"));
+        assertEquals("t-1", tiendas.obtenerPorVendedorId("v-1").orElseThrow().getId());
+        assertTrue(tiendas.obtenerPorVendedorId("v-2").isEmpty());
         assertFalse(tiendas.existePorVendedorId("v-2"));
     }
 }

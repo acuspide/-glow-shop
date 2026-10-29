@@ -1,5 +1,7 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.application.TokenService;
+import org.junit.jupiter.api.BeforeEach;
 import com.example.ecommerce.application.dto.response.ConsultarInventarioCompletoResponse;
 import com.example.ecommerce.application.usecase.ConsultarInventarioCompletoUseCase;
 import com.example.ecommerce.domain.entity.Articulo;
@@ -21,6 +23,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ConsultarInventarioControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private TokenService tokenService;
+
+    @BeforeEach
+    void sesionDeVera() {
+        org.mockito.Mockito.when(tokenService.extraerUsuarioId("token-vera")).thenReturn("v-1");
+    }
 
     @MockitoBean
     private ConsultarInventarioCompletoUseCase consultarInventarioCompletoUseCase;
@@ -46,12 +56,12 @@ public class ConsultarInventarioControllerTest {
                 )
         );
 
-        when(consultarInventarioCompletoUseCase.ejecutar())
+        when(consultarInventarioCompletoUseCase.ejecutar("v-1"))
                 .thenReturn(articulos);
         when(consultarInventarioCompletoMapper.toResponse(articulos))
                 .thenReturn(response);
 
-        mockMvc.perform(get("/api/inventario"))
+        mockMvc.perform(get("/api/inventario").header("Authorization", "Bearer token-vera"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articulos.length()").value(2))
                 .andExpect(jsonPath("$.articulos[0].nombre").value("Labial rojo"))
@@ -62,14 +72,20 @@ public class ConsultarInventarioControllerTest {
 
     @Test
     void debeRetornarListaVaciaCuandoNoHayArticulos() throws Exception {
-        when(consultarInventarioCompletoUseCase.ejecutar())
+        when(consultarInventarioCompletoUseCase.ejecutar("v-1"))
                 .thenReturn(List.of());
 
         when(consultarInventarioCompletoMapper.toResponse(List.of()))
                 .thenReturn(new ConsultarInventarioCompletoResponse(List.of()));
 
-        mockMvc.perform(get("/api/inventario"))
+        mockMvc.perform(get("/api/inventario").header("Authorization", "Bearer token-vera"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.articulos").isEmpty());
+    }
+
+    @Test
+    void sinTokenRetorna401() throws Exception {
+        mockMvc.perform(get("/api/inventario"))
+                .andExpect(status().isUnauthorized());
     }
 }

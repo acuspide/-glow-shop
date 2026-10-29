@@ -56,11 +56,16 @@ public class Tienda {
         this.estado = EstadoTienda.ACTIVA;
     }
 
-    /** RN10: para publicar, la tienda debe ser del vendedor y estar activa. */
-    public void verificarQuePuedePublicar(String vendedorId) {
+    /** Solo el vendedor dueño de la tienda la administra (publica, despacha sus pedidos...). */
+    public void verificarQueEsDe(String vendedorId) {
         if (!this.vendedorId.equals(vendedorId)) {
             throw new TiendaAjenaException();
         }
+    }
+
+    /** RN10: para publicar, la tienda debe ser del vendedor y estar activa. */
+    public void verificarQuePuedePublicar(String vendedorId) {
+        verificarQueEsDe(vendedorId);
         if (estado != EstadoTienda.ACTIVA) {
             throw new TiendaNoActivaException(estado);
         }

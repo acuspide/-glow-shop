@@ -8,4 +8,6 @@ import java.util.List;
 interface PedidoJpaDataRepository extends JpaRepository<PedidoEntity, String> {
 
     List<PedidoEntity> findByClienteId(String clienteId);
+
+    List<PedidoEntity> findByTiendaId(String tiendaId);
 }

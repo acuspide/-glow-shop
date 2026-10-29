@@ -55,6 +55,23 @@ public class Pago {
         }
     }
 
+    /**
+     * Registra lo que respondió la pasarela: si aprobó el cobro el pago queda APROBADO,
+     * si no, queda RECHAZADO con su motivo.
+     */
+    public void registrarResultado(boolean aprobado, String transaccionId, String motivoRechazo) {
+        if (aprobado) {
+            aprobar(transaccionId);
+        } else {
+            rechazar(transaccionId, motivoRechazo);
+        }
+    }
+
+    /** Al reintentar, si el cliente no elige otro medio de pago se usa el mismo del intento rechazado. */
+    public MedioPago medioParaReintentar(MedioPago medioElegido) {
+        return medioElegido != null ? medioElegido : this.medioPago;
+    }
+
     public void aprobar(String transaccionId) {
         validarEstadoActual(EstadoPago.PENDIENTE, EstadoPago.APROBADO);
         validarTransaccion(transaccionId);

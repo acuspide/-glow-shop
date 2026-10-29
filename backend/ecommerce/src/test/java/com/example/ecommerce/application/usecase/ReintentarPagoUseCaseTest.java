@@ -41,7 +41,7 @@ class ReintentarPagoUseCaseTest {
     private ReintentarPagoUseCase useCase;
 
     private Pedido pedidoConfirmadoDeAna() {
-        Pedido pedido = Pedido.crear("p-1", "u-100",
+        Pedido pedido = Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         pedido.confirmar();
         return pedido;
