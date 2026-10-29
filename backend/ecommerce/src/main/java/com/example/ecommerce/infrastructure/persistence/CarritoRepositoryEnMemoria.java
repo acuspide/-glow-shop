@@ -2,13 +2,12 @@ package com.example.ecommerce.infrastructure.persistence;
 
 import com.example.ecommerce.domain.entity.Carrito;
 import com.example.ecommerce.domain.repository.CarritoRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Repository
+// Se usa en las pruebas unitarias. En la aplicación corre el adaptador JPA (persistence/jpa).
 public class CarritoRepositoryEnMemoria implements CarritoRepository {
 
     private final Map<String, Carrito> carritos = new HashMap<>();
