@@ -11,7 +11,7 @@ import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
-import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
+import com.example.ecommerce.infrastructure.security.PasswordHasherBCrypt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,7 +22,7 @@ public class RegistrarClienteUseCaseTest {
     void debeRegistrarUnClienteNuevoConCorreoUnico() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
         // Act
@@ -37,7 +37,7 @@ public class RegistrarClienteUseCaseTest {
     void noDebePermitirRegistrarDosUsuariosConElMismoCorreo() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
         useCase.ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
 
@@ -51,7 +51,7 @@ public class RegistrarClienteUseCaseTest {
     void debeAlmacenarLaContrasenaComoHashYNoEnTextoPlano() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
         // Act
@@ -65,7 +65,7 @@ public class RegistrarClienteUseCaseTest {
     void noDebeRegistrarConContrasenaVaciaYNoDebeGuardarNada() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)
@@ -78,7 +78,7 @@ public class RegistrarClienteUseCaseTest {
     void noDebeRegistrarConUnaContrasenaDebilYNoDebeGuardarNada() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         RegistrarClienteUseCase useCase = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 
         // Act y Assert (doble verificación: la excepción y el estado intacto)

@@ -7,7 +7,7 @@ import com.example.ecommerce.domain.exception.CredencialesInvalidasException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
-import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
+import com.example.ecommerce.infrastructure.security.PasswordHasherBCrypt;
 import com.example.ecommerce.infrastructure.security.TokenServiceHmacSha256;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IniciarSesionUseCaseTest {
 
     private final UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-    private final PasswordHasher passwordHasher = new PasswordHasherSha256();
+    private final PasswordHasher passwordHasher = new PasswordHasherBCrypt();
     private final TokenServiceHmacSha256 tokenService =
             new TokenServiceHmacSha256("secreto-de-pruebas-con-mas-de-32-caracteres", 60);
     private final IniciarSesionUseCase useCase = new IniciarSesionUseCase(

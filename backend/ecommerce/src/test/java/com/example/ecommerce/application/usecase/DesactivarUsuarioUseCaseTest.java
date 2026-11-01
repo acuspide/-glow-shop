@@ -9,7 +9,7 @@ import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
-import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
+import com.example.ecommerce.infrastructure.security.PasswordHasherBCrypt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DesactivarUsuarioUseCaseTest {
 
     private final UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-    private final PasswordHasher passwordHasher = new PasswordHasherSha256();
+    private final PasswordHasher passwordHasher = new PasswordHasherBCrypt();
     private final DesactivarUsuarioUseCase useCase = new DesactivarUsuarioUseCase(repository);
     private final AutenticarUsuarioUseCase autenticar = new AutenticarUsuarioUseCase(repository, passwordHasher);
 

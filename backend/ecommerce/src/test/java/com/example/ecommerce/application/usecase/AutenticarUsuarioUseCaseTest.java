@@ -8,7 +8,7 @@ import com.example.ecommerce.domain.exception.UsuarioInactivoException;
 import com.example.ecommerce.domain.repository.UsuarioRepository;
 import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
-import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
+import com.example.ecommerce.infrastructure.security.PasswordHasherBCrypt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +20,7 @@ public class AutenticarUsuarioUseCaseTest {
     void debeAutenticarUnUsuarioConCredencialesCorrectas() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Ana Pérez", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
@@ -36,7 +36,7 @@ public class AutenticarUsuarioUseCaseTest {
     void noDebeAutenticarConContrasenaIncorrecta() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
@@ -51,7 +51,7 @@ public class AutenticarUsuarioUseCaseTest {
     void noDebeAutenticarUnCorreoNoRegistrado() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         AutenticarUsuarioUseCase useCase = new AutenticarUsuarioUseCase(repository, passwordHasher);
 
         // Act y Assert
@@ -64,7 +64,7 @@ public class AutenticarUsuarioUseCaseTest {
     void noDebeAutenticarUnUsuarioDesactivado() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         usuario.desactivar();
@@ -80,7 +80,7 @@ public class AutenticarUsuarioUseCaseTest {
     void unUsuarioDesactivadoConContrasenaIncorrectaRecibeCredencialesInvalidas() {
         // Arrange
         UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-        PasswordHasher passwordHasher = new PasswordHasherSha256();
+        PasswordHasher passwordHasher = new PasswordHasherBCrypt();
         Usuario usuario = new RegistrarClienteUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository))
                 .ejecutar("u-1", "Ana", "ana@correo.com", "Clave123", DatosPrueba.TELEFONO_TEXTO, DatosPrueba.FECHA_VALOR);
         usuario.desactivar();
