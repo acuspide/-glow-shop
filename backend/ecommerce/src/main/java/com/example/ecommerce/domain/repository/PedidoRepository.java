@@ -14,5 +14,8 @@ public interface PedidoRepository {
     List<Pedido> obtenerPorClienteId(String clienteId);
 
     List<Pedido> obtenerPorTiendaId(String tiendaId);
+
+    /** Ranking de artículos por unidades vendidas (de mayor a menor). Solo cuentan pedidos entregados. */
+    List<ArticuloVentas> masVendidos(int limite);
 }
 

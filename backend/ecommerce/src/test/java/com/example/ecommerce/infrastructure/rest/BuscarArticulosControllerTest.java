@@ -3,6 +3,7 @@ package com.example.ecommerce.infrastructure.rest;
 import com.example.ecommerce.application.dto.request.BuscarArticulosRequest;
 import com.example.ecommerce.application.usecase.BuscarArticulosUseCase;
 import com.example.ecommerce.domain.entity.Articulo;
+import com.example.ecommerce.domain.repository.Pagina;
 import com.example.ecommerce.domain.valueobject.CriteriosBusquedaArticulo;
 import com.example.ecommerce.infrastructure.rest.mapper.BuscarArticulosMapper;
 import com.example.ecommerce.infrastructure.rest.mapper.MostrarDetalleArticuloMapper;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -38,7 +40,7 @@ public class BuscarArticulosControllerTest {
     private MostrarDetalleArticuloMapper mostrarDetalleArticuloMapper;
 
     @Test
-    void debeBuscarArticulosYRetornar200() throws Exception {
+    void debeBuscarArticulosYRetornarLaPaginaConSusTotales() throws Exception {
         Articulo articulo = mock(Articulo.class);
 
         MostrarDetalleArticuloResponse response =
@@ -67,8 +69,8 @@ public class BuscarArticulosControllerTest {
                 ));
 
         when(buscarArticulosUseCase.ejecutar(
-                any(CriteriosBusquedaArticulo.class)))
-                .thenReturn(List.of(articulo));
+                any(CriteriosBusquedaArticulo.class), eq(0), eq(10)))
+                .thenReturn(new Pagina<>(List.of(articulo), 1, 1, 0, 10));
 
         when(mostrarDetalleArticuloMapper.toResponse(articulo))
                 .thenReturn(response);
@@ -76,20 +78,48 @@ public class BuscarArticulosControllerTest {
         mockMvc.perform(get("/api/buscarArticulos")
                         .param("texto", "labial"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value("a-1"))
-                .andExpect(jsonPath("$[0].nombre").value("Labial rojo"))
-                .andExpect(jsonPath("$[0].precio").value(35000));
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].id").value("a-1"))
+                .andExpect(jsonPath("$.content[0].nombre").value("Labial rojo"))
+                .andExpect(jsonPath("$.content[0].precio").value(35000))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1));
 
         verify(buscarArticulosMapper).toCriterios(
                 any(BuscarArticulosRequest.class));
         verify(buscarArticulosUseCase).ejecutar(
-                any(CriteriosBusquedaArticulo.class));
+                any(CriteriosBusquedaArticulo.class), eq(0), eq(10));
         verify(mostrarDetalleArticuloMapper).toResponse(articulo);
     }
 
     @Test
-    void debeRetornarListaVaciaCuandoNoHayCoincidencias() throws Exception {
+    void debePasarLosParametrosPageYSizeAlCasoDeUso() throws Exception {
+        when(buscarArticulosMapper.toCriterios(
+                any(BuscarArticulosRequest.class)))
+                .thenReturn(new CriteriosBusquedaArticulo(
+                        null, null, null, null,
+                        null, null, null, null
+                ));
+
+        when(buscarArticulosUseCase.ejecutar(
+                any(CriteriosBusquedaArticulo.class), eq(2), eq(5)))
+                .thenReturn(new Pagina<>(List.of(), 11, 3, 2, 5));
+
+        mockMvc.perform(get("/api/buscarArticulos")
+                        .param("page", "2")
+                        .param("size", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalElements").value(11))
+                .andExpect(jsonPath("$.totalPages").value(3))
+                .andExpect(jsonPath("$.number").value(2))
+                .andExpect(jsonPath("$.size").value(5));
+
+        verify(buscarArticulosUseCase).ejecutar(
+                any(CriteriosBusquedaArticulo.class), eq(2), eq(5));
+    }
+
+    @Test
+    void debeRetornarPaginaVaciaCuandoNoHayCoincidencias() throws Exception {
         when(buscarArticulosMapper.toCriterios(
                 any(BuscarArticulosRequest.class)))
                 .thenReturn(new CriteriosBusquedaArticulo(
@@ -98,16 +128,18 @@ public class BuscarArticulosControllerTest {
                 ));
 
         when(buscarArticulosUseCase.ejecutar(
-                any(CriteriosBusquedaArticulo.class)))
-                .thenReturn(List.of());
+                any(CriteriosBusquedaArticulo.class), eq(0), eq(10)))
+                .thenReturn(new Pagina<>(List.of(), 0, 0, 0, 10));
 
         mockMvc.perform(get("/api/buscarArticulos")
                         .param("texto", "inexistente"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[]"));
+                .andExpect(jsonPath("$.content").isEmpty())
+                .andExpect(jsonPath("$.totalElements").value(0))
+                .andExpect(jsonPath("$.totalPages").value(0));
 
         verify(buscarArticulosUseCase).ejecutar(
-                any(CriteriosBusquedaArticulo.class));
+                any(CriteriosBusquedaArticulo.class), eq(0), eq(10));
         verifyNoInteractions(mostrarDetalleArticuloMapper);
     }
 }
