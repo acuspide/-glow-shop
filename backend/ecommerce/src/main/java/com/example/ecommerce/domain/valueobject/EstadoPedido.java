@@ -1,5 +1,8 @@
 package com.example.ecommerce.domain.valueobject;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 public enum EstadoPedido {
     PENDIENTE,
     CONFIRMADO,
@@ -20,5 +23,14 @@ public enum EstadoPedido {
 
     public boolean esFinal() {
         return this == ENTREGADO || this == CANCELADO;
+    }
+
+    /** Un pedido cuenta como venta para los reportes cuando ya fue entregado. */
+    public boolean cuentaComoVenta() {
+        return estadosQueCuentanComoVenta().contains(this);
+    }
+
+    public static Set<EstadoPedido> estadosQueCuentanComoVenta() {
+        return EnumSet.of(ENTREGADO);
     }
 }
