@@ -13,6 +13,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BuscarArticulosUseCase {
+
+
     private final ArticuloRepository repository;
 
     @Transactional(readOnly = true)
