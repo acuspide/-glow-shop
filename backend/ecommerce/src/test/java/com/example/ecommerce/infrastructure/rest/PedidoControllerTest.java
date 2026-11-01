@@ -106,7 +106,7 @@ class PedidoControllerTest {
     }
 
     @Test
-    void deberiaRetornar400CuandoElCarritoEstaVacio() throws Exception {
+    void deberiaRetornar422CuandoElCarritoEstaVacio() throws Exception {
 
         // Arrange
         when(confirmarPedidoUseCase.ejecutar(anyString(), any()))
@@ -114,11 +114,11 @@ class PedidoControllerTest {
 
         // Act y Assert
         mockMvc.perform(post("/api/pedidos").header("Authorization", "Bearer token-ana"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test
-    void deberiaRetornar400CuandoElPrecioDeUnArticuloCambio() throws Exception {
+    void deberiaRetornar422CuandoElPrecioDeUnArticuloCambio() throws Exception {
 
         // Arrange
         when(confirmarPedidoUseCase.ejecutar(anyString(), any()))
@@ -126,7 +126,7 @@ class PedidoControllerTest {
 
         // Act y Assert
         mockMvc.perform(post("/api/pedidos").header("Authorization", "Bearer token-ana"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test

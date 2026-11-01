@@ -225,11 +225,11 @@ class AdminUsuarioControllerTest {
     }
 
     @Test
-    void desactivarUnUsuarioYaDesactivadoDebeResponder400() throws Exception {
+    void desactivarUnUsuarioYaDesactivadoDebeResponder422() throws Exception {
         when(tokenService.extraerUsuarioId("token-admin")).thenReturn("a-1");
         doThrow(new UsuarioYaDesactivadoException()).when(desactivarUsuarioUseCase).ejecutar("a-1", "u-1");
 
         mockMvc.perform(put("/api/admin/usuarios/u-1/desactivar").header("Authorization", "Bearer token-admin"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 }

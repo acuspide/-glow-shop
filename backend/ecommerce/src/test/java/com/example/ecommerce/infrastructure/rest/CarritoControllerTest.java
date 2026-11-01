@@ -102,7 +102,7 @@ class CarritoControllerTest {
     }
 
     @Test
-    void deberiaRetornar400CuandoElArticuloEstaAgotado() throws Exception {
+    void deberiaRetornar422CuandoElArticuloEstaAgotado() throws Exception {
 
         // Arrange
         String requestJson = """
@@ -119,7 +119,7 @@ class CarritoControllerTest {
         mockMvc.perform(post("/api/carrito/items").header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test
@@ -194,7 +194,7 @@ class CarritoControllerTest {
     }
 
     @Test
-    void deberiaRetornar400CuandoElArticuloNoEstaEnElCarrito() throws Exception {
+    void deberiaRetornar422CuandoElArticuloNoEstaEnElCarrito() throws Exception {
 
         // Arrange
         doThrow(new ArticuloNoEncontradoEnCarritoException())
@@ -202,7 +202,7 @@ class CarritoControllerTest {
 
         // Act y Assert
         mockMvc.perform(delete("/api/carrito/items/a-99").header("Authorization", "Bearer token-ana"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test
@@ -244,7 +244,7 @@ class CarritoControllerTest {
     }
 
     @Test
-    void deberiaRetornar400CuandoLaNuevaCantidadSuperaElStock() throws Exception {
+    void deberiaRetornar422CuandoLaNuevaCantidadSuperaElStock() throws Exception {
 
         // Arrange
         String requestJson = """
@@ -260,7 +260,7 @@ class CarritoControllerTest {
         mockMvc.perform(put("/api/carrito/items/a-1").header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test
@@ -315,7 +315,7 @@ class CarritoControllerTest {
     }
 
     @Test
-    void deberiaRetornar400CuandoElPrecioDeUnArticuloCambio() throws Exception {
+    void deberiaRetornar422CuandoElPrecioDeUnArticuloCambio() throws Exception {
 
         // Arrange
         doThrow(new PrecioDelArticuloCambioException("a-1"))
@@ -323,11 +323,11 @@ class CarritoControllerTest {
 
         // Act y Assert
         mockMvc.perform(get("/api/carrito/disponibilidad").header("Authorization", "Bearer token-ana"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test
-    void deberiaRetornar400CuandoElCarritoEstaVacio() throws Exception {
+    void deberiaRetornar422CuandoElCarritoEstaVacio() throws Exception {
 
         // Arrange
         doThrow(new CarritoVacioException())
@@ -335,7 +335,7 @@ class CarritoControllerTest {
 
         // Act y Assert
         mockMvc.perform(get("/api/carrito/disponibilidad").header("Authorization", "Bearer token-ana"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test

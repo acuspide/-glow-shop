@@ -23,7 +23,7 @@ class UsuarioRepositoryJpaTest {
     private UsuarioRepositoryJpa repositorio;
 
     private Usuario ana() {
-        return Usuario.registrarCliente("u-1", "Ana", new Email("Ana@Correo.com"), "hash",
+        return Usuario.registrarCliente("u-1", "Ana", new Email("Maria@Prueba.com"), "hash",
                 DatosPrueba.TELEFONO, DatosPrueba.FECHA);
     }
 
@@ -34,7 +34,7 @@ class UsuarioRepositoryJpaTest {
         Usuario leido = repositorio.obtenerPorId("u-1").orElseThrow();
 
         assertEquals("Ana", leido.getNombre());
-        assertEquals("ana@correo.com", leido.getEmail().getValor());
+        assertEquals("maria@prueba.com", leido.getEmail().getValor());
         assertEquals("hash", leido.getContrasenaHash());
         assertEquals(DatosPrueba.TELEFONO, leido.getTelefono());
         assertEquals(DatosPrueba.FECHA, leido.getFechaNacimiento());
@@ -46,9 +46,9 @@ class UsuarioRepositoryJpaTest {
     void buscaPorEmailSinImportarMayusculas() {
         repositorio.guardar(ana());
 
-        assertTrue(repositorio.existePorEmail(new Email("ANA@correo.com")));
-        assertEquals("u-1", repositorio.buscarPorEmail(new Email("ana@CORREO.com")).orElseThrow().getId());
-        assertFalse(repositorio.existePorEmail(new Email("otra@correo.com")));
+        assertTrue(repositorio.existePorEmail(new Email("MARIA@prueba.com")));
+        assertEquals("u-1", repositorio.buscarPorEmail(new Email("maria@PRUEBA.com")).orElseThrow().getId());
+        assertFalse(repositorio.existePorEmail(new Email("otra@prueba.com")));
     }
 
     @Test
@@ -60,6 +60,6 @@ class UsuarioRepositoryJpaTest {
         repositorio.guardar(ana);
 
         assertFalse(repositorio.obtenerPorId("u-1").orElseThrow().isActivo());
-        assertEquals(1, repositorio.listarTodos().size());
+        assertEquals(1 + 5, repositorio.listarTodos().size());   // no se duplicó: 1 de esta prueba + 5 de data.sql
     }
 }

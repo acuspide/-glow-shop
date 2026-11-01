@@ -63,7 +63,7 @@ class RutinaCuidadoRepositoryJpaTest {
 
     @BeforeEach
     void prepararArticulos() {
-        Categoria rostro = Categoria.crear("cat-1", "Rostro");
+        Categoria rostro = Categoria.crear("cat-1", "Cejas");
         Marca marca = Marca.crear("m-1", "Cosrx");
         Tienda tienda = Tienda.reconstruir("t-1", "Glow", "", "v-1", EstadoTienda.ACTIVA);
         categorias.guardar(rostro);

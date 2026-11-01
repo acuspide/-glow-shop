@@ -185,14 +185,14 @@ class AuthControllerTest {
     }
 
     @Test
-    void restablecerContrasenaConCodigoInvalidoDebeResponder400() throws Exception {
+    void restablecerContrasenaConCodigoInvalidoDebeResponder422() throws Exception {
         doThrow(new CodigoRecuperacionInvalidoException())
                 .when(restablecerContrasenaUseCase).ejecutar("ana@correo.com", "999999", "NuevaClave9");
 
         mockMvc.perform(post("/api/auth/restablecer-contrasena")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\": \"ana@correo.com\", \"codigo\": \"999999\", \"nuevaContrasena\": \"NuevaClave9\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test

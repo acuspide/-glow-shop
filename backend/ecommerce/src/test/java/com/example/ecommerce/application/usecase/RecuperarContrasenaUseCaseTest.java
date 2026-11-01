@@ -13,7 +13,7 @@ import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.infrastructure.persistence.CodigoRecuperacionRepositoryEnMemoria;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
-import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
+import com.example.ecommerce.infrastructure.security.PasswordHasherBCrypt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ public class RecuperarContrasenaUseCaseTest {
 
     private final UsuarioRepository usuarioRepository = new UsuarioRepositoryEnMemoria();
     private final CodigoRecuperacionRepository codigoRepository = new CodigoRecuperacionRepositoryEnMemoria();
-    private final PasswordHasher passwordHasher = new PasswordHasherSha256();
+    private final PasswordHasher passwordHasher = new PasswordHasherBCrypt();
     private final CorreoFalso correo = new CorreoFalso();
 
     private final SolicitarRecuperacionContrasenaUseCase solicitar =

@@ -55,6 +55,7 @@ public class TokenServiceHmacSha256 implements TokenService {
         long emitido = Instant.now().getEpochSecond();
         String payloadJson = "{\"jti\":\"" + UUID.randomUUID() + "\""
                 + ",\"sub\":\"" + usuario.getId() + "\""
+                + ",\"email\":\"" + usuario.getEmail().getValor() + "\""
                 + ",\"rol\":\"" + usuario.getRol().name() + "\""
                 + ",\"iat\":" + emitido
                 + ",\"exp\":" + (emitido + expiracionSegundos) + "}";

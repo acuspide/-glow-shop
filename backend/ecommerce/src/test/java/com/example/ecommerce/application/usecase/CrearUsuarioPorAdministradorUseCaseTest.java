@@ -10,7 +10,7 @@ import com.example.ecommerce.domain.service.VerificadorDeCorreoUnico;
 import com.example.ecommerce.domain.valueobject.Email;
 import com.example.ecommerce.domain.valueobject.RolUsuario;
 import com.example.ecommerce.infrastructure.persistence.UsuarioRepositoryEnMemoria;
-import com.example.ecommerce.infrastructure.security.PasswordHasherSha256;
+import com.example.ecommerce.infrastructure.security.PasswordHasherBCrypt;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +20,7 @@ public class CrearUsuarioPorAdministradorUseCaseTest {
     private static final String ADMIN_ID = "u-100";
 
     private final UsuarioRepository repository = new UsuarioRepositoryEnMemoria();
-    private final PasswordHasher passwordHasher = new PasswordHasherSha256();
+    private final PasswordHasher passwordHasher = new PasswordHasherBCrypt();
     private final CrearUsuarioPorAdministradorUseCase useCase =
             new CrearUsuarioPorAdministradorUseCase(repository, passwordHasher, new VerificadorDeCorreoUnico(repository));
 

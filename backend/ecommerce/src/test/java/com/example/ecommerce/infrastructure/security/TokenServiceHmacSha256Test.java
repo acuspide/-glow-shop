@@ -34,6 +34,22 @@ public class TokenServiceHmacSha256Test {
     }
 
     @Test
+    void elPayloadLlevaElCorreoElRolYLaFechaDeVencimiento() {
+        // Arrange
+        String token = tokenService.generar(administrador());
+
+        // Act
+        String payload = new String(java.util.Base64.getUrlDecoder().decode(token.split("\\.")[1]),
+                java.nio.charset.StandardCharsets.UTF_8);
+
+        // Assert
+        assertTrue(payload.contains("\"email\":\"admin@glow.com\""));
+        assertTrue(payload.contains("\"rol\":\"ADMINISTRADOR\""));
+        assertTrue(payload.contains("\"exp\":"));
+        assertFalse(payload.contains("hash"));
+    }
+
+    @Test
     void noDebeAceptarUnTokenConElPayloadAlterado() {
         // Arrange
         String[] partes = tokenService.generar(administrador()).split("\\.");
