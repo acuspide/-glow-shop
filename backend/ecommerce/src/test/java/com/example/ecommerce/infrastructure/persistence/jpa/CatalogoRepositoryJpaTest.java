@@ -34,20 +34,20 @@ class CatalogoRepositoryJpaTest {
 
     @Test
     void guardaCategoriasYDetectaNombresRepetidosSinImportarMayusculas() {
-        categorias.guardar(Categoria.crear("cat-1", "Labios"));
+        categorias.guardar(Categoria.crear("cat-1", "Uñas"));
 
-        assertEquals("Labios", categorias.obtenerPorId("cat-1").orElseThrow().getNombre());
+        assertEquals("Uñas", categorias.obtenerPorId("cat-1").orElseThrow().getNombre());
         assertTrue(categorias.existePorNombre(" labios "));
-        assertFalse(categorias.existePorNombre("Rostro"));
+        assertFalse(categorias.existePorNombre("Cejas"));
     }
 
     @Test
     void guardaMarcasYDetectaNombresRepetidosSinImportarMayusculas() {
-        marcas.guardar(Marca.crear("m-1", "Maybelline"));
+        marcas.guardar(Marca.crear("m-1", "Revlon"));
 
-        assertEquals("Maybelline", marcas.obtenerPorId("m-1").orElseThrow().getNombre());
-        assertTrue(marcas.existePorNombre("MAYBELLINE"));
-        assertFalse(marcas.existePorNombre("Nivea"));
+        assertEquals("Revlon", marcas.obtenerPorId("m-1").orElseThrow().getNombre());
+        assertTrue(marcas.existePorNombre("REVLON"));
+        assertFalse(marcas.existePorNombre("Bioderma"));
     }
 
     @Test

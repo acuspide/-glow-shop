@@ -91,7 +91,7 @@ class PedidoYPagoRepositoryJpaTest {
         assertEquals(2, pedidos.obtenerPorClienteId("u-1").size());
         assertEquals(3, pedidos.obtenerPorTiendaId("t-1").size());
         assertTrue(pedidos.obtenerPorTiendaId("t-9").isEmpty());
-        assertEquals(3, pedidos.listarTodos().size());
+        assertEquals(3 + 5, pedidos.listarTodos().size());   // 3 de esta prueba + 5 de data.sql
         assertEquals(2, pagos.obtenerPorPedidoId("p-1").size());
         assertEquals("Fondos insuficientes", pagos.obtenerPorId("pa-1").orElseThrow().getMotivoRechazo());
     }

@@ -53,8 +53,8 @@ class ArticuloRepositoryJpaTest {
 
     @BeforeEach
     void prepararCatalogo() {
-        labios = Categoria.crear("cat-1", "Labios");
-        maybelline = Marca.crear("m-1", "Maybelline");
+        labios = Categoria.crear("cat-1", "Uñas");
+        maybelline = Marca.crear("m-1", "Revlon");
         glow = Tienda.reconstruir("t-1", "Glow Natural", "", "v-1", EstadoTienda.ACTIVA);
         categorias.guardar(labios);
         marcas.guardar(maybelline);
@@ -78,8 +78,8 @@ class ArticuloRepositoryJpaTest {
 
         assertEquals("Labial mate", leido.getNombre().valor());
         assertEquals(0, new BigDecimal("35000").compareTo(leido.getPrecio().valor()));
-        assertEquals("Labios", leido.getCategoria().getNombre());
-        assertEquals("Maybelline", leido.getMarca().getNombre());
+        assertEquals("Uñas", leido.getCategoria().getNombre());
+        assertEquals("Revlon", leido.getMarca().getNombre());
         assertEquals("Glow Natural", leido.getTienda().getNombre());
         assertEquals(EstadoTienda.ACTIVA, leido.getTienda().getEstado());
         assertEquals(Tono.MEDIO, leido.getTono());
@@ -102,6 +102,6 @@ class ArticuloRepositoryJpaTest {
         Articulo leido = articulos.obtenerPorId("a-1").orElseThrow();
         assertEquals(7, leido.getCantidadDisponible());
         assertTrue(leido.isEliminado());
-        assertEquals(1, articulos.listarTodos().size());
+        assertEquals(1 + 10, articulos.listarTodos().size());   // no se duplicó: 1 de esta prueba + 10 de data.sql
     }
 }
