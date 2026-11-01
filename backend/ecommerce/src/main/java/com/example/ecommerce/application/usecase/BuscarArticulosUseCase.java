@@ -3,6 +3,7 @@ package com.example.ecommerce.application.usecase;
 import com.example.ecommerce.domain.entity.Articulo;
 import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
+import com.example.ecommerce.domain.repository.Pagina;
 import com.example.ecommerce.domain.valueobject.CriteriosBusquedaArticulo;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
@@ -15,24 +16,19 @@ import java.util.List;
 public class BuscarArticulosUseCase {
 
 
+    private static final int TAMANO_MAXIMO = 50;
+
     private final ArticuloRepository repository;
 
     @Transactional(readOnly = true)
-    public List<Articulo> ejecutar(CriteriosBusquedaArticulo criterios) {
-        return repository.listarTodos()
-                .stream()
-                .filter(this::estaDisponibleParaConsulta)
-                .filter(criterios::admite)
-                .toList();
-    }
-
-    private boolean estaDisponibleParaConsulta(Articulo articulo) {
-        try {
-            articulo.validarDisponibleParaConsulta();
-            return true;
-        } catch (ReglaDominioException e) {
-            return false;
+    public Pagina<Articulo> ejecutar(CriteriosBusquedaArticulo criterios, int pagina, int tamano) {
+        if (pagina < 0) {
+            throw new ReglaDominioException("La página no puede ser negativa");
         }
+        if (tamano < 1 || tamano > TAMANO_MAXIMO) {
+            throw new ReglaDominioException("El tamaño de la página debe estar entre 1 y " + TAMANO_MAXIMO);
+        }
+        return repository.buscar(criterios, pagina, tamano);
     }
 
 }

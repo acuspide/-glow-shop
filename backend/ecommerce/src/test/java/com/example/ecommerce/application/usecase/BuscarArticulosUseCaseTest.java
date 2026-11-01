@@ -1,7 +1,9 @@
 package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.domain.entity.*;
+import com.example.ecommerce.domain.exception.ReglaDominioException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
+import com.example.ecommerce.domain.repository.Pagina;
 import com.example.ecommerce.domain.valueobject.*;
 import com.example.ecommerce.infrastructure.persistence.ArticuloRepositoryEnMemoria;
 
@@ -86,7 +88,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertEquals(3, resultado.size());
     }
@@ -103,7 +105,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertEquals(1, resultado.size());
         assertEquals("a-1", resultado.get(0).getId());
@@ -121,7 +123,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertEquals(2, resultado.size());
         assertTrue(resultado.stream()
@@ -142,7 +144,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertEquals(3, resultado.size());
     }
@@ -159,7 +161,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertEquals(1, resultado.size());
         assertEquals("a-3", resultado.get(0).getId());
@@ -177,7 +179,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null, Tono.MEDIO, TipoPiel.SECA
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertEquals(1, resultado.size());
         assertEquals("a-2", resultado.get(0).getId());
@@ -204,7 +206,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertTrue(resultado.isEmpty());
     }
@@ -231,7 +233,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertTrue(resultado.isEmpty());
     }
@@ -266,9 +268,84 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        List<Articulo> resultado = useCase.ejecutar(criterios);
+        List<Articulo> resultado = useCase.ejecutar(criterios, 0, 10).contenido();
 
         assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    void debePaginarYDevolverTotalesDeElementosYPaginas() {
+        ArticuloRepository repository = crearRepositorioConArticulos();
+        BuscarArticulosUseCase useCase =
+                new BuscarArticulosUseCase(repository);
+
+        CriteriosBusquedaArticulo sinFiltros =
+                new CriteriosBusquedaArticulo(
+                        null, null, null, null,
+                        null, null, null, null
+                );
+
+        Pagina<Articulo> primera = useCase.ejecutar(sinFiltros, 0, 2);
+        Pagina<Articulo> segunda = useCase.ejecutar(sinFiltros, 1, 2);
+
+        assertEquals(3, primera.totalElementos());
+        assertEquals(2, primera.totalPaginas());
+        assertEquals(2, primera.contenido().size());
+        assertEquals(1, segunda.contenido().size());
+        // Orden por nombre: Base líquida, Crema facial, Labial rojo
+        assertEquals("a-3", primera.contenido().get(0).getId());
+        assertEquals("a-1", segunda.contenido().get(0).getId());
+    }
+
+    @Test
+    void elTotalCuentaSoloLosArticulosQueCumplenElFiltro() {
+        ArticuloRepository repository = crearRepositorioConArticulos();
+        BuscarArticulosUseCase useCase =
+                new BuscarArticulosUseCase(repository);
+
+        CriteriosBusquedaArticulo criterios =
+                new CriteriosBusquedaArticulo(
+                        null, "cat-2", null, null,
+                        null, null, null, null
+                );
+
+        Pagina<Articulo> pagina = useCase.ejecutar(criterios, 0, 1);
+
+        assertEquals(2, pagina.totalElementos());
+        assertEquals(2, pagina.totalPaginas());
+        assertEquals(1, pagina.contenido().size());
+    }
+
+    @Test
+    void noDebeAceptarUnaPaginaNegativa() {
+        BuscarArticulosUseCase useCase =
+                new BuscarArticulosUseCase(new ArticuloRepositoryEnMemoria());
+
+        CriteriosBusquedaArticulo criterios =
+                new CriteriosBusquedaArticulo(
+                        null, null, null, null,
+                        null, null, null, null
+                );
+
+        assertThrows(ReglaDominioException.class,
+                () -> useCase.ejecutar(criterios, -1, 10));
+    }
+
+    @Test
+    void noDebeAceptarUnTamanoDePaginaFueraDeRango() {
+        BuscarArticulosUseCase useCase =
+                new BuscarArticulosUseCase(new ArticuloRepositoryEnMemoria());
+
+        CriteriosBusquedaArticulo criterios =
+                new CriteriosBusquedaArticulo(
+                        null, null, null, null,
+                        null, null, null, null
+                );
+
+        assertThrows(ReglaDominioException.class,
+                () -> useCase.ejecutar(criterios, 0, 0));
+        assertThrows(ReglaDominioException.class,
+                () -> useCase.ejecutar(criterios, 0, 51));
     }
 
 }
