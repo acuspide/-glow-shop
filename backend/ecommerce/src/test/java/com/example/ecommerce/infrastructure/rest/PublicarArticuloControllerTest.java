@@ -204,7 +204,7 @@ public class PublicarArticuloControllerTest {
     }
 
     @Test
-    void debeRetornar400CuandoLaTiendaNoEstaActiva() throws Exception {
+    void debeRetornar422CuandoLaTiendaNoEstaActiva() throws Exception {
 
         cuandoPubliqueVera();
         when(publicarArticuloUseCase.ejecutar(anyString(), eq("v-1"), any(), any(), any(), any(),
@@ -215,7 +215,7 @@ public class PublicarArticuloControllerTest {
                         .header("Authorization", "Bearer token-vera")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CUERPO_PUBLICAR))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.mensaje")
                         .value("La tienda debe estar activa para publicar artículos. Estado actual: PENDIENTE."));
     }
@@ -252,7 +252,7 @@ public class PublicarArticuloControllerTest {
     }
 
     @Test
-    void debeRetornar400CuandoNoSePuedePublicarArticuloVencido() throws Exception {
+    void debeRetornar422CuandoNoSePuedePublicarArticuloVencido() throws Exception {
 
         cuandoPubliqueVera();
         when(publicarArticuloUseCase.ejecutar(anyString(), eq("v-1"), any(), any(), any(), any(),
@@ -263,8 +263,8 @@ public class PublicarArticuloControllerTest {
                         .header("Authorization", "Bearer token-vera")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CUERPO_PUBLICAR))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(status().isUnprocessableContent())
+                .andExpect(jsonPath("$.status").value(422))
                 .andExpect(jsonPath("$.mensaje")
                         .value("No se puede publicar un artículo que esté vencido."));
     }

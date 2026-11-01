@@ -71,11 +71,11 @@ public class EliminarArticuloControllerTest {
     }
 
     @Test
-    void debeRetornar400CuandoArticuloTienePedidosActivos() throws Exception {
+    void debeRetornar422CuandoArticuloTienePedidosActivos() throws Exception {
         doThrow(new ArticuloConPedidosActivosException("a-1"))
                 .when(eliminarArticuloUseCase).ejecutar("a-1", "v-1");
 
         mockMvc.perform(delete("/api/articulos/{id}", "a-1").header("Authorization", "Bearer token-vera"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 }

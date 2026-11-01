@@ -167,7 +167,7 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void deberiaRetornar400CuandoLaContrasenaEsDebil() throws Exception {
+    void deberiaRetornar422CuandoLaContrasenaEsDebil() throws Exception {
 
         // Arrange
         String requestJson = """
@@ -187,7 +187,7 @@ class UsuarioControllerTest {
         mockMvc.perform(post("/api/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test
@@ -365,7 +365,7 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void cambiarContrasenaConLaActualIncorrectaDebeResponder400() throws Exception {
+    void cambiarContrasenaConLaActualIncorrectaDebeResponder422() throws Exception {
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
         doThrow(new ContrasenaActualIncorrectaException())
                 .when(cambiarContrasenaUseCase).ejecutar("u-1", "Equivocada1", "NuevaClave9");
@@ -374,7 +374,7 @@ class UsuarioControllerTest {
                         .header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"contrasenaActual\": \"Equivocada1\", \"nuevaContrasena\": \"NuevaClave9\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test

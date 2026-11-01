@@ -93,13 +93,13 @@ class VendedorPedidoControllerTest {
     }
 
     @Test
-    void siElPedidoNoEstaPagadoRetorna400() throws Exception {
+    void siElPedidoNoEstaPagadoRetorna422() throws Exception {
         when(actualizarEstadoPedidoUseCase.ejecutar("p-1", "v-1", EstadoPedido.EN_PREPARACION))
                 .thenThrow(new PagoNoRegistradoException());
 
         mockMvc.perform(put("/api/vendedor/pedidos/p-1/estado").header("Authorization", "Bearer token-vera")
                         .contentType(MediaType.APPLICATION_JSON).content(cuerpo("EN_PREPARACION")))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test

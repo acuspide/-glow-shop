@@ -130,7 +130,7 @@ class PagoControllerTest {
     }
 
     @Test
-    void deberiaRetornar400CuandoElPedidoNoAceptaPago() throws Exception {
+    void deberiaRetornar422CuandoElPedidoNoAceptaPago() throws Exception {
 
         // Arrange
         when(procesarPagoDePedidoUseCase.ejecutar(anyString(), anyString(), anyString(), any()))
@@ -140,7 +140,7 @@ class PagoControllerTest {
         mockMvc.perform(post("/api/pedidos/p-1/pagos").header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CON_NEQUI))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test
@@ -311,7 +311,7 @@ class PagoControllerTest {
     }
 
     @Test
-    void deberiaRetornar400CuandoElPagoNoFueRechazado() throws Exception {
+    void deberiaRetornar422CuandoElPagoNoFueRechazado() throws Exception {
 
         // Arrange
         when(reintentarPagoUseCase.ejecutar(anyString(), anyString(), anyString(), any()))
@@ -319,7 +319,7 @@ class PagoControllerTest {
 
         // Act y Assert
         mockMvc.perform(post("/api/pagos/pa-1/reintentos").header("Authorization", "Bearer token-ana"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test

@@ -3,11 +3,14 @@ package com.example.ecommerce.infrastructure.rest.exception;
 import com.example.ecommerce.domain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,14 +25,46 @@ public class GlobalExceptionHandler {
         );
     }
 
+    // Regla de negocio rota: el dominio rechazó la operación (por ejemplo, publicar con la tienda
+    // pendiente o pasar un pedido de CONFIRMADO a ENTREGADO). La petición estaba bien formada,
+    // pero el negocio no la permite: 422.
     @ExceptionHandler(ReglaDominioException.class)
     public ResponseEntity<Map<String, Object>> manejarReglaDominio(
             ReglaDominioException ex) {
 
         return construirRespuesta(
-                HttpStatus.BAD_REQUEST,
+                HttpStatus.UNPROCESSABLE_CONTENT,
                 ex.getMessage()
         );
+    }
+
+    // Datos inválidos en la petición (@Valid en el DTO): 400 con el mensaje de cada campo.
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> manejarDatosInvalidos(
+            MethodArgumentNotValidException ex) {
+
+        String mensaje = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .sorted()
+                .collect(Collectors.joining("; "));
+
+        return construirRespuesta(HttpStatus.BAD_REQUEST, mensaje);
+    }
+
+    // El cuerpo no es un JSON válido o trae un valor que no corresponde (por ejemplo, un tono que no existe): 400.
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> manejarCuerpoIlegible(
+            HttpMessageNotReadableException ex) {
+
+        return construirRespuesta(HttpStatus.BAD_REQUEST,
+                "El cuerpo de la petición no es válido: revise el formato JSON y los valores enviados.");
+    }
+
+    @ExceptionHandler(CalificacionDuplicadaException.class)
+    public ResponseEntity<Map<String, Object>> manejarCalificacionDuplicada(
+            CalificacionDuplicadaException ex) {
+
+        return construirRespuesta(HttpStatus.CONFLICT, ex.getMessage()); // 409
     }
 
     @ExceptionHandler(CorreoElectronicoDuplicadoException.class)

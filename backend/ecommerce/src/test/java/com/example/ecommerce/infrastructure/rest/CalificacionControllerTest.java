@@ -104,13 +104,14 @@ class CalificacionControllerTest {
                         .header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"puntuacion\": 6, \"comentario\": \"Me encantó\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value(org.hamcrest.Matchers.startsWith("puntuacion: ")));
 
         verifyNoInteractions(calificarArticuloUseCase);
     }
 
     @Test
-    void calificarUnArticuloNoRecibidoDebeResponder400() throws Exception {
+    void calificarUnArticuloNoRecibidoDebeResponder422() throws Exception {
         when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
         when(calificarArticuloUseCase.ejecutar(anyString(), any(), eq("a-10"), eq(5), any()))
                 .thenThrow(new ArticuloNoRecibidoException());
@@ -119,7 +120,20 @@ class CalificacionControllerTest {
                         .header("Authorization", "Bearer token-ana")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(CALIFICACION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
+    }
+
+    @Test
+    void calificarDosVecesElMismoArticuloDebeResponder409() throws Exception {
+        when(tokenService.extraerUsuarioId("token-ana")).thenReturn("u-1");
+        when(calificarArticuloUseCase.ejecutar(anyString(), any(), eq("a-10"), eq(5), any()))
+                .thenThrow(new com.example.ecommerce.domain.exception.CalificacionDuplicadaException());
+
+        mockMvc.perform(post("/api/articulos/a-10/calificaciones")
+                        .header("Authorization", "Bearer token-ana")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(CALIFICACION_JSON))
+                .andExpect(status().isConflict());
     }
 
     @Test

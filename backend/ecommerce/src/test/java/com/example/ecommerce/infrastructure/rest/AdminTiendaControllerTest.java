@@ -82,10 +82,10 @@ class AdminTiendaControllerTest {
     }
 
     @Test
-    void siLaTiendaYaEstabaActivaRetorna400() throws Exception {
+    void siLaTiendaYaEstabaActivaRetorna422() throws Exception {
         when(aprobarTiendaUseCase.ejecutar("t-1", "ad-1")).thenThrow(new TiendaNoPendienteException(EstadoTienda.ACTIVA));
 
         mockMvc.perform(put("/api/admin/tiendas/t-1/aprobar").header("Authorization", "Bearer token-admin"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnprocessableContent());
     }
 }
