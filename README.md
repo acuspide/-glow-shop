@@ -213,12 +213,10 @@ Documentación de diseño (Entrega 1) en la carpeta [`Docs/`](Docs): glosario de
 
 | Observación que nos dieron | Qué cambiamos | Dónde se ve (archivo) |
 |---|---|---|
-| Faltaban casos de uso: registrar tienda, aprobar tienda, crear categoría, crear marca, consultar pedido y listar mis pedidos | Se implementaron los seis con su endpoint y sus pruebas | `RegistrarTiendaUseCase`, `AprobarTiendaUseCase`, `CrearCategoriaUseCase`, `CrearMarcaUseCase`, `ConsultarPedidoUseCase`, `ListarMisPedidosUseCase` |
-| Publicar artículo tenía varios métodos `ejecutar` | Quedó un solo `ejecutar`; recibe ids y el caso de uso carga categoría, marca y tienda | `PublicarArticuloUseCase.java` |
-| Cuando algo no existía se lanzaba una excepción genérica (`orElseThrow()` vacío) | Excepción propia de dominio `RecursoNoEncontradoException`, que el manejador convierte en 404 con mensaje claro | `domain/exception/RecursoNoEncontradoException.java`, `GlobalExceptionHandler.java` |
-| Categoría y marca debían crearse con un caso de uso simple | `CrearCategoriaUseCase` y `CrearMarcaUseCase`, solo para el administrador; la unicidad del nombre la verifica un servicio de dominio | `CrearCategoriaUseCase.java`, `CrearMarcaUseCase.java`, `VerificadorDeCategoriaUnica.java` |
-| La persistencia con H2 estaba pendiente | Entidades JPA separadas del dominio, mappers y repositorios JPA para todos los agregados | `infrastructure/persistence/jpa/` |
-| Había decisiones de negocio (`if`) dentro de casos de uso | Se movieron al dominio | `Pago.registrarResultado`, `Pago.medioParaReintentar`, `Pedido.registrarSiFueAprobado` |
+| Las entidades tenían constructores públicos: se podía crear un objeto sin pasar por las reglas | Constructores **privados**; los objetos nuevos se crean con un método de fábrica que valida (`crear`, `registrarCliente`…) y los que vienen de la base de datos con `reconstruir`. Los casos de uso y controllers dejaron de tener constructores escritos a mano y usan `@RequiredArgsConstructor` | `Usuario.java`, `Articulo.java`, `Pedido.java`, `Tienda.java` y los casos de uso en `application/usecase/` |
+| Publicar artículo tenía dos métodos `ejecutar` (uno recibía los objetos armados y otro un artículo completo que se publicaba sin validar) | Quedó un solo `ejecutar` que recibe ids; el caso de uso carga vendedor, tienda, categoría y marca de sus repositorios y la tienda verifica que sea del vendedor y esté activa | `PublicarArticuloUseCase.java` |
+| Cuando algo no existía se lanzaba una excepción genérica (`orElseThrow()` vacío) | Excepción propia de dominio `RecursoNoEncontradoException`, que el manejador convierte en 404 con un mensaje claro | `domain/exception/RecursoNoEncontradoException.java`, `GlobalExceptionHandler.java` |
+| Había decisiones de negocio (`if`) dentro de casos de uso | Se movieron al dominio: el pago decide si queda aprobado o rechazado y el pedido decide si lo registra | `Pago.registrarResultado`, `Pago.medioParaReintentar`, `Pedido.registrarSiFueAprobado` |
 
 ---
 
