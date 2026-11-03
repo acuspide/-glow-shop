@@ -104,4 +104,38 @@ public class TokenServiceHmacSha256Test {
         // Act y Assert
         assertThrows(IllegalArgumentException.class, () -> new TokenServiceHmacSha256("corto", 60));
     }
+
+    @Test
+    void noDebeAceptarUnTokenConCaracteresQueNoSonBase64() {
+        // Arrange: la firma trae caracteres que no existen en Base64
+        String[] partes = tokenService.generar(administrador()).split("\\.");
+        String conBasura = partes[0] + "." + partes[1] + ".%%%firma-invalida%%%";
+
+        // Act y Assert
+        assertThrows(TokenInvalidoException.class, () -> tokenService.extraerUsuarioId(conBasura));
+    }
+
+    @Test
+    void noDebeAceptarUnaFechaDeVencimientoQueNoCabeEnUnNumero() {
+        // Arrange: payload con un "exp" gigante, firmado con la clave correcta para pasar la firma
+        TokenServiceHmacSha256 servicio = new TokenServiceHmacSha256(SECRETO, 60);
+        java.util.Base64.Encoder b64 = java.util.Base64.getUrlEncoder().withoutPadding();
+        String header = b64.encodeToString("{\"alg\":\"HS256\",\"typ\":\"JWT\"}".getBytes());
+        String payload = b64.encodeToString(
+                "{\"jti\":\"x\",\"sub\":\"u-7\",\"exp\":99999999999999999999999}".getBytes());
+        String firma = firmaHs256(header + "." + payload);
+
+        // Act y Assert
+        assertThrows(TokenInvalidoException.class, () -> servicio.extraerUsuarioId(header + "." + payload + "." + firma));
+    }
+
+    private static String firmaHs256(String contenido) {
+        try {
+            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+            mac.init(new javax.crypto.spec.SecretKeySpec(SECRETO.getBytes(), "HmacSHA256"));
+            return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(mac.doFinal(contenido.getBytes()));
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }
