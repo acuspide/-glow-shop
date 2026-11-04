@@ -1,6 +1,6 @@
 package com.example.ecommerce.application.usecase;
 
-import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.application.ParametroInvalidoException;
 import com.example.ecommerce.domain.repository.ArticuloVentas;
 import com.example.ecommerce.domain.repository.PedidoRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class ConsultarArticulosMasVendidosUseCase {
     @Transactional(readOnly = true)
     public List<ArticuloVentas> ejecutar(int limite) {
         if (limite < 1 || limite > LIMITE_MAXIMO) {
-            throw new ReglaDominioException("El límite debe estar entre 1 y " + LIMITE_MAXIMO);
+            throw new ParametroInvalidoException("El límite debe estar entre 1 y " + LIMITE_MAXIMO);
         }
         return pedidoRepository.masVendidos(limite);
     }

@@ -1,7 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.domain.entity.Articulo;
-import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.application.ParametroInvalidoException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.Pagina;
 import com.example.ecommerce.domain.valueobject.CriteriosBusquedaArticulo;
@@ -23,10 +23,10 @@ public class BuscarArticulosUseCase {
     @Transactional(readOnly = true)
     public Pagina<Articulo> ejecutar(CriteriosBusquedaArticulo criterios, int pagina, int tamano) {
         if (pagina < 0) {
-            throw new ReglaDominioException("La página no puede ser negativa");
+            throw new ParametroInvalidoException("La página no puede ser negativa");
         }
         if (tamano < 1 || tamano > TAMANO_MAXIMO) {
-            throw new ReglaDominioException("El tamaño de la página debe estar entre 1 y " + TAMANO_MAXIMO);
+            throw new ParametroInvalidoException("El tamaño de la página debe estar entre 1 y " + TAMANO_MAXIMO);
         }
         return repository.buscar(criterios, pagina, tamano);
     }
