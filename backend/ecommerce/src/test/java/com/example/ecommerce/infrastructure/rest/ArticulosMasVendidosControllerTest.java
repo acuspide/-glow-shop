@@ -1,6 +1,6 @@
 package com.example.ecommerce.infrastructure.rest;
 
-import com.example.ecommerce.application.ParametroInvalidoException;
+import com.example.ecommerce.domain.exception.ParametroInvalidoException;
 import com.example.ecommerce.application.usecase.ConsultarArticulosMasVendidosUseCase;
 import com.example.ecommerce.domain.repository.ArticuloVentas;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.domain.entity.*;
-import com.example.ecommerce.application.ParametroInvalidoException;
+import com.example.ecommerce.domain.exception.ParametroInvalidoException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.Pagina;
 import com.example.ecommerce.domain.valueobject.*;

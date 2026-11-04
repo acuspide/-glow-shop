@@ -1,6 +1,6 @@
 package com.example.ecommerce.infrastructure.rest.exception;
 
-import com.example.ecommerce.application.ParametroInvalidoException;
+import com.example.ecommerce.domain.exception.ParametroInvalidoException;
 import com.example.ecommerce.domain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
