@@ -46,8 +46,7 @@ Correr las pruebas:
 
 ```bash
 cd backend/ecommerce
-.\gradlew.bat clean test      # Windows
-./gradlew clean test          # Linux / macOS
+.\gradlew.bat clean test     
 ```
 
 ### Usar el token en Swagger
