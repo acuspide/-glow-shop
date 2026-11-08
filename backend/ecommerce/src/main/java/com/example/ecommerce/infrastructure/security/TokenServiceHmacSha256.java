@@ -82,6 +82,37 @@ public class TokenServiceHmacSha256 implements TokenService {
     }
 
     private PayloadValido leerPayloadValido(String token) {
+        String[] partes = partesDelToken(token);
+
+        // 1) La firma debe coincidir (comparación en tiempo constante).
+        byte[] esperada = firmar(partes[0] + "." + partes[1]);
+        if (!MessageDigest.isEqual(esperada, decodificar(partes[2]))) {
+            throw new TokenInvalidoException();
+        }
+
+        // 2) El header debe ser exactamente el que emitimos (evita "alg":"none").
+        if (!HEADER_JSON.equals(texto(partes[0]))) {
+            throw new TokenInvalidoException();
+        }
+
+        // 3) El payload debe traer sus campos y el token no debe haber expirado.
+        String payload = texto(partes[1]);
+        String jti = campo(JTI, payload);
+        String usuarioId = campo(SUB, payload);
+        long expira = numero(campo(EXP, payload));
+        if (Instant.now().getEpochSecond() >= expira) {
+            throw new TokenInvalidoException();
+        }
+
+        // 4) El token no debe haber sido cerrado (logout).
+        if (revocados.containsKey(jti)) {
+            throw new TokenInvalidoException();
+        }
+        return new PayloadValido(jti, usuarioId, expira);
+    }
+
+    // Un JWT son tres partes separadas por punto: header.payload.firma
+    private String[] partesDelToken(String token) {
         if (token == null) {
             throw new TokenInvalidoException();
         }
@@ -89,39 +120,35 @@ public class TokenServiceHmacSha256 implements TokenService {
         if (partes.length != 3) {
             throw new TokenInvalidoException();
         }
+        return partes;
+    }
 
+    // El JDK lanza IllegalArgumentException si el texto no es Base64 válido: se traduce a 401.
+    private byte[] decodificar(String parte) {
         try {
-            // 1) La firma debe coincidir (comparación en tiempo constante).
-            byte[] esperada = firmar(partes[0] + "." + partes[1]);
-            byte[] recibida = DECODIFICADOR.decode(partes[2]);
-            if (!MessageDigest.isEqual(esperada, recibida)) {
-                throw new TokenInvalidoException();
-            }
+            return DECODIFICADOR.decode(parte);
+        } catch (IllegalArgumentException e) {
+            throw new TokenInvalidoException();
+        }
+    }
 
-            // 2) El header debe ser exactamente el que emitimos (evita "alg":"none").
-            if (!HEADER_JSON.equals(new String(DECODIFICADOR.decode(partes[0]), StandardCharsets.UTF_8))) {
-                throw new TokenInvalidoException();
-            }
+    private String texto(String parte) {
+        return new String(decodificar(parte), StandardCharsets.UTF_8);
+    }
 
-            // 3) El token no debe haber expirado.
-            String payload = new String(DECODIFICADOR.decode(partes[1]), StandardCharsets.UTF_8);
-            Matcher jti = JTI.matcher(payload);
-            Matcher exp = EXP.matcher(payload);
-            Matcher sub = SUB.matcher(payload);
-            if (!jti.find() || !exp.find() || !sub.find()) {
-                throw new TokenInvalidoException();
-            }
-            long expira = Long.parseLong(exp.group(1));
-            if (Instant.now().getEpochSecond() >= expira) {
-                throw new TokenInvalidoException();
-            }
+    private String campo(Pattern patron, String payload) {
+        Matcher coincidencia = patron.matcher(payload);
+        if (!coincidencia.find()) {
+            throw new TokenInvalidoException();
+        }
+        return coincidencia.group(1);
+    }
 
-            // 4) El token no debe haber sido cerrado (logout).
-            if (revocados.containsKey(jti.group(1))) {
-                throw new TokenInvalidoException();
-            }
-            return new PayloadValido(jti.group(1), sub.group(1), expira);
-        } catch (IllegalArgumentException e) { // base64 o número mal formado
+    // El "exp" es un número de segundos; si no cabe en un long, el token no es válido.
+    private long numero(String valor) {
+        try {
+            return Long.parseLong(valor);
+        } catch (NumberFormatException e) {
             throw new TokenInvalidoException();
         }
     }

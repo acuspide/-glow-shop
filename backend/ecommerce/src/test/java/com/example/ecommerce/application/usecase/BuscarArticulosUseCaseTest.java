@@ -1,7 +1,7 @@
 package com.example.ecommerce.application.usecase;
 
 import com.example.ecommerce.domain.entity.*;
-import com.example.ecommerce.domain.exception.ReglaDominioException;
+import com.example.ecommerce.domain.exception.ParametroInvalidoException;
 import com.example.ecommerce.domain.repository.ArticuloRepository;
 import com.example.ecommerce.domain.repository.Pagina;
 import com.example.ecommerce.domain.valueobject.*;
@@ -327,7 +327,7 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        assertThrows(ReglaDominioException.class,
+        assertThrows(ParametroInvalidoException.class,
                 () -> useCase.ejecutar(criterios, -1, 10));
     }
 
@@ -342,9 +342,9 @@ public class BuscarArticulosUseCaseTest {
                         null, null, null, null
                 );
 
-        assertThrows(ReglaDominioException.class,
+        assertThrows(ParametroInvalidoException.class,
                 () -> useCase.ejecutar(criterios, 0, 0));
-        assertThrows(ReglaDominioException.class,
+        assertThrows(ParametroInvalidoException.class,
                 () -> useCase.ejecutar(criterios, 0, 51));
     }
 

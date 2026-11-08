@@ -1,5 +1,6 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.domain.exception.ParametroInvalidoException;
 import com.example.ecommerce.application.dto.request.BuscarArticulosRequest;
 import com.example.ecommerce.application.usecase.BuscarArticulosUseCase;
 import com.example.ecommerce.domain.entity.Articulo;
@@ -141,5 +142,15 @@ public class BuscarArticulosControllerTest {
         verify(buscarArticulosUseCase).ejecutar(
                 any(CriteriosBusquedaArticulo.class), eq(0), eq(10));
         verifyNoInteractions(mostrarDetalleArticuloMapper);
+    }
+
+    @Test
+    void unaPaginaNegativaRespondeBadRequest() throws Exception {
+        when(buscarArticulosUseCase.ejecutar(any(), eq(-1), eq(10)))
+                .thenThrow(new ParametroInvalidoException("La página no puede ser negativa"));
+
+        mockMvc.perform(get("/api/buscarArticulos").param("page", "-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value("La página no puede ser negativa"));
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ecommerce.infrastructure.rest;
 
+import com.example.ecommerce.domain.exception.ParametroInvalidoException;
 import com.example.ecommerce.application.usecase.ConsultarArticulosMasVendidosUseCase;
 import com.example.ecommerce.domain.repository.ArticuloVentas;
 import org.junit.jupiter.api.Test;
@@ -51,5 +52,15 @@ class ArticulosMasVendidosControllerTest {
                 .andExpect(jsonPath("$.length()").value(0));
 
         verify(consultarArticulosMasVendidosUseCase).ejecutar(5);
+    }
+
+    @Test
+    void unLimiteFueraDeRangoRespondeBadRequest() throws Exception {
+        when(consultarArticulosMasVendidosUseCase.ejecutar(0))
+                .thenThrow(new ParametroInvalidoException("El límite debe estar entre 1 y 20"));
+
+        mockMvc.perform(get("/api/reportes/articulos-mas-vendidos").param("limite", "0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.mensaje").value("El límite debe estar entre 1 y 20"));
     }
 }

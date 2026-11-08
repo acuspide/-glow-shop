@@ -1,5 +1,6 @@
 package com.example.ecommerce.infrastructure.rest.exception;
 
+import com.example.ecommerce.domain.exception.ParametroInvalidoException;
 import com.example.ecommerce.domain.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,14 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("; "));
 
         return construirRespuesta(HttpStatus.BAD_REQUEST, mensaje);
+    }
+
+    // Parámetro de entrada inválido (página negativa, tamaño o límite fuera de rango): 400.
+    @ExceptionHandler(ParametroInvalidoException.class)
+    public ResponseEntity<Map<String, Object>> manejarParametroInvalido(
+            ParametroInvalidoException ex) {
+
+        return construirRespuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     // El cuerpo no es un JSON válido o trae un valor que no corresponde (por ejemplo, un tono que no existe): 400.
