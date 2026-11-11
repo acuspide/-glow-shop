@@ -27,6 +27,7 @@ public class PedidoMapper {
                 pedido.getClienteId(),
                 pedido.getTiendaId(),
                 pedido.getEstado().name(),
+                pedido.estaPagado(),
                 detalles,
                 pedido.calcularSubtotal(),
                 pedido.calcularTotal()

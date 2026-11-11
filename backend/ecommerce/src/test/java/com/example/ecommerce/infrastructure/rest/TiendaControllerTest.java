@@ -16,7 +16,9 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
+import com.example.ecommerce.application.usecase.ConsultarMiTiendaUseCase;
+import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -37,6 +39,9 @@ class TiendaControllerTest {
 
     @MockitoBean
     private RegistrarTiendaUseCase registrarTiendaUseCase;
+
+    @MockitoBean
+    private ConsultarMiTiendaUseCase consultarMiTiendaUseCase;
 
     @MockitoBean
     private TokenService tokenService;
@@ -107,5 +112,43 @@ class TiendaControllerTest {
         mockMvc.perform(post("/api/tiendas").header("Authorization", "Bearer token-vera")
                         .contentType(MediaType.APPLICATION_JSON).content(CUERPO))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void deberiaConsultarLaTiendaDelVendedorDelToken() throws Exception {
+
+        // Arrange
+        Tienda tienda = Tienda.reconstruir("t-1", "Glow Natural", "Cosmética vegana", "v-1", EstadoTienda.ACTIVA);
+        when(consultarMiTiendaUseCase.ejecutar("v-1")).thenReturn(tienda);
+        when(mapper.toResponse(tienda))
+                .thenReturn(new TiendaResponse("t-1", "Glow Natural", "Cosmética vegana", "v-1", "ACTIVA"));
+
+        // Act y Assert
+        mockMvc.perform(get("/api/tiendas/mia").header("Authorization", "Bearer token-vera"))
+                .andExpect(status().isOk())                         // HTTP 200
+                .andExpect(jsonPath("$.id").value("t-1"))
+                .andExpect(jsonPath("$.estado").value("ACTIVA"));
+    }
+
+    @Test
+    void deberiaRetornar404SiElVendedorNoTieneTienda() throws Exception {
+
+        // Arrange
+        when(consultarMiTiendaUseCase.ejecutar(anyString()))
+                .thenThrow(new RecursoNoEncontradoException("una tienda del vendedor", "v-1"));
+
+        // Act y Assert
+        mockMvc.perform(get("/api/tiendas/mia").header("Authorization", "Bearer token-vera"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void consultarMiTiendaSinTokenDebeResponder401() throws Exception {
+
+        // Act y Assert
+        mockMvc.perform(get("/api/tiendas/mia"))
+                .andExpect(status().isUnauthorized());
+
+        verify(consultarMiTiendaUseCase, never()).ejecutar(anyString());
     }
 }

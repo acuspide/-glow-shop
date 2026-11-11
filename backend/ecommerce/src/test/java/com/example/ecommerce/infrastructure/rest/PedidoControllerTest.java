@@ -69,7 +69,7 @@ class PedidoControllerTest {
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         when(confirmarPedidoUseCase.ejecutar(eq("u-100"), any())).thenReturn(List.of(pedidoSimulado));
         when(mapper.toResponse(any()))
-                .thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO", List.of(),
+                .thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO",false,  List.of(),
                         new BigDecimal("40000"), new BigDecimal("40000")));
 
         // Act y Assert
@@ -92,9 +92,9 @@ class PedidoControllerTest {
         Pedido deT2 = Pedido.crear("p-2", "u-100", "t-2",
                 List.of(new DetallePedido("a-2", 1, new Precio(new BigDecimal("50000")))));
         when(confirmarPedidoUseCase.ejecutar(eq("u-100"), any())).thenReturn(List.of(deT1, deT2));
-        when(mapper.toResponse(deT1)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO",
+        when(mapper.toResponse(deT1)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO", false,
                 List.of(), new BigDecimal("40000"), new BigDecimal("40000")));
-        when(mapper.toResponse(deT2)).thenReturn(new PedidoResponse("p-2", "u-100", "t-2", "CONFIRMADO",
+        when(mapper.toResponse(deT2)).thenReturn(new PedidoResponse("p-2", "u-100", "t-2", "CONFIRMADO",false,
                 List.of(), new BigDecimal("50000"), new BigDecimal("50000")));
 
         // Act y Assert
@@ -156,7 +156,7 @@ class PedidoControllerTest {
         Pedido pedido = Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         when(consultarPedidoUseCase.ejecutar("p-1", "u-100")).thenReturn(pedido);
-        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "PENDIENTE",
+        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "PENDIENTE", false,
                 List.of(), new BigDecimal("40000"), new BigDecimal("40000")));
 
         mockMvc.perform(get("/api/pedidos/p-1").header("Authorization", "Bearer token-ana"))
@@ -197,7 +197,7 @@ class PedidoControllerTest {
         Pedido pedido = Pedido.crear("p-1", "u-100", "t-1",
                 List.of(new DetallePedido("a-1", 2, new Precio(new BigDecimal("20000")))));
         when(listarMisPedidosUseCase.ejecutar("u-100")).thenReturn(List.of(pedido));
-        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO",
+        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-100", "t-1", "CONFIRMADO", false,
                 List.of(), new BigDecimal("40000"), new BigDecimal("40000")));
 
         mockMvc.perform(get("/api/pedidos").header("Authorization", "Bearer token-ana"))

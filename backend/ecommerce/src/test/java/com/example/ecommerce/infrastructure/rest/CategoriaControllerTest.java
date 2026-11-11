@@ -25,6 +25,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.example.ecommerce.application.dto.response.CategoriaResponse;
+import com.example.ecommerce.application.usecase.ListarCategoriasUseCase;
+import java.util.List;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @WebMvcTest(CategoriaController.class)
 class CategoriaControllerTest {
@@ -34,6 +38,9 @@ class CategoriaControllerTest {
 
     @MockitoBean
     private CrearCategoriaUseCase crearCategoriaUseCase;
+
+    @MockitoBean
+    private ListarCategoriasUseCase listarCategoriasUseCase;
 
     @MockitoBean
     private CategoriaMapper mapper;
@@ -99,5 +106,22 @@ class CategoriaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\": \"Labios\"}"))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void deberiaListarLasCategoriasSinNecesidadDeToken() throws Exception {
+
+        // Arrange
+        Categoria uno = Categoria.crear("x-1", "Labios");
+        Categoria dos = Categoria.crear("x-2", "Ojos");
+        when(listarCategoriasUseCase.ejecutar()).thenReturn(List.of(uno, dos));
+        when(mapper.toCategoriaResponse(uno)).thenReturn(new CategoriaResponse("x-1", "Labios"));
+        when(mapper.toCategoriaResponse(dos)).thenReturn(new CategoriaResponse("x-2", "Ojos"));
+
+        // Act y Assert
+        mockMvc.perform(get("/api/categorias"))
+                .andExpect(status().isOk())                         // HTTP 200
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].nombre").value("Labios"));
     }
 }

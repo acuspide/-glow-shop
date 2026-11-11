@@ -1,5 +1,6 @@
 package com.example.ecommerce.domain.repository;
 import com.example.ecommerce.domain.entity.Categoria;
+import java.util.List;
 
 import java.util.Optional;
 public interface CategoriaRepository {
@@ -9,4 +10,7 @@ public interface CategoriaRepository {
 
     /** Compara sin distinguir mayúsculas/minúsculas. */
     boolean existePorNombre(String nombre);
+
+    /** Todas las categorias, ordenadas por nombre. */
+    List<Categoria> listarTodas();
 }
