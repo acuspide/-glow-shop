@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import com.example.ecommerce.domain.exception.RecursoNoEncontradoException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,15 +63,18 @@ class VerCarritoUseCaseTest {
     }
 
     @Test
-    void deberiaLanzarExcepcionCuandoElClienteNoTieneCarrito() {
+    void deberiaDevolverUnCarritoVacioCuandoElClienteNoTieneCarrito() {
 
         // Arrange
         when(carritoRepository.obtenerPorClienteId("u-100")).thenReturn(Optional.empty());
 
-        // Act y Assert
-        assertThrows(RecursoNoEncontradoException.class, () -> {
-            useCase.ejecutar("u-100");
-        });
+        // Act
+        Carrito carrito = useCase.ejecutar("u-100");
+
+        // Assert
+        assertEquals("u-100", carrito.getClienteId());
+        assertTrue(carrito.getItems().isEmpty());
+        verify(carritoRepository, never()).guardar(any());
     }
 
     @Test
