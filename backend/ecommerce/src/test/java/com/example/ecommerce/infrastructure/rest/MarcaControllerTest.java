@@ -14,7 +14,10 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
+import com.example.ecommerce.application.dto.response.MarcaResponse;
+import com.example.ecommerce.application.usecase.ListarMarcasUseCase;
+import java.util.List;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -34,6 +37,9 @@ class MarcaControllerTest {
 
     @MockitoBean
     private CrearMarcaUseCase crearMarcaUseCase;
+
+    @MockitoBean
+    private ListarMarcasUseCase listarMarcasUseCase;
 
     @MockitoBean
     private MarcaMapper mapper;
@@ -99,5 +105,22 @@ class MarcaControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"nombre\": \"Maybelline\"}"))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void deberiaListarLasMarcasSinNecesidadDeToken() throws Exception {
+
+        // Arrange
+        Marca uno = Marca.crear("x-1", "Labios");
+        Marca dos = Marca.crear("x-2", "Ojos");
+        when(listarMarcasUseCase.ejecutar()).thenReturn(List.of(uno, dos));
+        when(mapper.toMarcaResponse(uno)).thenReturn(new MarcaResponse("x-1", "Labios"));
+        when(mapper.toMarcaResponse(dos)).thenReturn(new MarcaResponse("x-2", "Ojos"));
+
+        // Act y Assert
+        mockMvc.perform(get("/api/marcas"))
+                .andExpect(status().isOk())                         // HTTP 200
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].nombre").value("Labios"));
     }
 }

@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -558,5 +560,30 @@ public class PedidoTest {
         // Assert
         assertEquals(null, pedido.getPagoConfirmadoId());
         assertEquals(EstadoPedido.CONFIRMADO, pedido.getEstado());
+    }
+
+    @Test
+    void unPedidoSinPagoRegistradoNoEstaPagado() {
+
+        // Arrange
+        Pedido pedido = crearPedido();
+        pedido.confirmar();
+
+        // Act y Assert
+        assertFalse(pedido.estaPagado());
+    }
+
+    @Test
+    void unPedidoConPagoAprobadoRegistradoEstaPagado() {
+
+        // Arrange
+        Pedido pedido = crearPedido();                                   // total 20000
+        pedido.confirmar();
+
+        // Act
+        pedido.registrarSiFueAprobado(pagoAprobado("pa-50", "p-1", "20000"));
+
+        // Assert
+        assertTrue(pedido.estaPagado());
     }
 }

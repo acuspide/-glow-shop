@@ -228,6 +228,11 @@ public class Pedido {
     public Precio getCostoEnvio() {
         return costoEnvio;
     }
+
+    /** true cuando el pedido ya tiene un pago aprobado registrado. */
+    public boolean estaPagado() {
+        return pagoConfirmadoId != null;
+    }
     public String getPagoConfirmadoId() {
         return pagoConfirmadoId;
     }

@@ -8,6 +8,7 @@ public record PedidoResponse(
         String clienteId,
         String tiendaId,
         String estado,
+        boolean pagado,
         List<DetallePedidoResponse> detalles,
         BigDecimal subtotal,
         BigDecimal total

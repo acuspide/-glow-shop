@@ -64,7 +64,7 @@ class VendedorPedidoControllerTest {
         Pedido pedido = Pedido.crear("p-1", "u-1", "t-1",
                 List.of(new DetallePedido("a-1", 1, new Precio(new BigDecimal("20000")))));
         when(actualizarEstadoPedidoUseCase.ejecutar("p-1", "v-1", EstadoPedido.ENVIADO)).thenReturn(pedido);
-        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-1", "t-1", "ENVIADO",
+        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-1", "t-1", "ENVIADO",false,
                 List.of(), new BigDecimal("20000"), new BigDecimal("20000")));
 
         mockMvc.perform(put("/api/vendedor/pedidos/p-1/estado").header("Authorization", "Bearer token-vera")
@@ -114,7 +114,7 @@ class VendedorPedidoControllerTest {
         Pedido pedido = Pedido.crear("p-1", "u-1", "t-1",
                 List.of(new DetallePedido("a-1", 1, new Precio(new BigDecimal("20000")))));
         when(listarPedidosDeMiTiendaUseCase.ejecutar("v-1")).thenReturn(List.of(pedido));
-        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-1", "t-1", "CONFIRMADO",
+        when(mapper.toResponse(pedido)).thenReturn(new PedidoResponse("p-1", "u-1", "t-1", "CONFIRMADO",false,
                 List.of(), new BigDecimal("20000"), new BigDecimal("20000")));
 
         mockMvc.perform(get("/api/vendedor/pedidos").header("Authorization", "Bearer token-vera"))

@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import com.example.ecommerce.application.dto.response.MarcaResponse;
+import com.example.ecommerce.application.usecase.ListarMarcasUseCase;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
 import java.net.URI;
 import java.util.UUID;
 
@@ -24,9 +27,20 @@ import java.util.UUID;
 @RequestMapping("/api/marcas")
 public class MarcaController {
     private final CrearMarcaUseCase crearMarcaUseCase;
+    private final ListarMarcasUseCase listarMarcasUseCase;
     private final MarcaMapper mapper;
     private final TokenService tokenService;
 
+    // Público: lo usan el formulario de publicar artículo y los filtros del catálogo.
+    @GetMapping
+    public ResponseEntity<List<MarcaResponse>> listar() {
+        List<MarcaResponse> marcas = listarMarcasUseCase.ejecutar()
+                .stream()
+                .map(mapper::toMarcaResponse)
+                .toList();
+
+        return ResponseEntity.ok(marcas);
+    }
     @PostMapping
     public ResponseEntity<CrearMarcaResponse> crear(
             @RequestHeader(value = "Authorization", required = false) String autorizacion,

@@ -1,7 +1,8 @@
 package com.example.ecommerce.infrastructure.persistence;
 import com.example.ecommerce.domain.entity.Categoria;
 import com.example.ecommerce.domain.repository.CategoriaRepository;
-
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,5 +26,12 @@ public class CategoriaRepositoryEnMemoria implements CategoriaRepository{
         String buscado = nombre.trim();
         return categorias.values().stream()
                 .anyMatch(categoria -> categoria.getNombre().equalsIgnoreCase(buscado));
+    }
+
+    @Override
+    public List<Categoria> listarTodas() {
+        return categorias.values().stream()
+                .sorted(Comparator.comparing(Categoria::getNombre))
+                .toList();
     }
 }

@@ -1,7 +1,8 @@
 package com.example.ecommerce.infrastructure.persistence;
 import com.example.ecommerce.domain.entity.Marca;
 import com.example.ecommerce.domain.repository.MarcaRepository;
-
+import java.util.Comparator;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -28,5 +29,12 @@ public class MarcaRepositoryEnMemoria implements MarcaRepository {
         return marcas.values().stream()
                 .anyMatch(marca ->
                         marca.getNombre().equalsIgnoreCase(nombre.trim()));
+    }
+
+    @Override
+    public List<Marca> listarTodas() {
+        return marcas.values().stream()
+                .sorted(Comparator.comparing(Marca::getNombre))
+                .toList();
     }
 }

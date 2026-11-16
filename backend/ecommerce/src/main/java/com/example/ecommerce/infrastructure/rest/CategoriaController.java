@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import com.example.ecommerce.application.dto.response.CategoriaResponse;
+import com.example.ecommerce.application.usecase.ListarCategoriasUseCase;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
 import java.net.URI;
 import java.util.UUID;
 
@@ -24,8 +27,20 @@ import java.util.UUID;
 @RequestMapping("/api/categorias")
 public class CategoriaController {
     private final CrearCategoriaUseCase crearCategoriaUseCase;
+    private final ListarCategoriasUseCase listarCategoriasUseCase;
     private final CategoriaMapper mapper;
     private final TokenService tokenService;
+
+    // Público: lo usan el formulario de publicar artículo y los filtros del catálogo.
+    @GetMapping
+    public ResponseEntity<List<CategoriaResponse>> listar() {
+        List<CategoriaResponse> categorias = listarCategoriasUseCase.ejecutar()
+                .stream()
+                .map(mapper::toCategoriaResponse)
+                .toList();
+
+        return ResponseEntity.ok(categorias);
+    }
 
     @PostMapping
     public ResponseEntity<CrearCategoriaResponse> crear(

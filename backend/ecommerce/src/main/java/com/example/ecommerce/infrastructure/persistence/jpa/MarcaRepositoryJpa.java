@@ -5,7 +5,8 @@ import com.example.ecommerce.domain.repository.MarcaRepository;
 import com.example.ecommerce.infrastructure.persistence.jpa.mapper.MarcaPersistenceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.data.domain.Sort;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -29,5 +30,12 @@ public class MarcaRepositoryJpa implements MarcaRepository {
     @Override
     public boolean existePorNombre(String nombre) {
         return dataRepository.existsByNombreIgnoreCase(nombre.trim());
+    }
+
+    @Override
+    public List<Marca> listarTodas() {
+        return dataRepository.findAll(Sort.by("nombre")).stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }
